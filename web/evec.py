@@ -59,21 +59,21 @@ class Home:
         t.search = search
         db = evec_func.db_con()
         search = search.lower()
-        
+
         search = "%" + search + "%"
 
         notmask = '%Blueprint'
 
         if search.find('blueprint') != -1:
             notmask = 'this wont ever exist'
-            
-        
+
+
         cur = db.cursor()
         cur.execute("SELECT typename,typeid FROM types WHERE typename ILIKE %s AND typename NOT ILIKE %s ORDER BY typename", [search, notmask])
         types = []
         item = cur.fetchone()
         while item:
-            
+
             types.append({'typeid':item[1], 'typename':item[0]})
 
             item = cur.fetchone()
@@ -463,7 +463,7 @@ class Home:
 
         size = str(int(size))
         cashonhand = str(double(cashonhand))
-        
+
         sql_profit_size = """	 (t.price - f.price)* min(""" + size + """, min(t.volremain,f.volremain) * types.size)/types.size """
         sql_profit_jumps = """	 '1' """
         sql_cash = """ f.price <= $(cashonhand)s """
@@ -829,15 +829,6 @@ class Home:
     def tradefind(self):
         session = EVCstate()
 
-        ua = cherrypy.request.headers['User-Agent']
-
-        if ua[0:3] == "EVE":
-            if 'isigb' not in session:
-                session['isigb'] = True
-
-
-
-
 
         t = display.template('tradefind.tmpl', session)
         return t.respond()
@@ -847,13 +838,6 @@ class Home:
     @cherrypy.expose
     def market(self, regionlimit=None, pickregion = None, empire = ""):
         session = EVCstate()
-
-        ua = cherrypy.request.headers['User-Agent']
-
-        if ua[0:3] == "EVE":
-            if 'isigb' not in session:
-                session['isigb'] = True
-
 
         db = evec_func.db_con()
 
@@ -954,12 +938,6 @@ class Home:
     @cherrypy.expose
     def index(self):
         session = EVCstate()
-
-        ua = cherrypy.request.headers['User-Agent']
-
-        if ua[0:3] == "EVE":
-            if 'isigb' not in session:
-                session['isigb'] = True
 
         t = display.template('index.tmpl', session)
 
