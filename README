@@ -1,0 +1,74 @@
+EVE-Central.com Code Base - AGPL Release
+----------------------------------------
+
+* Introduction *
+
+Welcome to the source code to EVE-Central.com, the oldest and still
+the most popular cross region EVE market browser site.
+
+I (Yann) have decided to release the source code behind the site in
+order to foster new development activities and allow for community
+contributions to the core of the site. I believe in open source
+software, and hope this model can be successfully applied to
+EVE-Central.com
+
+The license chosen here is nothing unusual, and does not prevent
+running the code on another system (should the main EVE-Central servers cease
+to exist for whatever reason). The goal is to maintain eve-central.com
+as the primary instance for this codebase. If you so choose to run it
+on another system, please remember that the code is licensed under the
+Affero GPL, REQUIRING you to release the source to users who simply
+visit the network service, in addition to retaing all copyright
+notices where a web-user will see them. If you have more questions,
+see the LICENSE file for details.
+
+EVE-Central.com still deeply respects data privacy of our users. There
+are components which will not be made public in the form of database
+dumps. For example, market transaction information, user login
+information, e-mail addresses, API keys, and corporation website contents. These
+all include sensitive personal information.
+
+Not all code is available in the initial dump, nor is the old
+historical eve-central.com code available (back when it ran under
+mod_python and was even more ghastly). The internal git  repository was
+never intended to be a "public" release, and would take a significant
+amount of work to correctly filter out any embarassing parts.
+
+Best of luck,
+Yann Ramin <atrus@stackworks.net>
+
+
+* Requirements *
+
+- Python 2.5+ (3.0 not supported)
+  - psycopg2
+  - psycopg (for some old bath utilities)
+  - Pyro (for the pathfinder server
+  - numpy (for statistic calculations)
+  - CherryPy (primary web server)
+- PostgreSQL 8.3+
+
+
+* High level view of directories *
+
+db/
+        - Database schemas
+
+web/
+        - CherryPy launcher, web front end classes
+
+lib/evecentral
+        - Utility classes
+
+periodic/
+        - Batch programs which make EVE-Central tick
+
+static_web/
+        - Static HTML files (served by front-end server on the main
+        server)
+
+pathfinder_src/
+        - C++ implementation of a shortest path server, has partial
+        local copy of boost in pathfinder_src/boost
+
+
