@@ -1,0 +1,11 @@
+Thank you for downloading the EVE-Central.com MarketUploader!
+Newest version of the uploader is = 1.3.1 =
+
+We now list Black Rise Markets!
+
+EVE's market dump directory is no longer the root EVE folder, but instead in Documents and Settings\[computer name]\My Documents\eve\logs\marketlogs. Please make sure the uploader is pointed here 
+
+Donations of ISK not accepted. Keep it for youself :-)
+
+
+
