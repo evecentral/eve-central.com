@@ -14,13 +14,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import md5
 import string
 import os
 import Cheetah.Template
 import random
 
-import simplejson
+try:
+    import simplejson
+except:
+    import json as simplejson
 
 import cherrypy
 
