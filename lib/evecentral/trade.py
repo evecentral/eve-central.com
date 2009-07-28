@@ -35,7 +35,7 @@ class TradeFetcher(object):
         self.db = db
         self.bid = bid
         self.limits = limits
-        self.orders = []
+        self.orders = {} # map of lists of orders, keyed by type
         self._fetch()
 
     def _fetch(self):
@@ -63,7 +63,11 @@ class TradeFetcher(object):
         r = cur.fetchone()
         while r:
             o = Order(r[0], r[1], r[2], r[3], r[4], r[5], r[6])
-            self.orders.append(o)
+            if r[0] is in self.orders:
+                self.orders[r[0]].append(o)
+            else:
+                self.orders[r[0]] = [o]
+
             r = cur.fetchone()
         return
 
@@ -82,7 +86,7 @@ class TradeFinder(object):
 
     def set_limiter(self, limiter, limit):
         if limiters not in TradeFinder.VALID_LIMITS:
-            return TradeFinderException("Not a valid limit")
+            raise TradeFinderException("Not a valid limit")
 
         self.limits[limiter] = limit
         return self.limits[limiter]
@@ -94,3 +98,20 @@ class TradeFinder(object):
     def fetch_orders(self, db):
         sells = TradeFetcher(db, self.fromt, self.limits, bid = 0).orders
         buys = TradeFetcher(db, self.tot, self.limits, bid = 1).orders
+
+        types = set(sells.keys())
+        types = types.insersection(buys.keys())
+
+        for typeid in types:
+            _sells = sells[typeid]
+            _buys = buys[typeid]
+            self._process_typeid(_sells, _buys)
+
+
+    def _process_typeid(self, sells, buys):
+
+        # Determine minimum price of selling orders
+        minprice = reduce(lambda x, y: min(x.price, y.price), sells)
+
+        # Filter based upon minimum price, so buy orders under it won't be considered
+        buys = [order for order in buys if order.price > minprice]
