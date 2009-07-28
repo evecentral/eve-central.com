@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- Automatically generated data from EVE-Central.com -->
+
+#def MarketList($list)
+
+#for $order in $list
+<order id="$order['orderid']">
+
+<region>$order['regionid']</region>
+<station>$order['stationid']</station>
+<station_name>$order['stationname']</station_name>
+<security>$order['security']</security>
+<range>$order['range']</range>
+<price>$order['price_raw']</price>
+<vol_remain>$order['volremain_raw']</vol_remain>
+<min_volume>$order['minvolume_raw']</min_volume>
+
+<expires>$order['expires']</expires>
+<reported_time>$order['reportedtime']</reported_time>
+</order>
+#end for
+
+
+
+#end def
+
+
+#if $api == 2.0:
+<evec_api version="2.0" method="quicklook">
+#end if
+<quicklook>
+<item>$typeid</item>
+<itemname>$typename</itemname>
+<regions>
+
+
+	#for $region in $regions
+		#if $region['regionid'] in $regionlimit
+				<region>$region['regionname']</region>
+		#end if
+	#end for
+</regions>
+<hours>$hours</hours>
+<minqty>$minQ</minqty>
+<sell_orders>
+$MarketList($sells)
+</sell_orders>
+<buy_orders>
+$MarketList($buys)
+</buy_orders>
+
+</quicklook>
+
+
+#if $api == 2.0:
+</evec_api>
+#end if

@@ -1,0 +1,34 @@
+
+#extends templates.basebase
+
+#def title
+Market Reports
+#end def
+
+#def body
+
+<p>We are now generating pretty graphs based on archived market data on a daily basis on a certain set of 'market baskets', with several commodities in each. </p>
+
+<p>Composite market indicies:</p>
+<ul>
+<li><a href="/reports/Minerals.html">Minerals</a> - A basket of various Tech1 minerals, from Tritanium to Megacyte</li>
+<li><a href="/reports/Rare%20Minerals.html">Rare Minerals</a> - A basket of Megacyte and Zydrine, both rare high cost minerals</li>
+</ul>
+<p>Single market indicies:</p>
+<ul>
+#for $mineral in ['Tritanium', 'Pyerite', 'Mexallon', 'Isogen', 'Nocxium', 'Zydrine', 'Megacyte', 'Morphite']
+
+<li><a href="/reports/${mineral}.html">$mineral</a></li>
+
+#end for
+</ul>
+
+<p>Tier 1 BS</p>
+<ul>
+<li><a href="/reports/Tier%201%20Battleship.html">Tier 1 Battleship</a></li>
+</ul>
+<p>Note that these indicies are only as accurate as the submitted data is. Please submit data :)</p>
+
+
+
+#end def

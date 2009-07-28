@@ -1,0 +1,50 @@
+
+#extends templates.basebase
+
+#def title
+Register or Login
+#end def
+
+#def body
+
+<p>Please login or register below</p>
+
+
+<table border="0" width="100%">
+<tr>
+<td valign="top">
+<h3>Login</h3>
+<form method="POST" action="login.html">
+Username: <input type="text" name="username" length="10" value="$charname">
+<br />
+Password: <input type="password" name="password">
+<br />
+<input type="submit" value="Login">
+</form>
+</td>
+<td valign="top">
+<h3>Register</h3>
+#if $isigb and $charname
+
+<form method="POST" action="register.html">
+Character name: $charname
+<br />
+Password: <input type="password" name="password">
+<br /><i>Note: Do NOT use your main EVE account password. The password entered here is encrypted in our database minimizing risk, but its better to be safe.</i>
+<br />
+E-mail: <input type="text" name="email">
+<br />
+<input type="submit" value="Register">
+
+</form>
+
+#else
+
+<p><b>Registration requires the use of the In Game Browser, and requires trusting EVE-Central.com. Please make sure EVE-Central.com is on the trusted list in your browser settings. Please also make sure <b>http://eve-central.com/</b> is in your address bar, <i>NOT</i> http://www.eve-central.com/ to work around misc. IGB issues.</b></p>
+
+#end if
+
+</td></tr>
+</table>
+
+#end def

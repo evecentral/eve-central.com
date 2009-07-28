@@ -1,0 +1,94 @@
+#extends templates.basebase
+
+#def title
+Trade Tools
+#end def
+
+#def body
+
+
+<!-- css -->
+<link rel="stylesheet" type="text/css" href="/js/yui/autocomplete/assets/skins/sam/autocomplete.css">
+<!-- js -->
+<script type="text/javascript" src="/js/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
+
+<script type="text/javascript" src="/js/yui/connection/connection-min.js"></script>
+<script type="text/javascript" src="/js/yui/animation/animation-min.js"></script>
+<script type="text/javascript" src="/js/yui/datasource/datasource-beta-min.js"></script>
+<script type="text/javascript" src="/js/yui/json/json-min.js"></script>
+<script type="text/javascript" src="/js/yui/autocomplete/autocomplete-min.js"></script>
+
+<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software.html">software page</a> to download the free utility which will upload market dumps from the EVE client. See our <a href="/home/leaders.html">leaderboard</a> for most uploads per person.</p>
+
+<div class="tradeTool">
+  <h3>Sell->Buy Order Tool with Jump Distance</h3>
+  The traditional NPC or player order matcher tool still lives on. Use this tool to match up Sell and Buy orders between regions and systems.
+
+  <form method="GET" action="/home/tradefind_search.html">
+    <table>
+      <tr>
+
+        <td>Query type:</td>
+        <td>
+          <select name="qtype">
+            <option>Systems</option>
+            <option value="SystemToRegion">System to Region</option>
+            <option selected="1">Regions</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          From:
+        </td> <td><input type="text" name="fromt"> ---&gt; </td>
+      </tr>
+      <tr>
+        <td>To:</td><td>  <input type="text" name="to">
+
+
+          <input type="submit" value="Search & Display" /></td></tr>
+    </table>
+    <i>Note: From and To can be the same system or region. </i>
+  </form>
+
+</div>
+
+
+<div class="tradeTool">
+  <h3>System and Region Price Comparison Tool</h3>
+  <p>Compare the price differences between sell orders in two systems or regions (or combination thereof). Simply enter any system or region name in either box, and pick a matching entry from the list. <i>This premium feature is not IGB compatible. </i> <strong>BETA! Beware of bugs!</strong>
+
+  <form action="compare" onsubmit="return ac1.validateForm() && ac2.validateForm();" class="yui-skin-sam">
+    <div id="systemSearch">
+
+      <div>
+	    <input id="system1s" type="text" name="name" />
+        <input id="system1" type="hidden" name="system1" value="-1" />
+        <br />
+	    <div id="system1ysearchcontainer"></div>
+      </div>
+      <div>
+        <input id="system2s" type="text" name="name" />
+        <input id="system2" type="hidden" name="system2" value="-1" />
+        <br />
+
+
+	    <div id="system2ysearchcontainer"></div>
+      </div>
+      <br />
+      <input type="submit" value="Compare!" />
+    </div>
+  </form>
+<script type="text/javascript" src="/js/evec_acomplete.js"></script>
+
+</div>
+
+<!--
+<div class="tradeToolPremium">
+  <h3>At-A-Glance Market Views</h3>
+  <p><b>Coming soon!</b> <br />Build a collection of items from different places and compares prices, all in one page. Integrates
+    market order exporting to track your orders vs uploaded pricing information.</p>
+</div>
+-->
+
+#end def

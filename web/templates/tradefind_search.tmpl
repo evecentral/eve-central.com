@@ -1,0 +1,80 @@
+
+#extends templates.basebase
+
+#def title
+Trade Finder - Pick $qtype
+#end def
+
+#def body
+
+<script>
+function disableForm(theform) {
+if (document.all || document.getElementById) {
+for (i = 0; i < theform.length; i++) {
+var tempobj = theform.elements[i];
+if (tempobj.type.toLowerCase() == "submit")
+tempobj.disabled = true;
+}
+}
+}
+</script>
+
+<p>
+
+<img src="/images/trade.png" align="right" />
+
+<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the Red Moon Rising client</p>
+
+<p>Pick the two locations to find trade routes between.</p>
+
+<form method="GET" action="tradefind_display.html" name="tfform">
+Searching for type $qtype
+<input type="hidden" name="qtype" value="$qtype">
+<input type="hidden" name="newsearch" value="1">
+<table width="70%" border="0">
+<tr><th>From</th><th>To</th></tr>
+
+<tr>
+<td valign="top">
+#if len($from_list) == 0
+<i>Nothing available</i>
+#end if
+ #for $item in $from_list
+  <input type="radio" name="fromt" value="$item['id']" 
+#if len($from_list) == 1
+checked
+#end if
+> $item['name']<br />
+ #end for
+</td>
+
+<td valign="top">
+#if len($to_list) == 0
+<i>Nothing available</i>
+#end if
+
+
+ #for $item in $to_list
+  <input type="radio" name="to" value="$item['id']"
+#if len($to_list) == 1
+checked
+#end if
+
+> $item['name']<br />
+ #end for
+</td>
+</tr>
+</table>
+
+
+#if len($to_list) == 0 or len($from_list) == 0
+<b>Missing a from/to option. Try again</b>
+#else
+ <input type="submit" value="Display Routes" onclick="disableForm(tfform); tfform.submit();"/> <br />
+ <i>This can take awhile, depending on current system load (we process up to 30 concurrent tradefinder requests at peak times). Have patience.</i>
+#end if
+<br />
+<i>Note: From and To can be the same location.</i>
+</form>
+
+#end def

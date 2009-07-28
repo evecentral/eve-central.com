@@ -1,0 +1,49 @@
+
+#extends templates.basebase
+#def title
+EVE-Central.com - Wallet & Transactions
+#end def
+
+#def body
+<p>Welcome to the <i>beta</i> wallet and transaction viewer, part of EVE-Central.com. This page will be filling up over time with new features as they become available, but for now, enjoy your wallet balance: 
+</p>
+<p>-&gt; <a href="setapikeys.html">Set API keys</a></p>
+<p>
+Wallet balance: $balance ISK (at $timeat)</p>
+<p>Historical balances (last 100): </p>
+
+<OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+	codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" 
+	WIDTH="400" 
+	HEIGHT="250" 
+	id="charts" 
+	ALIGN="">
+<PARAM NAME=movie VALUE="charts.swf?library_path=charts_library&xml_source=sample.xml">
+<PARAM NAME=quality VALUE=high>
+<PARAM NAME=bgcolor VALUE=#666666>
+
+<EMBED src="/swfcharts/charts.swf?library_path=/swfcharts/charts_library&xml_source=/wallet/balance_xml"
+       quality=high 
+       bgcolor=#666666  
+       WIDTH="600" 
+       HEIGHT="450" 
+       NAME="charts" 
+       ALIGN="" 
+       swLiveConnect="true" 
+       TYPE="application/x-shockwave-flash" 
+       PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer">
+</EMBED>
+</OBJECT>
+<br />
+<a href="http://eve-central.com/wallet/balance_xml?nochart=1&number=1000">XML dump of history</a>
+<table width="50%">
+<tr><th>Balance</th><th>Time</th></tr>
+#for $bal in $wallethis
+<tr><td>$bal[0]</td><td>$bal[1]</td></tr>
+
+
+#end for
+</table>
+
+
+#end def

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- Automatically generated data from EVE-Central.com -->
+<!-- This is the new API :-) -->
+
+
+#def StatPrint($dict)
+<volume>$dict['total_vol']</volume>
+<avg>$dict['avg_price']</avg>
+<max>$dict['max']</max>
+<min>$dict['min']</min>
+<stddev>$dict['stddev']</stddev>
+<median>$dict['median']</median>
+#end def
+
+<evec_api version="2.0" method="marketstat_xml">
+<marketstat>
+
+#for $type in $types
+
+
+<type id="$type.typeid">
+
+  <all>
+    $StatPrint($type.prices)
+  </all>
+  <buy>
+    $StatPrint($type.buy)
+  </buy>
+  <sell>
+    $StatPrint($type.sell)
+  </sell>
+</type>
+
+#end for
+
+</marketstat>
+</evec_api>

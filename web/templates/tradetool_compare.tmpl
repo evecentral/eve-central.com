@@ -1,0 +1,75 @@
+#extends templates.basebase
+
+#def title
+Trade Tool - Compare
+#end def
+
+#def body
+
+
+#from evecentral.evec_func import format_price
+
+<form method="GET" action="compare.html">
+<input type="hidden" name="system1" value="$system1"/>
+<input type="hidden" name="system2" value="$system2"/>
+<input type="hidden" name="mode1" value="$mode1" />
+<input type="hidden" name="mode2" value="$mode2" />
+</form>
+Comparing sell orders between <strong>$system1name</strong> and <strong>$system2name</strong>
+<form method="GET" action="compare">
+  <input type="hidden" name="system1" value="$system1" /> <input type="hidden" name="system2" value="$system2" />
+  <input type="text" name="setsecfilter" value="$secfilter" size="5"/> System security cutoff. Showing orders uploaded within the past <input type="text" size="6" name="sethours" value="$hours" /> hours. Maximum ISK of an item: <input type="text" size="15" name="setmaxisk" value="$maxisk"/>
+  <input type="submit" value="Filter"/>
+</form>
+
+<table width="100%">
+
+<tr>
+  <th>Item</th>  <th>$system1name</th><th>$system2name</th> <th>Difference</th>
+</tr>
+
+#set $altB = False
+#for $item in $pricelist
+
+<tr
+#if $altB
+class="colorAlt"
+#end if>
+ <td>
+   <a href="/home/quicklook.html?typeid=$item.type">$namemap[$item.type]</a>
+   <br />
+   $omap[$item.type][4].station_name<br /> $omap[$item.type][5].station_name
+ </td>
+ <td>
+   <img src="/images/icon_min.png" alt="Minimum price" /> $format_price($omap[$item.type][0].min)
+   <br />
+   <img src="/images/icon_median.png" alt="Median price" /> $format_price($omap[$item.type][0].median)
+   <br />
+   <i>Qty</i> $omap[$item.type][2]
+ </td>
+ <td>
+   $format_price($omap[$item.type][1].min)
+   <br /> $format_price($omap[$item.type][1].median)
+   <br />
+   $omap[$item.type][3]
+ </td>
+
+ <td>$format_price($item.min) <br /> $format_price($item.median)</td>
+
+</tr>
+
+#if $altB == False
+#set $altB = True
+#else
+#set $altB = False
+#end if
+
+#end for
+
+</table>
+
+
+
+
+
+#end def

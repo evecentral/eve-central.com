@@ -1,0 +1,26 @@
+
+#extends templates.basebase
+
+#def title
+Leaderboard
+#end def
+
+#def body
+
+
+
+<p><img src="/images/trade.png" align="right" />
+
+Current leaderboard, ranked by number of uploads:
+<table border="0">
+#set $count = 1
+<tr><th>#</th><th>Character name</th><th>Uploads</th></tr>
+ #for $item in $results
+<tr>
+        <td>$count</td><td><b>$item[0]</b></td><td>$item[1]</td>
+</tr> 
+#set $count = $count + 1
+
+ #end for
+</table>
+#end def

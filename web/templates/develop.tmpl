@@ -1,0 +1,142 @@
+#extends templates.basebase
+
+#def title
+Developer Integration
+#end def
+
+#def body
+
+#if 'user' in $session
+
+#end if
+<h2>Now 3 Great Ways to Integrate</h2>
+<p>Pick your poison</p>
+<ul>
+
+<li><a href="#csv">CSV Nightly Dumps</a></li>
+<li><a href="#xml">XML Query</a></li>
+<li><a href="#smtp">Mail-Push SMTP Service</a></li>
+
+
+</ul>
+
+
+<a name="csv"></a>
+<h2>CSV All-submitted-entries market dumps</h2>
+<p>The feature you've all been asking for, dumped market files. These CSV files contain all of our user provided uploads dating back to 1/15/2006. Sure to be a boon to those of you who like lots of data to chew on. Note that this isn't a static price dump of prices for a day; instead its every market log that was uploaded appened end to end (though in-file sorting is not guaranteed).</p>
+
+<p>There are of course some caveats:</p>
+<ol><li>All timestamps are in <i>Pacfic</i> time (7 or 8 hours off GMT depending on daylight savings time, designed to make your life more interesting) up until October 2007, when we moved to GMT/UTC.</li>
+<li>This is a first shot at the data, it probably contains some bugs.</li>
+<li>For awhile, buy order ranges were being inserted totally wrong, making the bid range field useless for a good part of 2006.</li>
+<li>The data is big. Its 511MB compressed for the time period 2006-01-15 to 2007-5-1, but thats at around a 90% compression savings. You will have gigs of data in CSV files when you gunzip them.</li>
+<li>It isn't live. Its generated nightly around 2am pacific for the previous day.</li>
+</ol>
+
+<p>The dump files are available here: <a href="http://eve-central.com/dumps/">http://eve-central.com/dumps/</a>. The first tar file in the directory is a combination of the first file set, saving you time vs. downloading it file by file.</p>
+
+<a name="xml"></a>
+<h2>XML HTTP APIs</h2>
+<p>We now have a limited set of XML datafeeds available to query pricing information from your own application, killboard, or website. See the upgrade news <a href="http://yannramin.com/2008/04/04/eve-central-api-upgrades/">here</a>. But first, the rules:
+</p>
+
+<ul>
+ <li>This is direct from ingame data and has some useage restrictions. If you are unsure what that is, please see the <a href="http://www.eve-online.com/">EVE-Online</a> Terms of Service.</li>
+ <li>Do not hammer the server every second - If you are writing a killboard, it is ok to grab updated prices on a regular (hourly, daily, etc) basis to
+	make cool loss/gain graphs, but do NOT try getting data on every page load. Most forms of caching for your site is ok. If you're unsure - ask.
+ </li>
+ <li>Do not query type IDs which do not exist in the market over and over! Its a waste of resources. This irritating practice will lead to swift bannination if I see it. Type IDs do not extend from 1 to 100000000000. Use the CCP data exports to figure out which types actually have a market group.</li>
+</ul>
+
+<p>You simply make an HTTP GET or POST request to a given URL and read the generated XML document. The following APIs are available, along with query parameters. The query paramaters can be passed in an HTTP GET or POST request.</p>
+<p>It is adivsable to set a custom User-Agent header when requesting data to determine the soruce application. We can also add you to the "Applications using EVE-Central" section on our page.</p>
+#def $paramtable($paramlist)
+
+<table border="1">
+
+  <tr><th>Parameter</th><th>Usage</th><th>Required</th><th>Can be specified more than once</th></tr>
+#for $param in $paramlist
+  <tr>
+    <td><code>$param[0]</code></td><td>$param[1]</td><td>$param[2]</td><td>$param[3]</td>
+  </tr>
+#end for
+</table>
+#end def
+
+<h3>marketstat_xml</h3>
+<p>Usage: <b>http://api.eve-central.com/api/marketstat</b>
+<br /><b>Purpose: </b> Retrieve aggerate statistics for the items specified.
+<br />
+$paramtable( [ [ 'hours', 'Statistics from the last X specified hours.', False, False],
+['typeid', 'The type ID of the item you are requesting. I.e., 34 for Tritanium. Can be specified more than once', True, True],
+['minQ', 'The minimum quantity in an order to consider it for the statistics', False, False],
+['regionlimit', 'Restrict statistics to a region. Can be specified more than once.', False, True]
+
+ ] )
+<br />
+<b>Example:</b> <a href="http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002</a>
+</p>
+
+<h3>quicklook</h3>
+<p>Usage: <b>http://eve-central.com/api/quicklook</b>
+  <br/><b>Purpose: </b> Retrieve all of the available market orders, including prices, stations, order IDs, volumes, etc.
+<br />
+$paramtable( [[ 'typeid', 'The type ID to be queried', True, False],
+['sethours', 'Get orders which have been posted within the last X hours. Defaults to 360', False, False],
+['regionlimit', 'Restrict the view to only show from within the specified region IDs. Can be specified multiple times.', False, True],
+['usesystem', 'Restrict the view to the following system only.', False, False],
+['setminQ', 'Restrict the view to show only orders above the specified quantity', False, False]
+])
+<br />
+<b>Example:</b> <a href="http://api.eve-central.com/api/quicklook?typeid=34">http://api.eve-central.com/api/quicklook?typeid=34</a>
+</p>
+
+<h3>evemon</h3>
+
+<p>Usage: <b>http://api.eve-central.com/api/evemon</b>
+<br />
+<b>Purpose:</b> Retrieve the median mineral prices in the empire regions in a format digestable by <a href="http://evemon.battleclinic.com/">EVEmon</a>.
+<br />
+<i>No parameters supported</i>
+<br />
+<b>Example:</b> <a href="http://api.eve-central.com/api/evemon">http://api.eve-central.com/api/evemon</a>
+</p>
+
+<h3>upload_suggest</h3>
+
+<p>Usage: <b>http://api.eve-central.com/api/upload_suggest</b>
+<br />
+<b>Purpose:</b> Retrieve a random assortment of not-recently-updated items per region. 
+<br />
+$paramtable( [[ 'region', 'The region in which to suggest an upload', True, False]] )
+<br />
+<b>Example:</b> <a href="http://api.eve-central.com/api/upload_suggest?region=10000002">http://api.eve-central.com/api/upload_suggest?region=10000002</a>
+</p>
+
+<p>If you have any questions or wish for more APIs, send me an e-mail. </p>
+
+<h2>Deprecated XML Datafeeds</h2>
+
+<p>We've done some internal URL and system cleanup. These APIs will still work, and many packages support them, but should be considered deprecated. <b>Don't use these for new designs.</b></p>
+<a href="develop_old.html">See the documentation.</a>
+
+
+
+<a name="smtp"></a>
+<h2>Mail-Push Instant Market Log Service</h2>
+<p><b>Important Notice</b>: Many mail services can't handle the large number of messages delivered by our system. These systems include:</p>
+<ul>
+<li> Live.com/Hotmail.com/live.co.uk (rate-limits messages)</li>
+<li>fastmail.fm (rate-limits messages)</li>
+</ul>
+<p>The above addresses are not allowed to subscribe to the list, as a majority of the mail will never reach it, and I don't like to wakeup to a mail queue of 20,000 messages.</p>
+
+<p>Now you can receive every market log uploaded to EVE-Central.com via e-mail, more or less the instant it happens. From there, you can filter it to a script on your e-mail server, or pull it from a POP/IMAP server at your end to process messages. This is probably the most advanced system we offer. It will chew through a lot of bandwidth and storage space, generating potentially hundreds of e-mails per hour.</p>
+<p>It is implemented as a mailman mailing list which you can subscribe a special e-mail address to. Don't subscribe your normal e-mail, you WILL regret it. To subscribe, go here: <a href="http://lists.stackworks.net/cgi-bin/mailman/listinfo/evec-upload">http://lists.stackworks.net/cgi-bin/mailman/listinfo/evec-upload</a>. Note that you will need to confirm your subscription, so if you have a mail eating script, turn it off when you first subscribe so you can receive the confirmation key. From there, the mailing list will forward you all upload messages. The first relevant line of data is the top of the CSV file spit out by the EVE client, with every following line containing an order. We may reserve lines above the beginning CSV line and the subject line (and any mail headers) for exciting meta-data, so don't count on the format being set in stone.</p>
+<p>Note that you can't post to the list - your messages will get rejected. This is not a discussion list.</p>
+<p>Accepting any and all feedback.</p>
+
+
+
+
+#end def

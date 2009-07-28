@@ -1,0 +1,292 @@
+
+#extends templates.basebase
+
+#def title
+$typename - Market Browser - Quick Look At Item
+#end def
+
+
+#def MarketList($list, $color, $igbcolor)
+<table border="1" cellpadding="5" width="95%">
+
+<tr>
+  <th
+
+
+#if $sortorder == 'regionname':
+bgcolor="#DDDDDD"
+#end if
+>Region <a href="quicklook.html?typeid=$typeid&setorder=regionname&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=regionname&setdir=1"><img src="/images/down.gif" border="0"></a> </th>
+
+<th
+#if $sortorder == 'stationname':
+bgcolor="#DDDDDD"
+#end if
+
+
+
+>System - Station <a href="quicklook.html?typeid=$typeid&setorder=stationname&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=stationname&setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
+
+<th
+#if $sortorder == 'price':
+bgcolor="#DDDDDD"
+#end if
+
+
+ width="50">Price <a href="quicklook.html?typeid=$typeid&setorder=price&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=price&setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
+
+<th
+#if $sortorder == 'volremain':
+bgcolor="#DDDDDD"
+#end if
+
+
+>Qty<a href="quicklook.html?typeid=$typeid&setorder=volremain&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=volremain&setdir=1"><img src="/images/down.gif" border="0"></a> </th>
+
+<th
+
+>Expires</th><th
+
+
+>Reported Time</th>
+</tr>
+
+
+#set $altB = False
+
+#for $order in $list
+#if $altB
+
+#if $isigb
+<tr bgcolor="$igbcolor">
+#else
+<tr bgcolor="$color">
+#end if
+#set $altB = False
+
+#else
+
+#set $altB = True
+
+
+#if $isigb
+<tr>
+#else
+<tr bgcolor="#FFFFFF">
+#end if
+
+#end if
+ <td>$order['regionname']</td>
+ <td>
+<a href="quicklook.html?typeid=$typeid&usesystem=$order['systemid']"><img src="/images/solarsystem.gif" border="0"></a> 
+$order['stationname'] ($order['security']) 
+<a href="mailto:atrus@stackworks.net?subject=EVEC%20Wrong%20Name&body=Use%20this%20only%20for%20wrong%20station%20names%20NOT%20PRICES%20SystemID:%20$order['systemid']%20StationID:%20$order['stationid']%0dCorrect name is:%20"><font size="-4">?</font></a>
+#if $order['range'] > -2
+<br />
+<i>
+#if $order['range'] == -1
+ (Station)
+#elif $order['range'] == 0
+ (Solarsystem)
+#elif $order['range'] == 32767
+ (Region)
+#else
+(Range: $order['range'])
+#end if
+</i>
+#end if
+</td>
+
+ <td>$order['price']</td>
+ <td>$order['volremain']
+#if $order['minvolume'] > 1
+(Min: $order['minvolume'])
+#end if
+
+</td>
+ <td>$order['expires']</td>
+ <td>$order['reportedtime']</td>
+
+</tr>
+
+
+#end for
+
+</table>
+
+
+#end def
+
+
+#def body
+
+
+
+<p>
+
+<!-- <img src="/images/market.png" align="right" /> -->
+
+<!-- <img src="http://eve-central-cdn-eur.s3.amazonaws.com/market.png" align="right" /> -->
+
+<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the EVE client.</p>
+
+#if $upload_sug is not None
+<p><b>&gt; </b> <i>Some upload suggestions for <b>
+
+	#for $region in $regions
+		#if $region['regionid'] == $upload_reg
+				$region['regionname'] 
+		#end if
+	#end for
+
+
+</b>: 
+</i>
+#for $sug in $upload_sug
+ $sug,
+#end for
+</p>
+#end if
+
+#if $isigb
+<p><h3>IGB Note:</h3> IGB client is limited to viewing 25 entries for the buy and sell list per page, since it can't tolerate large HTML pages. Use an external browser for maximum convenience.</p>
+#end if
+
+#if $isigb
+<p>
+#if $poffset != 0
+#set $pf = $poffset - 25
+<a href="/home/quicklook.html?typeid=$typeid&poffset=$pf">Previous page</a>
+#end if
+#set $pf = $poffset + 25
+<a href="/home/quicklook.html?typeid=$typeid&poffset=$pf">Next page</a>
+</p>
+
+#end if
+
+<table border="0" width="100%">
+<tr><td align="left">
+Item: <b>$typename</b> (size: $typesize m<sup>3</sup>),
+Looking at regions: 
+#if $len($regionlimit) < 1
+<i>All regions</i>
+#end if
+
+	#for $region in $regions
+		#if $region['regionid'] in $regionlimit
+				$region['regionname'], 
+		#end if
+	#end for
+
+</td><td align="right"><img src="/images/type/${typeid}.png"></td></tr>
+</table>
+
+
+
+
+
+<form method="GET" action="quicklook.html">
+&nbsp;<br />
+Viewing data up to <input type="text" value="$hours" name="sethours" size="5"> hours old. Minimum Qty: <input type="text" value="$minQ" name="setminQ" size="7"> (entered for stats, remain for view)
+<input type="hidden" name="typeid" value="$typeid" />
+<input type="submit" value="Refresh" />
+</form>
+
+<hr />
+<form method="GET" action="typesearch.html">
+Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx): <input type="text" name="search"> <input type="submit" value="Search">
+
+</form>
+
+<p>Jump to: <a href="#sells">Sell Orders</a> | <a href="#buys">Buy Orders</a></p>
+<p>See a wrong station name? Click the "?" in an out of game browser to send an email giving the correct name!</p>
+<table border="0" width="100%">
+<tr>
+<td>
+<h3>Quick Selling Statistics</h3>
+<p>
+<b>Median selling price in view:</b> $avg_price ISK
+<br />
+<b>Volume for sale now:</b> $total_vol units
+<br />
+<b class="view">Movement <span>(Initial volume - volume remaining)</span></b>: $total_movement units
+
+</p>
+</td>
+<td>
+<h3>Quick Buying Statistics</h3>
+<p>
+<b>Median buying price in view:</b> $b_avg_price ISK
+<br />
+<b>Volume buying now:</b> $b_total_vol units
+<br />
+<b class="view">Movement <span>(Initial volume - volume remaining)</span></b>: $b_total_movement units
+</p>
+</td></tr></table>
+
+
+#if $isigb
+
+#else
+<p class="adLink">
+<b><a href="http://www.shatteredcrystal.com/code.php/eve_online/~325">EVE Online Game Time Codes</a></b> - Support EVE-Central by purchasing them at ShatteredCrystal.com through this affiliate link.</p>
+
+#end if
+
+<a name="trans"></a>
+
+#if $mtransaction
+
+<h3>Latest Transactions (<a href="http://yannramin.com/2009/04/19/api-pulling-going-well-data-starting-to-be-incorporated-and-other-small-changes/">?</a>)</h3>
+<i>BETA!</i>
+<table width="95%" cellpadding="5" border="1">
+<tr><th>Location</th><th>Qty</th><th>Price</th><th>Transaction Time</th></tr>
+
+
+#for $mt in $mtransaction
+<tr>
+<td>$mt['stationname']</td>
+<td>$mt['quantity']</td>
+<td>$mt['price']</td>
+<td>$mt['transtime']</td>
+</tr>
+#end for
+
+</table>
+
+#end if
+
+<a name="sells"></a>
+<h3>Sell Orders</h3>
+
+
+$MarketList($sells, "#DDDDEE", "#444477")
+
+<hr />
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-8691225504311148";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_type = "text_image";
+//2007-06-15: EVE-Central
+google_ad_channel = "2372685710";
+google_color_border = "E0E0EE";
+google_color_bg = "F0F0FF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//-->
+</script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<a name="buys"></a>
+<h3>Buy Orders</h3>
+
+$MarketList($buys, "#EEEEDD", "#666644")
+
+
+#end def

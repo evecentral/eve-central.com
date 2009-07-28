@@ -1,0 +1,36 @@
+#extends templates.basebase
+
+#def title
+Trade Finder
+#end def
+
+#def body
+
+
+
+<p>
+
+<img src="/images/trade.png" align="right" />
+
+<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the EVE client. See our <a href="/home/leaders.html">leaderboard</a> for most uploads per person.</p>
+
+<p><b>1. Search between two localities</b>. </p>
+
+<form method="GET" action="/home/tradefind_search.html">
+Search for type:
+ <select name="qtype">
+  <option>Systems</option>
+  <option value="SystemToRegion">System to Region</option>
+<!--  <option>Constellations</option> -->
+ <option>Regions</option>
+ </select>
+<br />
+ From: <input type="text" name="fromt"> ---&gt; To:  <input type="text" name="to">
+
+
+ <input type="submit" value="Search & Display" />
+<br />
+<i>Note: From and To can be the same system, constellation, region. Example route: Pimebeka, Penirgmam</i>
+</form>
+
+#end def

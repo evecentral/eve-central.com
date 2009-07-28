@@ -1,0 +1,35 @@
+#extends templates.basebase
+
+#def title
+Welcome to EVE-Central.com - Registered User
+#end def
+
+#def body
+
+#from evecentral.evec_func import format_price
+
+
+
+<h3>Tools</h3>
+<ul>
+ <li><a href="/corps/index.html">Corporation Settings and Free Web Space</a></li>
+ <li><a href="/home/market.html">Market Browser</a></li>
+ <li><a href="/home/tradefind.html">Trade Finder</a></li>
+ <li><a href="/home/reports.html">Market Reports</a></li>
+ <li><a href="/users/setapikeys.html">Set EVE-Online API Access Keys</a></li>
+<!-- <li><a href="/wallet/">Wallet & Transaction Log</a> - <i>Beta</i></li> -->
+</ul>
+
+
+<h3>Account settings</h3>
+<p>Change password:</p>
+<form method="POST" action="/users/changepw.html">
+<table border="0">
+<tr><td>Old password:</td> <td><input type="password" name="oldpw" /></td></tr>
+<tr><td> New password:</td><td><input type="password" name="newpw"/></td></tr>
+<tr><td> New password (again):</td><td> <input type="password" name="newpw2" /></td></tr>
+</table>
+<input type="submit" value="Change" />
+</form>
+
+#end def

@@ -1,0 +1,64 @@
+
+#extends templates.basebase
+
+#def title
+Upload Utility
+#end def
+
+#def body
+
+<p>
+<img src="/images/uploader.png" align="right" /> Version <b>1.3</b> of the Market Upload utility is now available! 
+</p>
+<h3>New in version 1.3.1</h3>
+<ul>
+ <li>Supports Revelations 2.2 and Trinity</li>
+</ul>
+<h3>New in version 1.3</h3>
+<ul>
+ <li>Minor UI cleanups</li>
+ <li>Now supports a -hide switch on launch - will go to tray only</li>
+ <li>Attempts not to clobber wallet exports</li>
+ <li><i>Behind the scenes:</i> Upgraded to WxPython 2.8 and Python 2.5.1. Downside is the download size has grown by a whopping 2MB.</li>
+</ul>
+
+<h3>How to Use</h3>
+<ul>
+<li>Run the downloaded installer</li>
+<li>Start up the MarketUploader</li>
+<li>Fire up EVE Online (Note: EVE can be running before starting the uploader. You can start & stop the uploader independent of EVE running.)</li>
+<li>In a market window on a specific item, hit Export to File</li>
+<li><i>Optional:</i> To hide the the Uploader window, double click on the system tray icon, or right click and choose hide.</li>
+<li>Every minute the uploader utility will scan the EVE directory for Market Exports. It will then read each file, upload it to EVE-Central.com, and delete the dump file.</li>
+</ul>
+
+<p><b>Disclaimer:</b> This software comes with NO WARRANTY! It may eat your dog. It may smell funny. I can't guarantee it will work.</p>
+
+<h3>Download</h3>
+<p>Please send feedback to <a href="mailto:atrus@stackworks.net">atrus@stackworks.net</a>.</p>
+
+<p>Windows (32bit)</p>
+<ul>
+<li><a href="http://eve-central-cdn-eur.s3.amazonaws.com/evec_setup_1_3_1.exe">Version 1.3.1 - 32bit Windows</a> 5MB, 8/29/2007, <a href="http://eve-central.com/dl/evec_setup_1_3_1.exe.asc">(PGP Signature from Yann Ramin key B790A0EC)</a></li>
+<li><a href="/dl/evec_setup_1_3_1.exe">(Alternate download location) Version 1.3.1</a> 5MB, 8/29/2007</li>
+</ul>
+<p>Mac OS X (Universal)</p>
+<p>If you have a Mac, we suggest using the source version. </p>
+
+
+
+<h3>Source Code</h3>
+<p>This program is distributed under the GPL license version 2. See the COPYING file in the source archive for more information. This is being provided as a good-faith download for the EVE community. If the EVE-Central.com database is abused because of the availability of this source, future version will not be released under the GPL.</p>
+<p>Git repository for the source code is now available. See <a href="http://git.stackfoundry.com/cgi-bin/gitweb.cgi?p=evec_upload.git;a=summary">gitweb on stackfoundry.com</a> or clone by:
+<blockquote>
+<pre>git clone git://stackworks.net/evec_upload.git</pre>
+</blockquote>
+</p>
+<p>This download requires <a href="http://python.org">Python 2.4+</a> and <a href="http://wxpython.org">wxPython 2.6+</a>. To make an EXE out of the provided source, <a href="http://py2exe.org">py2exe</a> is required. The installer package is made with <a href="http://nsis.sourceforge.net/Main_Page">NSIS</a>.</p>
+<p>Download: <a href="/dl/evec_upload_1_3_1.zip">Version 1.3.1 source</a></p>
+<p>Download: <a href="/dl/evec_upload_1_3.tar.gz">Version 1.3 source</a></p>
+<p>Download: <a href="/dl/evec_upload_1_2.tar.gz">Version 1.2 source</a></p>
+
+<p>Download: <a href="/dl/evec_upload_1_1.tar.gz">Version 1.1 source</a></p>
+
+#end def

@@ -1,0 +1,37 @@
+
+<h3> Old News</h3>
+<p>6/25/2007 We have some minor user login issues - looking into a possible solution. Thanks for your patience. <i>Problem has been resolved</i> </p>
+<p>6/20/2007 <b>Minor glitch with disappearing minerals has been fixed :)</b> - There will probably be issues with new RevII items, report them as you see them.</p>
+<p>5/26/2007 <b>Fixed a Javascript problem with IE6 and the tradefinder</b></p>
+<p>5/26/2007 <b>Welcome to the new hardware</b> If you're seeing this, you're on the new hardware! Things may be rocky a bit, especially with the tradefinder (which uses a new C++ based pathfinder). Hopefuly everything will settle soon though. Thank you for all of your support in the past months via our affiliates and advertising. This upgrade would not have been possible without that support. </p>
+<p>5/14/2007 <b>New server is in, though not running yet</b>. Part of the EVE-Central.com improvement drive has been to upgrade our hardware for more speed and reliability (and save costs in the long run). I present you with <a href="/images/shiny.jpg">shiny.stackworks.net</a>, which will soon be co-located, and then soon after that be replacing this current rented dedicated server (<a href="/images/hamster.jpg">geddon.stackworks.net</a>).</p>
+<p>5/2/2007 <b>Historical Market Dumps</b> are now available! Check out our <a href="/home/xml_datafeed.html">developers</a> section for more information.</p>
+<p>4/25/2007 <b>No I haven't died yet...</b> I've been unable to contact the winner of the logo contest for his 50m ISK at this point. Also been extremely busy with work (yay startups!) and other side projects outside of EVE. Never fear, EVE-Central.com updates will be coming! Currently working on making database dumps available without killing my bandwidth (I'm not trying to hold back others from using this data. I have well over a year's worth, starting 1/6/2006!). I'll be posting some intermediate updates on my <a href="http://yannramin.com/">blog</a> until I'm ready to announce new features. Stay tuned!</p>
+<p>4/25/2007: Cleared the backlog of wrong name emails. Normalcy resumed. Send me more as 0.0 stations change hands ;)</p>
+
+<p>1/30/2007: <b>Rig components changed to 0.01 m3</b>. Let me know if I missed any other important changes from Revelations 1.3.</p>
+
+<p>1/13/2007: Back from vacation :). Updated everything for Kali 1 (including new regions and systems). There may be some rocky performance as I'm still running some database maintenance tasks, but this should improve as time goes on.</p>
+<p>11/24/2006: Tweaked the market average numbers a bit (mainly removing obvious outliers - but not dynamically yet), but looking at generating more numbers as well. Added minimum quantity to the market browser. Stay tuned for more. </p>
+<p>10/22/2006: New XML datafeeds which ease getting live market data from EVE-Central.com. Read more about it here: <a href="/home/xml_datafeed.html">Developer Integration</a>
+<p>10/15/2006: New link in the market reports to report wrong station names!</p>
+<p>7/24/2006: <a href="http://www.stavros-online.com"><b>CAPS LOCK IS CRUISE CONTROL FOR COOL</b></a></p>
+<p>5/28/2006: <b>0.0 Player Outposts</b> Now instead of throwing away player outpost entries, the system will create a station entry for them. It will have a generic name though until a better one is provided to Kaladr in game. A quick ISKie donation might expedite your name change as well ;)</p>
+
+<p>3/12/2006: Version 1.2 of the uploader released. Supports tracking uploads per user for the <a href="/home/leaders.html">leaderboard</a>.</p>
+<p>3/1/2006: Released a bugfixed version of the uploader. This upgrade is optional.</p>
+<p>2/24/2006: Moved to a brand new, much faster server. Enjoy!</p>
+<p>2/21/2006: New <a href="/home/reports.html">market reports</a> with pretty graphs. Enjoy!</p>
+<p>2/12/2006: New <b>jump distance</b> and profit per jump in the trade finder. User logins and registration. Corporate web hosting (BETA version).
+<p>1/27/2006: A new System to Region search option. I.e.: Jita to The Forge</p>
+<p>1/24/2006: The filter values on the Tradefinder are now saved per browser session. For the IGB, a session exists as long as the window is open. For external browsers this is as long as the browser is running. The number of entries per page is now selectable as well. Also, much thanks to <a href="http://evegeek.com/">EVEGeek.com</a> for the quick plug!</p>
+<p>1/20/2006: <ul><li> Cargo sizes work properly</li>
+<li> The tradefinder is useable in the IGB. Rejoice.</li>
+<li> No more large QuickLook pages crashing your EVE client. The IGB view has been limited to 25 orders for Buy and Sell each.</li></ul></p>
+<p>1/11/2006: New ability to filter out old trade routes from the trade view. Changed default view restriction to 15 days in the main browser view.</p>
+<p>1/10/2006: Crude trade route finder</p>
+<p>1/8/2006: New polished upload client. Looks splashier (maybe), can hide window in tray only, and works a bit better too! </p>
+<p>1/5/2006: Sortable columns, and more fun enhancements </p>
+<p>12/24/2005: There has been a RAM eating monster on the loose lately. If EVE-Central.com seems dead, he probably got out of his cage. I've since secured the cage with some 800mm plating, which should hopefuly hold up.</P>
+<p>12/21/2005: Station names imported from <a href="http://eve-ffet.com">EVE-Map</a>. MarketUploader 1.01 released (with settable EVE path)</p>
+<p>The <a href="/home/software">MarketUploader</a> utility is available. </p>

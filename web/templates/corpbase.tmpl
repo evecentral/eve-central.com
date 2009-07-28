@@ -1,0 +1,89 @@
+#from templates.pythonbase import pythonbase
+#from mx.DateTime import gmt
+#extends pythonbase
+
+#implements respond
+
+
+#def title
+Untitled
+#end def
+
+#def banner
+$title
+#end def
+
+#def body
+<div id="bodyText">
+No body! :)
+</div>
+#end def
+
+#if $isigb
+<html>
+#else
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+#end if
+
+<head>
+#if $isigb
+
+#else
+  <link href="/style.css" rel="stylesheet" type="text/css" />
+#end if
+
+  <title>
+#block _title
+ EVE-Central.com - $title 
+#end block
+</title>
+
+</head>
+
+<body>
+
+
+#if $isigb
+<a href="/">EVE-Central.com Home</a>
+
+<br />
+#else
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-84549-2";
+urchinTracker();
+</script>
+
+
+#end if
+
+#block _banner
+<h1>$banner</h1>
+#end block
+
+#if $isigb
+
+#else
+
+#end if
+$body
+
+
+
+<hr noshade="1"/>
+<p>
+
+
+#set $n = gmt()
+
+
+<br />
+
+</p>
+</body>
+</html>

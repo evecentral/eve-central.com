@@ -1,0 +1,51 @@
+
+#extends templates.basebase
+
+#def title
+Market Index Report: $basket
+#end def
+
+#def body
+
+<h1>Basket Contents</h1>
+<p>
+This basket contains the following items:<br />
+#for $item in $contents
+$item[1] x <a href="/home/quicklook.html?typeid=$item[0]">$item[2]</a><br />
+#end for
+</p>
+<p>
+Weight is a price multiplier for a basket. </p>
+<p>This set of graphs was generated at $last_generated (UTC). It includes data up to and including $data_upto.date (UTC)
+
+
+
+<h1>Charts</h1>
+<h3>180 day</h3>
+
+<a href="$basket-180.png">All prices</a><br />
+<a href="$basket-180-nobuysell.png">Median price only</a><br />
+<a href="$basket-180-nobuysell-nomoving.png">Median price without 5-day average</a><br />
+<a href="$basket-180-nomoving.png">All prices without 5-day average</a><br />
+<a href="$basket-180-sellonly.png">Sell only prices</a><br />
+
+
+
+<h3>60 day</h3>
+
+<a href="$basket-60.png">All prices</a><br />
+<a href="$basket-60-nobuysell.png">Median price only</a><br />
+<a href="$basket-60-nobuysell-nomoving.png">Median price without 5-day average</a><br />
+<a href="$basket-60-nomoving.png">All prices without 5-day average</a><br />
+<a href="$basket-60-sellonly.png">Sell only prices</a><br />
+<h3>30 day</h3>
+
+<a href="$basket-30.png">All prices</a><br />
+<a href="$basket-30-nobuysell.png">Median price only</a><br />
+<a href="$basket-30-nobuysell-nomoving.png">Median price without 5-day average</a><br />
+<a href="$basket-30-nomoving.png">All prices without 5-day average</a><br />
+<a href="$basket-30-sellonly.png">Sell only prices</a><br />
+
+
+
+#end def
