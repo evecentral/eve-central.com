@@ -15,9 +15,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import sys
+sys.path.append('../lib')
+
 import cherrypy
 
-import sys
+
 
 from usermanager import Users
 from corps import Corps
@@ -47,7 +50,7 @@ if __name__=="__main__":
         cherrypy.config.update({'engine.autoreload_on' : True})
 
     cherrypy.config.update({'server.socket_port': int(sys.argv[1])})
-  
+
 
     cherrypy.tree.mount(Home(), '/home')
     cherrypy.tree.mount(Api(), '/api', {'/' : { 'tools.sessions.on' : False } })

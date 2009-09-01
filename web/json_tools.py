@@ -20,8 +20,10 @@ import string
 import os
 import Cheetah.Template
 import random
-
-import simplejson
+try:
+    import simplejson
+except:
+    import json as simplejson
 
 import cherrypy
 
