@@ -39,22 +39,21 @@ def last_key_f():
     global _last_key_f
     return _last_key_f
 
-
+mc = memcache.Client(['127.0.0.1:11211'], debug = 0)    
 
 def set(key, data, expire = None):
-    global DEFAULT_EXPIRE, _last_key_s
-    mc = memcache.Client(['127.0.0.1:11211'], debug = 0)    
+    global DEFAULT_EXPIRE, _last_key_s, mc
 
     if expire is None:
         expire = DEFAULT_EXPIRE
     _last_key_s = key
     r = mc.set(key, data, expire)
-    mc.disconnect_all()
+
     return r
 
 def get(key):
-    global _miss,_hits, _last_key_f
-    mc = memcache.Client(['127.0.0.1:11211'], debug = 0)
+    global _miss,_hits, _last_key_f, mc
+
     _last_key_f = key
     v = mc.get(key)
 
@@ -62,7 +61,7 @@ def get(key):
         _miss += 1
     else:
         _hits += 1
-    mc.disconnect_all()
+
     return v
     
 
