@@ -27,6 +27,7 @@ import cherrypy
 from evecentral import display
 from evecentral import evec_func
 from evecentral import stats
+from evecentral import cache
 
 from numpy import *
 
@@ -178,9 +179,13 @@ class Home:
 
     marketstat_xml_html = marketstat_xml
 
+
     @cherrypy.expose
     def quicklook(self, typeid, setorder=None, setdir = None, igbover = False, sethours = None, regionlimit = None, usesystem = None, setminQ = 0, poffset = 0, outtype = 'html', api = 1.0):
         session = {}
+
+
+
 
         if outtype == 'html':
             session = EVCstate()
@@ -339,60 +344,77 @@ class Home:
 
         t.poffset = int(poffset)
 
-
-        cur_buy.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname, (reportedtime),stationname,security,minvolume,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND stations.systemid = systems.systemid AND typeid = %s AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"' AND volremain >= %s AND current_market.bid = 1  " + sql_system + " ORDER BY " + order + " " + borderdir + " " + limit, [typeid,minQ])
-
-        cur_sell.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname,(reportedtime),stationname,security,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND typeid = %s AND stations.systemid = systems.systemid AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"'	AND volremain >= %s AND current_market.bid = 0 " + sql_system + " ORDER BY " + order + " " + orderdir + " " + limit, [typeid,minQ])
+        # Fetch from cache or run query
 
         buys = []
         sells = []
 
-        for (query,lista,isbuy) in [(cur_buy, buys, True), (cur_sell, sells, False)]:
-            r = query.fetchone()
-            while r:
-                rec = {}
-                rec['systemid'] = r[1]
-                rec['stationid'] = r[2]
-                price = float(r[3])
-                string = format_price(price)
 
-                rec['price'] = string
-                rec['price_raw'] = price
-                rec['volremain'] = format_long(r[4])
-                rec['volremain_raw'] = r[4]
-                rec['expires'] = str(r[5])[0:10]
-                if r[0] == True:
-                    rec['range'] = r[6]
-                else:
-                    rec['range'] = -2
-                rec['regionname'] = r[7]
+        cache_key = cache.generic_key("evec_quicklook", typeid, regionlimit, usesystem, order, limit, minQ)
+        cache_result = cache.get(cache_key)
+        
 
-                rec['reportedtime'] = str(r[8])[5:-7]
-                rec['stationname'] = r[9]
-                rec['security'] = str(r[10])[0:3]
-                # Try to grab regionid from the end of the query
-                if isbuy:
-                    if int(r[11]) > 1:
-                        rec['minvolume'] = format_long(int(r[11]))
-                        rec['minvolume_raw'] = int(r[11])
+        def run_query():
+
+            cur_buy.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname, (reportedtime),stationname,security,minvolume,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND stations.systemid = systems.systemid AND typeid = %s AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"' AND volremain >= %s AND current_market.bid = 1  " + sql_system + " ORDER BY " + order + " " + borderdir + " " + limit, [typeid,minQ])
+
+            cur_sell.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname,(reportedtime),stationname,security,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND typeid = %s AND stations.systemid = systems.systemid AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"'	AND volremain >= %s AND current_market.bid = 0 " + sql_system + " ORDER BY " + order + " " + orderdir + " " + limit, [typeid,minQ])
+
+
+            for (query,lista,isbuy) in [(cur_buy, buys, True), (cur_sell, sells, False)]:
+                r = query.fetchone()
+                while r:
+                    rec = {}
+                    rec['systemid'] = r[1]
+                    rec['stationid'] = r[2]
+                    price = float(r[3])
+                    string = format_price(price)
+                    
+                    rec['price'] = string
+                    rec['price_raw'] = price
+                    rec['volremain'] = format_long(r[4])
+                    rec['volremain_raw'] = r[4]
+                    rec['expires'] = str(r[5])[0:10]
+                    if r[0] == True:
+                        rec['range'] = r[6]
+                    else:
+                        rec['range'] = -2
+                    rec['regionname'] = r[7]
+                    
+                    rec['reportedtime'] = str(r[8])[5:-7]
+                    rec['stationname'] = r[9]
+                    rec['security'] = str(r[10])[0:3]
+                    # Try to grab regionid from the end of the query
+                    if isbuy:
+                        if int(r[11]) > 1:
+                            rec['minvolume'] = format_long(int(r[11]))
+                            rec['minvolume_raw'] = int(r[11])
+                        else:
+                            rec['minvolume'] = 1
+                            rec['minvolume_raw'] = 1
+                        rec['regionid'] = r[12]
+                        rec['orderid']  = r[13]
                     else:
                         rec['minvolume'] = 1
                         rec['minvolume_raw'] = 1
-                    rec['regionid'] = r[12]
-                    rec['orderid']  = r[13]
-                else:
-                    rec['minvolume'] = 1
-                    rec['minvolume_raw'] = 1
-                    rec['regionid'] = r[11]
-                    rec['orderid'] = r[12]
+                        rec['regionid'] = r[11]
+                        rec['orderid'] = r[12]
 
-                lista.append(rec)
+                    lista.append(rec)
 
-                r = query.fetchone()
+                    r = query.fetchone()
 
 
 
         # pass in info here
+
+        if cache_result is None:
+            run_query()
+            cache.set(cache_key, (buys,sells))
+        else:
+            buys = cache_result[0]
+            sells = cache_result[1]
+            
 
         t.regions = evec_func.region_list(db)
         t.upload_sug = up_sug
@@ -407,6 +429,7 @@ class Home:
         db.close()
         return t.respond()
 
+    
 
     quicklook_html = quicklook
 

@@ -16,8 +16,20 @@
 
 
 from numpy import *
+import cmemcache as memcache
 
 from evecentral import evec_func
+from evecentral import cache
+
+CACHE_TIME = 3600
+
+
+def cache_name(typeid, hours, sql_system, regionlimit, buysell, minQ):
+    regions = ""
+    for region in regionlimit:
+        regions += "-" + str(region)
+    name =  "evec_stats_" + str(typeid) + str(hours) + str(sql_system) + str(regions) + str(buysell) + str(minQ)
+    return name.replace(" ", "_")
 
 def sum_volumes(volenter, volremain):
     ea = array(volenter, dtype=int)
@@ -56,6 +68,13 @@ def calculate_stats(list, weight = None):
 
 def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysell = True, minQ = 0):
 
+
+    obj_name = cache_name(typeid, hours, sql_system, regionlimit, buysell, minQ)
+    
+    cache_obj = cache.get(obj_name)
+    if cache_obj:
+        return cache_obj
+    
     sql_age = `hours`+" hours"
     reg_block_stat = evec_func.build_regionquery("current_market", regionlimit)
     stat = db.cursor()
@@ -104,6 +123,7 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
             emap['max'] = r[4]
             emap['min'] = r[5]
 
+        cache.set(obj_name, (sell, buy), CACHE_TIME)
         return (sell,buy)
 
     else:
@@ -129,4 +149,5 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
 	    sell['max'] = 0
 	    sell['min'] = 0
 
+        mc.set(obj_name, sell, CACHE_TIME)
 	return sell
