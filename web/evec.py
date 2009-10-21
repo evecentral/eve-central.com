@@ -340,7 +340,7 @@ class Home:
         t.poffset = int(poffset)
 
 
-        cur_buy.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname, (reportedtime),stationname,security,minvolume,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND stations.systemid = systems.systemid AND typeid = %s AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"' AND volremain >= %s AND current_market.bid = 1	 " + sql_system + " ORDER BY " + order + " " + borderdir + " " + limit, [typeid,minQ])
+        cur_buy.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname, (reportedtime),stationname,security,minvolume,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND stations.systemid = systems.systemid AND typeid = %s AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"' AND volremain >= %s AND current_market.bid = 1  " + sql_system + " ORDER BY " + order + " " + borderdir + " " + limit, [typeid,minQ])
 
         cur_sell.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname,(reportedtime),stationname,security,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND typeid = %s AND stations.systemid = systems.systemid AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"'	AND volremain >= %s AND current_market.bid = 0 " + sql_system + " ORDER BY " + order + " " + orderdir + " " + limit, [typeid,minQ])
 
@@ -464,9 +464,9 @@ class Home:
         size = str(int(size))
         cashonhand = str(double(cashonhand))
 
-        sql_profit_size = """	 (t.price - f.price)* min(""" + size + """, min(t.volremain,f.volremain) * types.size)/types.size """
-        sql_profit_jumps = """	 '1' """
-        sql_cash = """ f.price <= $(cashonhand)s """
+        sql_profit_size = """    (t.price - f.price)* min(""" + size + """, min(t.volremain,f.volremain) * types.size)/types.size """
+        sql_profit_jumps = """   '1' """
+        #sql_cash = """ f.price <= $(cashonhand)s """
 
         sql_sec_limit = """ """
         if prefer_sec:
@@ -496,15 +496,13 @@ class Home:
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
             """ + sql_profit_size + """ >=	%(minprofit)s AND
-            AND """ + sql_cash + """ AND
-
 
             types.size <= """ + size + """ AND
             t.typeid = types.typeid
             AND f.typeid = types.typeid
             AND f.price < t.price""",
 
-                        {'fromt':fromt, 'to':to, 'age':age_t, 'minprofit':minprofit, 'cashonhand' : cashonhand})
+                        {'fromt':fromt, 'to':to, 'age':age_t, 'minprofit':minprofit,})
 
             cur_f.execute("SELECT systemid,(systemname || ' / ')  || regionname FROM systems,regions WHERE systems.regionid = regions.regionid AND systemid = %s ORDER BY systemname", [fromt])
             cur_t.execute("SELECT systemid,(systemname || ' / ')  || regionname FROM systems,regions WHERE systems.regionid = regions.regionid AND systemid = %s ORDER BY systemname", [to])
@@ -530,13 +528,12 @@ class Home:
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
             """ + sql_profit_size + """ >=	%(minprofit)s AND
-            AND """ + sql_cash + """ AND
 
             types.size <= """ + size + """ AND
             t.typeid = types.typeid
             AND f.typeid = types.typeid
             AND f.price < t.price""",
-                        {'fromt':fromt, 'to':to, 'age':age_t, 'minprofit':minprofit, 'cashonhand' : cashonhand})
+                        {'fromt':fromt, 'to':to, 'age':age_t, 'minprofit':minprofit, })
             cur_f.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [fromt])
             cur_t.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [to])
 
@@ -562,7 +559,6 @@ class Home:
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
             """ + sql_profit_size + """ >=	%(minprofit)s AND
-            AND """ + sql_cash + """ AND
 
 
             types.size <= """ + size + """ AND
@@ -570,7 +566,7 @@ class Home:
             AND f.typeid = types.typeid
             AND f.price < t.price""",
 
-                        {'fromt':fromt, 'to':to, 'age':age_t, 'minprofit':minprofit, 'cashonhand' : cashonhand})
+                        {'fromt':fromt, 'to':to, 'age':age_t, 'minprofit':minprofit, })
             cur_f.execute("SELECT systemid,(systemname || ' / ')  || regionname FROM systems,regions WHERE systems.regionid = regions.regionid AND systemid = %s ORDER BY systemname", [fromt])
             cur_t.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [to])
 
@@ -594,14 +590,13 @@ class Home:
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
             """ + sql_profit_size + """ >=	%(minprofit)s AND
-            AND """ + sql_cash + """ AND
 
             types.size <= """ + size + """ AND
             t.typeid = types.typeid
             AND f.typeid = types.typeid
             AND f.price < t.price""",
-    #	 ORDER BY profit_size DESC LIMIT %(limit)s OFFSET %(startat)s""",
-                        {'age':age_t, 'minprofit':minprofit, 'cashonhand' : cashonhand})
+    #    ORDER BY profit_size DESC LIMIT %(limit)s OFFSET %(startat)s""",
+                        {'age':age_t, 'minprofit':minprofit})
             cur_f.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [fromt])
             cur_t.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [to])
 
