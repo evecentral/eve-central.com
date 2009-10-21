@@ -16,25 +16,54 @@
 
 import cmemcache as memcache
 import copy
+import hashlib
 
 DEFAULT_EXPIRE = 3600
 
-def nulllog(*args):
-    pass
+_hits = 0
+_miss = 0
+_last_key_s = ""
+_last_key_f = ""
 
+def hits():
+    global _hits
+    return _hits
+def miss():
+    global _miss
+    return _miss
 
+def last_key_s():
+    global _last_key_s
+    return _last_key_s
+def last_key_f():
+    global _last_key_f
+    return _last_key_f
 
-mc = memcache.Client(['127.0.0.1:1121'], debug = 0)
-mc.log = nulllog
 
 
 def set(key, data, expire = None):
+    global DEFAULT_EXPIRE, _last_key_s
+    mc = memcache.Client(['127.0.0.1:11211'], debug = 0)    
+
     if expire is None:
         expire = DEFAULT_EXPIRE
-    return mc.set(key, data, expire)
+    _last_key_s = key
+    r = mc.set(key, data, expire)
+    mc.disconnect_all()
+    return r
 
 def get(key):
-    return mc.get(key)
+    global _miss,_hits, _last_key_f
+    mc = memcache.Client(['127.0.0.1:11211'], debug = 0)
+    _last_key_f = key
+    v = mc.get(key)
+
+    if v is None:
+        _miss += 1
+    else:
+        _hits += 1
+    mc.disconnect_all()
+    return v
     
 
 
@@ -48,6 +77,6 @@ def generic_key(prefix, *args):
         else:
             name += str(arg)
     # Remove spaces for memcache use
-    nsname = name.replace(' ', '_')
+    nsname = prefix + "_" + hashlib.md5(name).hexdigest()
     return nsname
             

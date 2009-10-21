@@ -17,6 +17,7 @@
 
 from numpy import *
 import cmemcache as memcache
+import hashlib
 
 from evecentral import evec_func
 from evecentral import cache
@@ -29,7 +30,8 @@ def cache_name(typeid, hours, sql_system, regionlimit, buysell, minQ):
     for region in regionlimit:
         regions += "-" + str(region)
     name =  "evec_stats_" + str(typeid) + str(hours) + str(sql_system) + str(regions) + str(buysell) + str(minQ)
-    return name.replace(" ", "_")
+    nsname = "evec_stats_" + hashlib.md5(name).hexdigest()
+    return nsname
 
 def sum_volumes(volenter, volremain):
     ea = array(volenter, dtype=int)
@@ -67,8 +69,7 @@ def calculate_stats(list, weight = None):
 
 
 def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysell = True, minQ = 0):
-
-
+    global CACHE_TIME
     obj_name = cache_name(typeid, hours, sql_system, regionlimit, buysell, minQ)
     
     cache_obj = cache.get(obj_name)
@@ -149,5 +150,5 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
 	    sell['max'] = 0
 	    sell['min'] = 0
 
-        mc.set(obj_name, sell, CACHE_TIME)
+        cache.set(obj_name, sell, CACHE_TIME)
 	return sell

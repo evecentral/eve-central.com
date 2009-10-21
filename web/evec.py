@@ -51,6 +51,16 @@ except:
 
 class Home:
 
+    @cherrypy.expose
+    def cache_stat(self):
+        cherrypy.response.headers['Content-Type'] = 'text/plain'
+        r = "Cache hit: " + str(cache.hits()) + "\n"
+        r += "Cache miss: " + str(cache.miss()) + "\n"
+        r += "%: " + str(float(cache.hits()) / cache.miss()) + "\n"
+        r += "Last key stored: " + cache.last_key_s() + "\n"
+        r += "Last key fetched: " + cache.last_key_f() 
+        return r
+
 
     @cherrypy.expose
     def typesearch(self, search):
