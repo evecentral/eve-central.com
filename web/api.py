@@ -148,6 +148,7 @@ class Api:
                 useMinQ = 10000
 
             prices = stats.item_stat(db, typeid, hours, buysell = False, regionlimit = regionlimit, minQ = useMinQ)
+            newprices = {}
             # Reformat prices as 2 digit float strings
             for key in prices.keys():
                 newprices[key] = "%0.2f" % prices[key]
