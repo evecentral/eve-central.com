@@ -1,11 +1,9 @@
 Thank you for downloading the EVE-Central.com MarketUploader!
-Newest version of the uploader is = 1.3.1 =
+Newest version of the uploader is = 2.0 alpha 1 =
 
-We now list Black Rise Markets!
+==== ALPHA RELEASE OF CACHE READING UPLOADER ====
 
-EVE's market dump directory is no longer the root EVE folder, but instead in Documents and Settings\[computer name]\My Documents\eve\logs\marketlogs. Please make sure the uploader is pointed here 
 
-Donations of ISK not accepted. Keep it for youself :-)
 
 
 
