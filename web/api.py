@@ -56,7 +56,7 @@ class Api:
         data = "This is a header\n" + data # Fake in a header for the sake of inputdata
         resp = di.inputdata("notype", None, data)
         print resp
-        
+
         return "Thanks for using webhook, the datainput adapter of choice  " + resp
 
     @cherrypy.expose
@@ -148,8 +148,19 @@ class Api:
                 useMinQ = 10000
 
             prices = stats.item_stat(db, typeid, hours, buysell = False, regionlimit = regionlimit, minQ = useMinQ)
+            newprices = {}
+            # Reformat prices as 2 digit float strings
+            for key in prices.keys():
+                newprices[key] = "%0.2f" % prices[key]
             (sell,buy) = stats.item_stat(db, typeid, hours, regionlimit = regionlimit, minQ = useMinQ)
-            statslist.append(StatHolder(typeid, prices, buy, sell))
+            newsell = {}
+            newbuy = {}
+            for key in sell.keys():
+                newsell[key] = "%0.2f" % sell[key]
+            for key in buy.keys():
+                newbuy[key] = "%0.2f" % buy[key]
+
+            statslist.append(StatHolder(typeid, newprices, newbuy, newsell))
 
         t = display.template('marketstat_xml.tmpl', None)
         t.types = statslist

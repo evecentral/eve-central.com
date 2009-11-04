@@ -71,11 +71,11 @@ def calculate_stats(list, weight = None):
 def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysell = True, minQ = 0):
     global CACHE_TIME
     obj_name = cache_name(typeid, hours, sql_system, regionlimit, buysell, minQ)
-    
+
     cache_obj = cache.get(obj_name)
     if cache_obj:
         return cache_obj
-    
+
     sql_age = `hours`+" hours"
     reg_block_stat = evec_func.build_regionquery("current_market", regionlimit)
     stat = db.cursor()
@@ -134,21 +134,21 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
 
         r = calculate_stats(median_price_sell)
         v = sum_volumes(volenter_sell, volremain_sell)
-	try:
-            sell['median'] = r[0]
-	    sell['avg_price'] = r[1]
-	    sell['total_vol'] = v[0]
-	    sell['total_movement'] = v[2]
-	    sell['stddev'] = r[2]
-	    sell['max'] = r[4]
-	    sell['min'] = r[5]
-	except:
-	    sell['avg_price'] = 0
-	    sell['total_vol'] = 0
-	    sell['total_movement'] = 0
-	    sell['stddev'] = 0
-	    sell['max'] = 0
-	    sell['min'] = 0
+    try:
+        sell['median'] = r[0]
+        sell['avg_price'] = r[1]
+        sell['total_vol'] = v[0]
+        sell['total_movement'] = v[2]
+        sell['stddev'] = r[2]
+        sell['max'] = r[4]
+        sell['min'] = r[5]
+    except:
+        sell['avg_price'] = 0
+        sell['total_vol'] = 0
+        sell['total_movement'] = 0
+        sell['stddev'] = 0
+        sell['max'] = 0
+        sell['min'] = 0
 
         cache.set(obj_name, sell, CACHE_TIME)
-	return sell
+    return sell
