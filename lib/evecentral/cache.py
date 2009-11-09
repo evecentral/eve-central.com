@@ -63,7 +63,20 @@ def get(key):
         _hits += 1
 
     return v
-    
+
+def incr(key):
+    global mc
+    r = mc.incr(key)
+    if r is None:
+        mc.set(key, "0")
+        return 0
+    else:
+        return int(r)
+
+def decr(key):
+    global mc
+    return mc.decr(key)
+
 
 
 def generic_key(prefix, *args):

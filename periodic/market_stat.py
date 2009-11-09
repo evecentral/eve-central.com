@@ -306,7 +306,7 @@ for basket in baskets:
     # Generate basket html
 
     session = dict()
-    t = display.template('report.tmpl', session)
+    t = display.template('../web/templates/report.tmpl', session)
 
     for dr in [30,60,180]:
         
@@ -323,6 +323,6 @@ for basket in baskets:
     t.contents = basket_data['contents']
     t.last_generated = now()
     t.data_upto = now() -RelativeDateTime(days=1)
-    f = open('/www/eve-central.com/htdocs/reports/'+basket+".html", "w")
+    f = open('/www/eve-central.com/static_web/reports/'+basket+".html", "w")
     print >> f, t.respond()
     f.close()

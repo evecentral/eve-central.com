@@ -9,6 +9,7 @@ import cherrypy
 from evecentral import display
 from evecentral import evec_func
 from evecentral.userlib import User
+from evecentral import cache
 
 class DataInput:
     @cherrypy.expose
@@ -88,15 +89,20 @@ class DataInput:
         if (userid == 0):
             hexdigest = "0"
 
-        smtpsess = smtplib.SMTP('localhost')
-        datae = "To: evec-upload@lists.stackworks.net\nPrecedence: bulk\nX-EVEC-UserIdHash: " + hexdigest + "\nSubject: Upload\n\n" + data
-        smtpres = smtpsess.sendmail('uploader@stackworks.net', 'evec-upload@lists.stackworks.net', datae);
+
+        
+        #smtpsess = smtplib.SMTP('localhost')
+        #datae = "To: evec-upload@lists.stackworks.net\nPrecedence: bulk\nX-EVEC-UserIdHash: " + hexdigest + "\nSubject: Upload\n\n" + data
+        #smtpres = smtpsess.sendmail('uploader@stackworks.net', 'evec-upload@lists.stackworks.net', datae);
 
 
         data = data.split("\n")
 
         del data[0] # header
         ndata = []
+        mailcount = cache.incr("evec_mail_count")
+        cache.set("evec_mail_" + str(mailcount), "\n".join(data), expire = 3600)
+        
 
         # chunk the CSV file
 
