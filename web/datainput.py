@@ -83,11 +83,6 @@ class DataInput:
 
         # Send e-mail to the update push list
 
-        mdigest = md5.new()
-        mdigest.update(`userid`)
-        hexdigest = mdigest.hexdigest()
-        if (userid == 0):
-            hexdigest = "0"
 
 
         
@@ -169,6 +164,13 @@ class DataInput:
 
             station = line[10]
             system = line[12]
+            source = "evec_upload_cache"
+
+            try:
+                source = line[13]
+            except:
+                pass
+
             self.station_check(db, station = station, system = system, region = region)
 
             cur.execute("""
@@ -184,12 +186,12 @@ class DataInput:
 
             cur.execute("""
             INSERT INTO archive_market (regionid, systemid, stationid, typeid,
-            bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby)
-            VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby, source)
+            VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 
 
             """, [region, line[12], line[10], typeid, `bid`, line[0], line[4], line[6],
-                  int(float(line[1])), line[5], line[8], line[9]+" days", line[3], 0])
+                  int(float(line[1])), line[5], line[8], line[9]+" days", line[3], 0, source])
 
             db.commit()
 

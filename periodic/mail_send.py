@@ -17,7 +17,8 @@ def main():
 
     #print "Count",mailcount,"at",mailsend
 
-    message = "CSV Header\n"
+    message = "price,volRemaining,typeID,range,orderID,volEntered,minVolume,bid,issued,duration,stationID,regionID,solarSystemID,jumps,source\n"
+    #message = "CSV Header\n"
 
     if mailsend >= mailcount:
         return False

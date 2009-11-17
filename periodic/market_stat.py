@@ -306,7 +306,7 @@ for basket in baskets:
     # Generate basket html
 
     session = dict()
-    t = display.template('../web/templates/report.tmpl', session)
+    t = display.template('report.tmpl', session)
 
     for dr in [30,60,180]:
         

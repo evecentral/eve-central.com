@@ -16,6 +16,8 @@
 
 
 import sys
+import cmemcache as memcache
+sys.modules['memcache'] = memcache # Hack
 sys.path.append('../lib')
 
 import cherrypy
@@ -29,6 +31,7 @@ from tradetool import TradeTool
 from evec import Home
 from api import Api
 from json_tools import JsonTools
+
 
 import os
 
