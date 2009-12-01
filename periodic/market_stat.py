@@ -12,7 +12,7 @@ import datetime
 import pickle
 from numpy import *
 sys.path.append('../lib/')
-
+sys.path.append('../web/')
 from evecentral import display
 
 #import evec_func
