@@ -84,8 +84,11 @@ class Api:
         response = ""
         response += "<minerals>\n"
 
+        empireregions = [10000001, 10000002, 10000016, 10000020, 10000028, 10000030, 10000032, 10000033, 10000043, 10000049, 10000037, 10000038, 10000036, 10000052, 10000064, 10000065, 10000067, 10000068, 10000054, 10000042,10000044, 10000048 ]
+
         for mineral in [34, 35, 36, 37, 38, 39, 40, 11399]:
-            prices = stats.item_stat(db, mineral, hours, buysell = False, minQ = 5000)
+            prices = stats.item_stat(db, mineral, hours, buysell = False, minQ = 5000,
+                                     regionlimit = empireregions)
 
             typename = evec_func.get_type_name(db, mineral)
             response += " <mineral>\n"

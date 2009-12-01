@@ -57,7 +57,7 @@ Developer Integration
   <tr><th>Parameter</th><th>Usage</th><th>Required</th><th>Can be specified more than once</th></tr>
 #for $param in $paramlist
   <tr>
-    <td><code>$param[0]</code></td><td>$param[1]</td><td>$param[2]</td><td>$param[3]</td>
+	<td><code>$param[0]</code></td><td>$param[1]</td><td>$param[2]</td><td>$param[3]</td>
   </tr>
 #end for
 </table>
@@ -95,7 +95,7 @@ $paramtable( [[ 'typeid', 'The type ID to be queried', True, False],
 
 <p>Usage: <b>http://api.eve-central.com/api/evemon</b>
 <br />
-<b>Purpose:</b> Retrieve the median mineral prices in the empire regions in a format digestable by <a href="http://evemon.battleclinic.com/">EVEmon</a>.
+<b>Purpose:</b> Retrieve the median mineral prices in the empire regions in a format digestible by <a href="http://evemon.battleclinic.com/">EVEmon</a>.
 <br />
 <i>No parameters supported</i>
 <br />
@@ -106,7 +106,7 @@ $paramtable( [[ 'typeid', 'The type ID to be queried', True, False],
 
 <p>Usage: <b>http://api.eve-central.com/api/upload_suggest</b>
 <br />
-<b>Purpose:</b> Retrieve a random assortment of not-recently-updated items per region. 
+<b>Purpose:</b> Retrieve a random assortment of not-recently-updated items per region.
 <br />
 $paramtable( [[ 'region', 'The region in which to suggest an upload', True, False]] )
 <br />
