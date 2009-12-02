@@ -1,3 +1,5 @@
+from Queue import Queue
+import threading
 import md5
 import string
 import os
@@ -11,7 +13,29 @@ from evecentral import evec_func
 from evecentral.userlib import User
 from evecentral import cache
 
+class BackgroundStatThread(threading.Thread):
+    """
+    A background worker thread, handles statistic generation events from
+    an upload and recomputes per (region,typeid) stats.
+    """
+
+    def __init__(self, inqueue):
+        self.queue = inqueue
+        threading.Thread.__init__(self)
+    def run(self):
+        while True:
+            runstat = self.queue.get()
+             # Do something
+
+            self.queue.task_done()
+
 class DataInput:
+
+    def __init__(self):
+        self.stat_queue = Queue()
+        self.run_thread = BackgroundStatThread(self.stat_queue)
+        self.run_thread.start()
+
     @cherrypy.expose
     def userlogin(self, username, password):
 
@@ -85,7 +109,7 @@ class DataInput:
 
 
 
-        
+
         #smtpsess = smtplib.SMTP('localhost')
         #datae = "To: evec-upload@lists.stackworks.net\nPrecedence: bulk\nX-EVEC-UserIdHash: " + hexdigest + "\nSubject: Upload\n\n" + data
         #smtpres = smtpsess.sendmail('uploader@stackworks.net', 'evec-upload@lists.stackworks.net', datae);
@@ -97,7 +121,7 @@ class DataInput:
         ndata = []
         mailcount = cache.incr("evec_mail_count")
         cache.set("evec_mail_" + str(mailcount), "\n".join(data), expire = 3600)
-        
+
 
         # chunk the CSV file
 
@@ -142,20 +166,16 @@ class DataInput:
         db.commit()
 
 
-        if typename:
-            cur.execute('SELECT typename FROM types WHERE typeid = %s', [typeid])
-            if cur.fetchone():
-                pass
-                #cur.execute('DELETE FROM types WHERE typeid = %s AND typeclass IS NULL', [typeid])
-
-            else:
-                pass
-                #cur.execute('INSERT INTO types (typeid, typename) VALUES (%s,%s)', [typeid, typename])
-
+        derived_region = 0
+        derived_typeid = 0
 
         for line in data:
             typeid = line[2]
             region = line[11]
+
+            derived_typeid = typeid
+            derived_region = region
+
             bid = line[7]
             if bid == "True":
                 bid = 1
@@ -198,6 +218,9 @@ class DataInput:
         db.commit()
         db.close()
         response += "Complete! Thank you for your contribution to EVE-Central.com!"
+        if derived_region != 0 and derived_typeid != 0:
+            # Schedule a background queue action to recompute statistics
+            self.stat_queue.put((region, typeid))
+
 
         return response
-    
