@@ -26,7 +26,7 @@ ssid = set()
 if True:
 
     f = open("dbo_mapSolarSystemJumps.csv")
-    lines = f.readlines()[1:]
+    lines = f.readlines()
 
 
     ssid = set()
