@@ -29,18 +29,18 @@ def emit_redirect( page):
 
 class SorterDict(dict):
     def __init__(self,sortby):
-    self.sortby = sortby
-    self.reverse = False
-    dict.__init__(self)
+        self.sortby = sortby
+        self.reverse = False
+        dict.__init__(self)
     def __cmp__(self,other):
-    t = 1
-    if self.reverse:
-        t = -1
-    if self[self.sortby] < other[self.sortby]:
-        return -1*t
-    if self[self.sortby] > other[self.sortby]:
-        return 1*t
-    return 0
+        t = 1
+        if self.reverse:
+            t = -1
+        if self[self.sortby] < other[self.sortby]:
+            return -1*t
+        if self[self.sortby] > other[self.sortby]:
+            return 1*t
+        return 0
 
 
 
@@ -50,15 +50,15 @@ def format_long(price):
     intpart = list(str(intpart))
 
     if price >= 1000:
-    intpart.insert(len(intpart)-3, ',')
+        intpart.insert(len(intpart)-3, ',')
     if price >= 1000000:
-    intpart.insert(len(intpart)-7, ',')
+        intpart.insert(len(intpart)-7, ',')
     if price >= 1000000000:
-    intpart.insert(len(intpart)-11, ',')
+        intpart.insert(len(intpart)-11, ',')
 
     string = ""
     for x in intpart:
-    string = string + x
+        string = string + x
 
     return string
 
@@ -69,26 +69,22 @@ def format_price(price):
     intpart = list(str(intpart))
 
     if price >= 1000:
-    intpart.insert(len(intpart)-3, ',')
+        intpart.insert(len(intpart)-3, ',')
     if price >= 1000000:
-    intpart.insert(len(intpart)-7, ',')
+        intpart.insert(len(intpart)-7, ',')
     if price >= 1000000000:
-    intpart.insert(len(intpart)-11, ',')
+        intpart.insert(len(intpart)-11, ',')
 
     string = ""
     for x in intpart:
-    string = string + x
+        string = string + x
 
     price = price - long(price)
     price = list(str("%f.2" % price))
     for x in price[1:4]:
-    string = string + x
+        string = string + x
 
     return string
-
-
-
-
 
 class EVCstate:
     def __init__(self, trust=False):
@@ -132,15 +128,15 @@ def format_long(price):
     intpart = list(str(intpart))
 
     if price >= 1000:
-    intpart.insert(len(intpart)-3, ',')
+        intpart.insert(len(intpart)-3, ',')
     if price >= 1000000:
-    intpart.insert(len(intpart)-7, ',')
+        intpart.insert(len(intpart)-7, ',')
     if price >= 1000000000:
-    intpart.insert(len(intpart)-11, ',')
+        intpart.insert(len(intpart)-11, ',')
 
     string = ""
     for x in intpart:
-    string = string + x
+        string = string + x
 
     return string
 
@@ -151,20 +147,20 @@ def format_price(price):
     intpart = list(str(intpart))
 
     if price >= 1000:
-    intpart.insert(len(intpart)-3, ',')
+        intpart.insert(len(intpart)-3, ',')
     if price >= 1000000:
-    intpart.insert(len(intpart)-7, ',')
+        intpart.insert(len(intpart)-7, ',')
     if price >= 1000000000:
-    intpart.insert(len(intpart)-11, ',')
+        intpart.insert(len(intpart)-11, ',')
 
     string = ""
     for x in intpart:
-    string = string + x
+        string = string + x
 
     price = price - long(price)
     price = list(str("%f.2" % price))
     for x in price[1:4]:
-    string = string + x
+        string = string + x
 
     return string
 
@@ -175,13 +171,13 @@ def build_regionquery(front,rl_o):
     rl = copy(rl_o)
 
     if len(rl) < 1:
-    return " 1 = 1 "
+        return " 1 = 1 "
 
     r = rl.pop()
     query = "( "+front+".regionid = " + str(r) + "  "
     for r in rl:
-    query = query + " OR "+front+".regionid = " + str(r) + ""
-    query = query + ")"
+        query = query + " OR "+front+".regionid = " + str(r) + ""
+        query = query + ")"
     return query
 
 
@@ -197,7 +193,7 @@ def set_or_get(session, name, set, default):
 def condense_list(list):
     string = str(list.pop())
     for item in list:
-    string = string + ":" + item
+        string = string + ":" + item
 
     return string
 
@@ -238,7 +234,7 @@ def type_list(db):
 
     row = cur.fetchone()
     while row:
-    ret.append({'typeid':row[0], 'typename':row[1]})
+        ret.append({'typeid':row[0], 'typename':row[1]})
 
     row = cur.fetchone()
     return ret
@@ -256,7 +252,7 @@ def region_list(db):
 
     row = cur.fetchone()
     while row:
-    ret.append({'regionid':row[0], 'regionname':row[1]})
+        ret.append({'regionid':row[0], 'regionname':row[1]})
 
     row = cur.fetchone()
     return ret
