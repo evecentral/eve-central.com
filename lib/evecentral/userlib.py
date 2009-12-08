@@ -203,15 +203,15 @@ class User(object):
     def register(db, password, email): # LOGIN
         headers = cherrypy.request.headers
 
-        if 'HTTP_EVE_CHARID' in headers and not User.user_exists(db, long(headers['HTTP_EVE_CHARID'])):
+        if 'Eve-Charid' in headers and not User.user_exists(db, long(headers['Eve-Charid'])):
             # This really really really really doesn't belong here....
             cur = db.cursor()
-            userid = long(headers['HTTP_EVE_CHARID'])
-            username = headers['HTTP_EVE_CHARNAME']
-            corpid = long(headers['HTTP_EVE_CORPID'])
-            corporation = headers['HTTP_EVE_CORPNAME']
-            alliance = headers['HTTP_EVE_ALLIANCENAME']
-            flags = long(headers['HTTP_EVE_CORPROLE'])
+            userid = long(headers['Eve-Charid'])
+            username = headers['Eve-Charname']
+            corpid = long(headers['Eve-Corpid'])
+            corporation = headers['Eve-Corpname']
+            alliance = ""
+            flags = 0 #long(headers['HTTP_EVE_CORPROLE'])
             isdirector = 0
             if flags & (2**0) == 1:
                 isdirector = 1
@@ -232,19 +232,19 @@ class User(object):
     def update_user(self, db):
         headers = cherrypy.request.headers
         cur = None
-        if 'HTTP_EVE_CHARID' in headers and User.user_exists(db, long(headers['HTTP_EVE_CHARID'])):
+        if 'Eve-Charid' in headers and User.user_exists(db, long(headers['Eve-Charid'])):
             cur = db.cursor()
             corp = Corp(db,self.corpid)
             if corp.join_password == "":
                 self.ismember = 1
 
             # This really really doesn't belong here either - a domain class crusing through request headers? wtf? :)
-            userid = long(headers['HTTP_EVE_CHARID'])
-            username = headers['HTTP_EVE_CHARNAME']
-            corpid = long(headers['HTTP_EVE_CORPID'])
-            corporation = headers['HTTP_EVE_CORPNAME']
-            alliance = headers['HTTP_EVE_ALLIANCENAME']
-            flags = long(headers['HTTP_EVE_CORPROLE'])
+            userid = long(headers['Eve-Charid'])
+            username = headers['Eve-Charname']
+            corpid = long(headers['Eve-Corpid'])
+            corporation = headers['Eve-Corpname']
+            alliance = ""
+            flags = 0
 
 
 

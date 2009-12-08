@@ -135,8 +135,8 @@ class Users:
 
 
         charname = None
-        if 'HTTP_EVE_CHARNAME' in dict(cherrypy.request.headers):
-            charname = cherrypy.request.headers['HTTP_EVE_CHARNAME']
+        if 'Eve-Charname' in dict(cherrypy.request.headers):
+            charname = cherrypy.request.headers['Eve-Charname']
 
         if charname is None:
             return evec_func.simple_error("No username found?")
@@ -208,8 +208,8 @@ class Users:
 
         if user.valid is False:
             t = display.template('registerlogin.tmpl', session)
-            if 'HTTP_EVE_CHARNAME' in dict(cherrypy.request.headers):
-                t.charname = cherrypy.request.headers['HTTP_EVE_CHARNAME']
+            if 'Eve-Charname' in dict(cherrypy.request.headers):
+                t.charname = cherrypy.request.headers['Eve-Charname']
             else:
                 t.charname = ""
         else:
