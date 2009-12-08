@@ -177,7 +177,7 @@ def build_regionquery(front,rl_o):
     query = "( "+front+".regionid = " + str(r) + "  "
     for r in rl:
         query = query + " OR "+front+".regionid = " + str(r) + ""
-        query = query + ")"
+    query = query + ")"
     return query
 
 
@@ -235,8 +235,8 @@ def type_list(db):
     row = cur.fetchone()
     while row:
         ret.append({'typeid':row[0], 'typename':row[1]})
+        row = cur.fetchone()
 
-    row = cur.fetchone()
     return ret
 
 
@@ -253,6 +253,6 @@ def region_list(db):
     row = cur.fetchone()
     while row:
         ret.append({'regionid':row[0], 'regionname':row[1]})
+        row = cur.fetchone()
 
-    row = cur.fetchone()
     return ret
