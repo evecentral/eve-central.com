@@ -8,7 +8,7 @@ $corp.corporation - $ptitle
 #def body
 <p>Editing page: <a href="/corp/$corp.ticker/${pagename}.html">${pagename}.html</a>. Note: index cannot be deleted.</p>
 
-<form method="POST" action="edit_page">
+<form method="post" action="edit_page">
 <input type="hidden" name="page" value="$pagename">
 <input type="hidden" name="set" value="$pagename">
 
@@ -35,7 +35,7 @@ View permissions: <select name="view">
 <input type="submit" value="Save">
 </form>
 
-<form method="GET" action="edit_page">
+<form method="get" action="edit_page">
 Go to page:
 <select name="page">
 #for $page in $pages
