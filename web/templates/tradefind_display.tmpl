@@ -72,10 +72,10 @@ checked="1"
 .</p>
 <p>Page $page.
 #if $page != 1
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$prev&sort=$sort">Previous page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$prev&amp;sort=$sort">Previous page</a>
 #end if
 #if $len($trades) >= $limit
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$next&sort=$sort">Next page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$next&amp;sort=$sort">Next page</a>
 #end if
 
 <hr />
@@ -93,10 +93,10 @@ checked="1"
 <hr />
 <p>Page $page.
 #if $page != 1
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$prev&sort=$sort">Previous page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$prev&amp;sort=$sort">Previous page</a>
 #end if
 #if $len($trades) >= $limit
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$next&sort=$sort">Next page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$next&amp;sort=$sort">Next page</a>
 #end if
 <br />&nbsp;
 <br/><i><b>*</b>(Note: This will remove start and end stations which are in < 0.5 space, as well as ATTEMPT to avoid routes going through insecure space. Routes which must go through lowsec space will still be shown if that is the only option)</i>

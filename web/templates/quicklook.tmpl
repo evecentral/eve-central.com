@@ -16,7 +16,7 @@ $typename - Market Browser - Quick Look At Item
 #if $sortorder == 'regionname':
 bgcolor="#DDDDDD"
 #end if
->Region <a href="quicklook.html?typeid=$typeid&setorder=regionname&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=regionname&setdir=1"><img src="/images/down.gif" border="0"></a> </th>
+>Region <a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=1"><img src="/images/down.gif" border="0"></a> </th>
 
 <th
 #if $sortorder == 'stationname':
@@ -25,7 +25,7 @@ bgcolor="#DDDDDD"
 
 
 
->System - Station <a href="quicklook.html?typeid=$typeid&setorder=stationname&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=stationname&setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
+>System - Station <a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
 
 <th
 #if $sortorder == 'price':
@@ -33,7 +33,7 @@ bgcolor="#DDDDDD"
 #end if
 
 
- width="50">Price <a href="quicklook.html?typeid=$typeid&setorder=price&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=price&setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
+ width="50">Price <a href="quicklook.html?typeid=$typeid&amp;setorder=price&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=price&amp;setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
 
 <th
 #if $sortorder == 'volremain':
@@ -41,7 +41,7 @@ bgcolor="#DDDDDD"
 #end if
 
 
->Qty<a href="quicklook.html?typeid=$typeid&setorder=volremain&setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&setorder=volremain&setdir=1"><img src="/images/down.gif" border="0"></a> </th>
+>Qty<a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=1"><img src="/images/down.gif" border="0"></a> </th>
 
 <th
 
@@ -78,9 +78,9 @@ bgcolor="#DDDDDD"
 #end if
  <td>$order['regionname']</td>
  <td>
-<a href="quicklook.html?typeid=$typeid&usesystem=$order['systemid']"><img src="/images/solarsystem.gif" border="0"></a> 
+<a href="quicklook.html?typeid=$typeid&amp;usesystem=$order['systemid']"><img src="/images/solarsystem.gif" border="0"></a> 
 $order['stationname'] ($order['security']) 
-<a href="mailto:atrus@stackworks.net?subject=EVEC%20Wrong%20Name&body=Use%20this%20only%20for%20wrong%20station%20names%20NOT%20PRICES%20SystemID:%20$order['systemid']%20StationID:%20$order['stationid']%0dCorrect name is:%20"><font size="-4">?</font></a>
+<a href="mailto:atrus@stackworks.net?subject=EVEC%20Wrong%20Name&amp;body=Use%20this%20only%20for%20wrong%20station%20names%20NOT%20PRICES%20SystemID:%20$order['systemid']%20StationID:%20$order['stationid']%0dCorrect name is:%20"><font size="-4">?</font></a>
 #if $order['range'] > -2
 <br />
 <i>
@@ -156,10 +156,10 @@ $order['stationname'] ($order['security'])
 <p>
 #if $poffset != 0
 #set $pf = $poffset - 25
-<a href="/home/quicklook.html?typeid=$typeid&poffset=$pf">Previous page</a>
+<a href="/home/quicklook.html?typeid=$typeid&amp;poffset=$pf">Previous page</a>
 #end if
 #set $pf = $poffset + 25
-<a href="/home/quicklook.html?typeid=$typeid&poffset=$pf">Next page</a>
+<a href="/home/quicklook.html?typeid=$typeid&amp;poffset=$pf">Next page</a>
 </p>
 
 #end if
