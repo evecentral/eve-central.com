@@ -18,14 +18,15 @@ Trade Finder - Results
 <br /><b>Important:</b> Profit is obviously not guaranteed. Use at your own risk. Check for the freshness of the data before using! </p>
 
 <form method="get" action="tradefind_display.html">
-<input type="hidden" name="set" value="1">
-<input type="hidden" name="fromt" value="$fromt">
-<input type="hidden" name="to" value="$to">
-<input type="hidden" name="qtype" value="$qtype">
-Only show trade routes with data newer than <input type="text" name="age" value="$age" size="3"> hours. <br/>
-Showing only routes with profit of <input type="text" name="minprofit" value="$minprofit" size="5"> ISK or greater per trip. <br />
-My ship can carry <input type="text" name="size" value="$size" size="7"> m<sup>3</sup> of cargo. <br />
-Show <input type="text" name="limit" value="$limit" size="4"> entries per page. <br />
+<div>
+<input type="hidden" name="set" value="1" />
+<input type="hidden" name="fromt" value="$fromt" />
+<input type="hidden" name="to" value="$to" />
+<input type="hidden" name="qtype" value="$qtype" />
+Only show trade routes with data newer than <input type="text" name="age" value="$age" size="3" /> hours. <br/>
+Showing only routes with profit of <input type="text" name="minprofit" value="$minprofit" size="5" /> ISK or greater per trip. <br />
+My ship can carry <input type="text" name="size" value="$size" size="7" /> m<sup>3</sup> of cargo. <br />
+Show <input type="text" name="limit" value="$limit" size="4" /> entries per page. <br />
 Sort by <select name="sort">
 
 	<option value="jprofit"
@@ -57,9 +58,10 @@ selected="1"
 #if $prefer_sec == 1
 checked="1"
 #end if
-/ > System Security filter (*Note below)
-<input type="submit" value="Filter">
-<!--<br /><input type="checkbox" name="save" value="1">Save as defaults-->
+/> System Security filter (*Note below)
+<input type="submit" value="Filter" />
+<!--<br /><input type="checkbox" name="save" value="1" />Save as defaults-->
+</div>
 </form>
 
 

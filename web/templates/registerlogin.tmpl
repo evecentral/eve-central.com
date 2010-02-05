@@ -14,11 +14,13 @@ Register or Login
 <td valign="top">
 <h3>Login</h3>
 <form method="post" action="login.html">
-Username: <input type="text" name="username" length="10" value="$charname">
+<div>
+Username: <input type="text" name="username" length="10" value="$charname" />
 <br />
-Password: <input type="password" name="password">
+Password: <input type="password" name="password" />
 <br />
-<input type="submit" value="Login">
+<input type="submit" value="Login" />
+</div>
 </form>
 </td>
 <td valign="top">
@@ -26,15 +28,16 @@ Password: <input type="password" name="password">
 #if $charname != ""
 
 <form method="post" action="register.html">
+<div>
 Character name: $charname
 <br />
-Password: <input type="password" name="password">
+Password: <input type="password" name="password" />
 <br /><i>Note: Do NOT use your main EVE account password. The password entered here is encrypted in our database minimizing risk, but its better to be safe.</i>
 <br />
-E-mail: <input type="text" name="email">
+E-mail: <input type="text" name="email" />
 <br />
-<input type="submit" value="Register">
-
+<input type="submit" value="Register" />
+</div>
 </form>
 
 #else

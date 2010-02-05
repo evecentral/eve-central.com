@@ -10,16 +10,20 @@ Trade Tool - Compare
 #from evecentral.evec_func import format_price
 
 <form method="get" action="compare.html">
-<input type="hidden" name="system1" value="$system1"/>
-<input type="hidden" name="system2" value="$system2"/>
+<div>
+<input type="hidden" name="system1" value="$system1" />
+<input type="hidden" name="system2" value="$system2" />
 <input type="hidden" name="mode1" value="$mode1" />
 <input type="hidden" name="mode2" value="$mode2" />
+</div>
 </form>
 Comparing sell orders between <strong>$system1name</strong> and <strong>$system2name</strong>
 <form method="get" action="compare">
+<div>
   <input type="hidden" name="system1" value="$system1" /> <input type="hidden" name="system2" value="$system2" />
-  <input type="text" name="setsecfilter" value="$secfilter" size="5"/> System security cutoff. Showing orders uploaded within the past <input type="text" size="6" name="sethours" value="$hours" /> hours. Maximum ISK of an item: <input type="text" size="15" name="setmaxisk" value="$maxisk"/>
-  <input type="submit" value="Filter"/>
+  <input type="text" name="setsecfilter" value="$secfilter" size="5" /> System security cutoff. Showing orders uploaded within the past <input type="text" size="6" name="sethours" value="$hours" /> hours. Maximum ISK of an item: <input type="text" size="15" name="setmaxisk" value="$maxisk" />
+  <input type="submit" value="Filter" />
+</div>
 </form>
 
 <table width="100%">
