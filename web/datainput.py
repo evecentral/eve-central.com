@@ -183,17 +183,15 @@ class DataInput:
                   int(float(line[1])), line[5], line[8], line[9]+" days", line[3], 0])
 
             db.commit()
+            rows = cur.execute("SELECT orderid FROM archive_market WHERE orderid = %s AND volremain = %s", [ line[4], int(float(line[1]))])
+            if rows == 0:
+                cur.execute("""
+                            INSERT INTO archive_market (regionid, systemid, stationid, typeid,
+                            bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby, source)
+                            VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            """, [region, line[12], line[10], typeid, `bid`, line[0], line[4], line[6],
+                                  int(float(line[1])), line[5], line[8], line[9]+" days", line[3], 0, source])
 
-            cur.execute("""
-            INSERT INTO archive_market (regionid, systemid, stationid, typeid,
-            bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby, source)
-            VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-
-
-            """, [region, line[12], line[10], typeid, `bid`, line[0], line[4], line[6],
-                  int(float(line[1])), line[5], line[8], line[9]+" days", line[3], 0, source])
-
-            db.commit()
 
         db.commit()
         db.close()
