@@ -17,37 +17,38 @@ Trade Finder - Results
 <p>Displaying potential trade routes between <i>$fromname</i> and <i>$toname</i> (query type <i>$qtype</i>) up to $age hours old.
 <br /><b>Important:</b> Profit is obviously not guaranteed. Use at your own risk. Check for the freshness of the data before using! </p>
 
-<form method="GET" action="tradefind_display.html">
-<input type="hidden" name="set" value="1">
-<input type="hidden" name="fromt" value="$fromt">
-<input type="hidden" name="to" value="$to">
-<input type="hidden" name="qtype" value="$qtype">
-Only show trade routes with data newer than <input type="text" name="age" value="$age" size="3"> hours. <br/>
-Showing only routes with profit of <input type="text" name="minprofit" value="$minprofit" size="5"> ISK or greater per trip. <br />
-My ship can carry <input type="text" name="size" value="$size" size="7"> m<sup>3</sup> of cargo. <br />
-Show <input type="text" name="limit" value="$limit" size="4"> entries per page. <br />
+<form method="get" action="tradefind_display.html">
+<div>
+<input type="hidden" name="set" value="1" />
+<input type="hidden" name="fromt" value="$fromt" />
+<input type="hidden" name="to" value="$to" />
+<input type="hidden" name="qtype" value="$qtype" />
+Only show trade routes with data newer than <input type="text" name="age" value="$age" size="3" /> hours. <br/>
+Showing only routes with profit of <input type="text" name="minprofit" value="$minprofit" size="5" /> ISK or greater per trip. <br />
+My ship can carry <input type="text" name="size" value="$size" size="7" /> m<sup>3</sup> of cargo. <br />
+Show <input type="text" name="limit" value="$limit" size="4" /> entries per page. <br />
 Sort by <select name="sort">
 
 	<option value="jprofit"
 #if $sort == "jprofit"
-selected="1"
+selected="selected"
 #end if
 >Profit per jump</option>
 	<option value="sprofit"
 #if $sort == "sprofit"
-selected="1"
+selected="selected"
 #end if
 
 >Profit per trip</option>
 	<option value="profit"
 #if $sort == "profit"
-selected="1"
+selected="selected"
 #end if
 
 >Profit</option>
 	<option value="jumps"
 #if $sort == "jumps"
-selected="1"
+selected="selected"
 #end if
 
 >Distance</option></select>
@@ -57,9 +58,10 @@ selected="1"
 #if $prefer_sec == 1
 checked="1"
 #end if
-/ > System Security filter (*Note below)
-<input type="submit" value="Filter">
-<!--<br /><input type="checkbox" name="save" value="1">Save as defaults-->
+/> System Security filter (*Note below)
+<input type="submit" value="Filter" />
+<!--<br /><input type="checkbox" name="save" value="1" />Save as defaults-->
+</div>
 </form>
 
 
@@ -70,10 +72,10 @@ checked="1"
 .</p>
 <p>Page $page.
 #if $page != 1
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$prev&sort=$sort">Previous page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$prev&amp;sort=$sort">Previous page</a>
 #end if
 #if $len($trades) >= $limit
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$next&sort=$sort">Next page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$next&amp;sort=$sort">Next page</a>
 #end if
 
 <hr />
@@ -91,10 +93,10 @@ checked="1"
 <hr />
 <p>Page $page.
 #if $page != 1
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$prev&sort=$sort">Previous page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$prev&amp;sort=$sort">Previous page</a>
 #end if
 #if $len($trades) >= $limit
-<a href="tradefind_display.html?qtype=$qtype&fromt=$fromt&to=$to&age=$age&minprofit=$minprofit&size=$size&startat=$next&sort=$sort">Next page</a>
+<a href="tradefind_display.html?qtype=$qtype&amp;fromt=$fromt&amp;to=$to&amp;age=$age&amp;minprofit=$minprofit&amp;size=$size&amp;startat=$next&amp;sort=$sort">Next page</a>
 #end if
 <br />&nbsp;
 <br/><i><b>*</b>(Note: This will remove start and end stations which are in < 0.5 space, as well as ATTEMPT to avoid routes going through insecure space. Routes which must go through lowsec space will still be shown if that is the only option)</i>

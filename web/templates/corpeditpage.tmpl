@@ -8,16 +8,17 @@ $corp.corporation - $ptitle
 #def body
 <p>Editing page: <a href="/corp/$corp.ticker/${pagename}.html">${pagename}.html</a>. Note: index cannot be deleted.</p>
 
-<form method="POST" action="edit_page">
-<input type="hidden" name="page" value="$pagename">
-<input type="hidden" name="set" value="$pagename">
+<form method="post" action="edit_page">
+<div>
+<input type="hidden" name="page" value="$pagename" />
+<input type="hidden" name="set" value="$pagename" />
 
-Title: <input type="text" value="$ptitle" name="title" size="30">
+Title: <input type="text" value="$ptitle" name="title" size="30" />
 <br />
 Contents:<br />
 #if $isigb
 <b>The IGB does not support textareas correctly. You will not be able to edit this page</b>
-<input type="hidden" name="contents" value="$pcontents">
+<input type="hidden" name="contents" value="$pcontents" />
 #else
 <i>Use <a href="http://www.w3schools.com/html/html_examples.asp">HTML</a> in the box below. Make links to other pages by the local link syntax (&lt;a href="myotherpage.html"&gt;Go here&lt;/a&gt;). </i>
 <br/>
@@ -32,17 +33,20 @@ View permissions: <select name="view">
 <option>director only</option>
 </select>
 <br />
-<input type="submit" value="Save">
+<input type="submit" value="Save" />
+</div>
 </form>
 
-<form method="GET" action="edit_page">
+<form method="get" action="edit_page">
+<div>
 Go to page:
 <select name="page">
 #for $page in $pages
  <option value="$page">${page}.html</option>
 #end for
 </select>
-<input type="submit" value="Go">
+<input type="submit" value="Go" />
+</div>
 </form>
 
 <hr>

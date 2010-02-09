@@ -12,12 +12,14 @@ $pcontents
 <hr>
 #if $canedit
 <a href="/corps/edit_page?page=$pagename">Edit page</a>
-<form method="GET" action="/corps/edit_page">
-<input type="hidden" value="1" name="create">
-Create new page: <input type="text" name="page" value="">.html <input type="submit" value="Create">
+<form method="get" action="/corps/edit_page">
+<div>
+<input type="hidden" value="1" name="create" />
+Create new page: <input type="text" name="page" value="" />.html <input type="submit" value="Create" />
+</div>
 </form>
 #if $pagename != "index"
-<a href="/corps/edit_page?page=$pagename&delete=1" onclick="return confirm('Are you sure you want to delete this page?');">Delete page</a>
+<a href="/corps/edit_page?page=$pagename&amp;delete=1" onclick="return confirm('Are you sure you want to delete this page?');">Delete page</a>
 #end if
 #end if
 <p>Last edited on $pedit. This page is set '$view'</p>

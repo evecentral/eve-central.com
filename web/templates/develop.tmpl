@@ -21,7 +21,7 @@ Developer Integration
 </ul>
 
 
-<a name="csv"></a>
+<a id="csv"></a>
 <h2>CSV All-submitted-entries market dumps</h2>
 <p>The feature you've all been asking for, dumped market files. These CSV files contain all of our user provided uploads dating back to 1/15/2006. Sure to be a boon to those of you who like lots of data to chew on. Note that this isn't a static price dump of prices for a day; instead its every market log that was uploaded appened end to end (though in-file sorting is not guaranteed).</p>
 
@@ -35,7 +35,7 @@ Developer Integration
 
 <p>The dump files are available here: <a href="http://eve-central.com/dumps/">http://eve-central.com/dumps/</a>. The first tar file in the directory is a combination of the first file set, saving you time vs. downloading it file by file.</p>
 
-<a name="xml"></a>
+<a id="xml"></a>
 <h2>XML HTTP APIs</h2>
 <p>We now have a limited set of XML datafeeds available to query pricing information from your own application, killboard, or website. See the upgrade news <a href="http://yannramin.com/2008/04/04/eve-central-api-upgrades/">here</a>. But first, the rules:
 </p>
@@ -51,9 +51,7 @@ Developer Integration
 <p>You simply make an HTTP GET or POST request to a given URL and read the generated XML document. The following APIs are available, along with query parameters. The query paramaters can be passed in an HTTP GET or POST request.</p>
 <p>It is adivsable to set a custom User-Agent header when requesting data to determine the soruce application. We can also add you to the "Applications using EVE-Central" section on our page.</p>
 #def $paramtable($paramlist)
-
 <table border="1">
-
   <tr><th>Parameter</th><th>Usage</th><th>Required</th><th>Can be specified more than once</th></tr>
 #for $param in $paramlist
   <tr>
@@ -66,34 +64,36 @@ Developer Integration
 <h3>marketstat_xml</h3>
 <p>Usage: <b>http://api.eve-central.com/api/marketstat</b>
 <br /><b>Purpose: </b> Retrieve aggerate statistics for the items specified.
-<br />
+</p>
 $paramtable( [ [ 'hours', 'Statistics from the last X specified hours.', False, False],
 ['typeid', 'The type ID of the item you are requesting. I.e., 34 for Tritanium. Can be specified more than once', True, True],
 ['minQ', 'The minimum quantity in an order to consider it for the statistics', False, False],
 ['regionlimit', 'Restrict statistics to a region. Can be specified more than once.', False, True]
 
  ] )
-<br />
-<b>Example:</b> <a href="http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002</a>
+<p>
+<b>Example:</b> <a href="http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002</a>
 </p>
 
 <h3>quicklook</h3>
-<p>Usage: <b>http://eve-central.com/api/quicklook</b>
+<p>
+  Usage: <b>http://eve-central.com/api/quicklook</b>
   <br/><b>Purpose: </b> Retrieve all of the available market orders, including prices, stations, order IDs, volumes, etc.
-<br />
+</p>
 $paramtable( [[ 'typeid', 'The type ID to be queried', True, False],
 ['sethours', 'Get orders which have been posted within the last X hours. Defaults to 360', False, False],
 ['regionlimit', 'Restrict the view to only show from within the specified region IDs. Can be specified multiple times.', False, True],
 ['usesystem', 'Restrict the view to the following system only.', False, False],
 ['setminQ', 'Restrict the view to show only orders above the specified quantity', False, False]
 ])
-<br />
+<p>
 <b>Example:</b> <a href="http://api.eve-central.com/api/quicklook?typeid=34">http://api.eve-central.com/api/quicklook?typeid=34</a>
 </p>
 
 <h3>evemon</h3>
 
-<p>Usage: <b>http://api.eve-central.com/api/evemon</b>
+<p>
+Usage: <b>http://api.eve-central.com/api/evemon</b>
 <br />
 <b>Purpose:</b> Retrieve the median mineral prices in the empire regions in a format digestible by <a href="http://evemon.battleclinic.com/">EVEmon</a>.
 <br />
@@ -104,12 +104,13 @@ $paramtable( [[ 'typeid', 'The type ID to be queried', True, False],
 
 <h3>upload_suggest</h3>
 
-<p>Usage: <b>http://api.eve-central.com/api/upload_suggest</b>
+<p>
+Usage: <b>http://api.eve-central.com/api/upload_suggest</b>
 <br />
 <b>Purpose:</b> Retrieve a random assortment of not-recently-updated items per region.
-<br />
+</p>
 $paramtable( [[ 'region', 'The region in which to suggest an upload', True, False]] )
-<br />
+<p>
 <b>Example:</b> <a href="http://api.eve-central.com/api/upload_suggest?region=10000002">http://api.eve-central.com/api/upload_suggest?region=10000002</a>
 </p>
 
@@ -122,7 +123,7 @@ $paramtable( [[ 'region', 'The region in which to suggest an upload', True, Fals
 
 
 
-<a name="smtp"></a>
+<a id="smtp"></a>
 <h2>Mail-Push Instant Market Log Service</h2>
 <p><b>Important Notice</b>: Many mail services can't handle the large number of messages delivered by our system. These systems include:</p>
 <ul>

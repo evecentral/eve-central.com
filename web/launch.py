@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #    EVE-Central.com Codebase
 #    Copyright (C) 2006-2009 StackFoundry LLC and Yann Ramin
 #
@@ -52,7 +53,7 @@ if __name__=="__main__":
     if mode == 'devel':
         cherrypy.config.update({'engine.autoreload_on' : True})
 
-    cherrypy.config.update({'server.socket_port': int(sys.argv[1])})
+    #cherrypy.config.update({'server.socket_port': int(sys.argv[1])})
 
 
     cherrypy.tree.mount(Home(), '/home')
