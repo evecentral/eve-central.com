@@ -167,11 +167,12 @@ class DataInput:
             source = "evec_upload_cache"
 
             try:
-                source = line[13]
+                source = line[14]
             except:
                 pass
 
             self.station_check(db, station = station, system = system, region = region)
+
 
             cur.execute("""
             INSERT INTO current_market (regionid, systemid, stationid, typeid,
@@ -182,9 +183,10 @@ class DataInput:
             """, [region, line[12], line[10], typeid, `bid`, line[0], line[4], line[6],
                   int(float(line[1])), line[5], line[8], line[9]+" days", line[3], 0])
 
-            db.commit()
-            rows = cur.execute("SELECT orderid FROM archive_market WHERE orderid = %s AND volremain = %s", [ line[4], int(float(line[1]))])
-            if rows == 0:
+            cur.execute("SELECT count(orderid) FROM archive_market WHERE orderid = %s AND volremain = %s AND regionid = %s", [ line[4], int(float(line[1])), region])
+            hasdata = cur.fetchone()
+            if not hasdata:
+                response += "This includes new order informaion "
                 cur.execute("""
                             INSERT INTO archive_market (regionid, systemid, stationid, typeid,
                             bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby, source)
