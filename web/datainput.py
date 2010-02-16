@@ -12,6 +12,7 @@ from evecentral import display
 from evecentral import evec_func
 from evecentral.userlib import User
 from evecentral import cache
+from evecentral import stats
 
 class BackgroundStatThread(threading.Thread):
     """
@@ -24,8 +25,15 @@ class BackgroundStatThread(threading.Thread):
         threading.Thread.__init__(self)
     def run(self):
         while True:
-            runstat = self.queue.get()
-             # Do something
+            regionid, typeid = self.queue.get()
+            db = evec_func.db_con()
+
+            minq = 0
+            if typeid in stats.MINQ_TYPES:
+                minq = stats.MINQ_VOL
+
+            (buy,sell) = stats.item_stat(db, typeid, regionlimit = [regionid], nocache = True, minQ = minq)
+            all_stat = stats.item_stat(db, typeid, regionlimit = [regionid], nocache = True, minQ = minq, buysell = False)
 
             self.queue.task_done()
 
@@ -168,6 +176,7 @@ class DataInput:
 
         derived_region = 0
         derived_typeid = 0
+        has_new_data = False
 
         for line in data:
             typeid = line[2]
@@ -207,7 +216,7 @@ class DataInput:
             hasdata = cur.fetchone()
             hasdata = hasdata[0]
             if hasdata == 0:
-                response += "This includes new order informaion "
+                has_new_data = True
                 cur.execute("""
                             INSERT INTO archive_market (regionid, systemid, stationid, typeid,
                             bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby, source)
