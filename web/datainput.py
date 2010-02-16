@@ -117,7 +117,7 @@ class DataInput:
 
         response += "Beginning your upload of "+typename+"\n"
         response += "TypeID: " + typeid + " RegionID: " + region + "\n"
-        cur.execute('SET TRANSACTION ISOLATION LEVEL READ COMMITTED')
+        #cur.execute('SET TRANSACTION ISOLATION LEVEL READ COMMITTED')
 
         # Pre-validate the data coming in
         for line in data:
@@ -132,14 +132,14 @@ class DataInput:
                     return # invalid data
 
 
-        cur.execute('LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE')
+        #cur.execute('LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE')
 
-        cur.execute('UPDATE users SET uploads = uploads + 1 WHERE userid = %s', [userid])
-        db.commit()
+        #cur.execute('UPDATE users SET uploads = uploads + 1 WHERE userid = %s', [userid])
+        #db.commit()
 
 
         cur.execute('DELETE FROM current_market WHERE typeid = %s AND regionid = %s', [typeid, region])
-        db.commit()
+        #db.commit()
 
 
         if typename:
@@ -185,7 +185,8 @@ class DataInput:
 
             cur.execute("SELECT count(orderid) FROM archive_market WHERE orderid = %s AND volremain = %s AND regionid = %s", [ line[4], int(float(line[1])), region])
             hasdata = cur.fetchone()
-            if not hasdata:
+            hasdata = hasdata[0]
+            if hasdata == 0:
                 response += "This includes new order informaion "
                 cur.execute("""
                             INSERT INTO archive_market (regionid, systemid, stationid, typeid,
