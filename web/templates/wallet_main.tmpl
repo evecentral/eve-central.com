@@ -1,7 +1,7 @@
 
 #extends templates.basebase
 #def title
-EVE-Central.com - Wallet & Transactions
+EVE-Central.com - Wallet &amp; Transactions
 #end def
 
 #def body
@@ -18,11 +18,11 @@ Wallet balance: $balance ISK (at $timeat)</p>
 	HEIGHT="250" 
 	id="charts" 
 	ALIGN="">
-<PARAM NAME=movie VALUE="charts.swf?library_path=charts_library&xml_source=sample.xml">
+<PARAM NAME=movie VALUE="charts.swf?library_path=charts_library&amp;xml_source=sample.xml">
 <PARAM NAME=quality VALUE=high>
 <PARAM NAME=bgcolor VALUE=#666666>
 
-<EMBED src="/swfcharts/charts.swf?library_path=/swfcharts/charts_library&xml_source=/wallet/balance_xml"
+<EMBED src="/swfcharts/charts.swf?library_path=/swfcharts/charts_library&amp;xml_source=/wallet/balance_xml"
        quality=high 
        bgcolor=#666666  
        WIDTH="600" 
@@ -35,7 +35,7 @@ Wallet balance: $balance ISK (at $timeat)</p>
 </EMBED>
 </OBJECT>
 <br />
-<a href="http://eve-central.com/wallet/balance_xml?nochart=1&number=1000">XML dump of history</a>
+<a href="http://eve-central.com/wallet/balance_xml?nochart=1&amp;number=1000">XML dump of history</a>
 <table width="50%">
 <tr><th>Balance</th><th>Time</th></tr>
 #for $bal in $wallethis

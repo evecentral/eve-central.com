@@ -84,7 +84,7 @@ class UserPreference(object):
         cur.execute("INSERT INTO user_pref (userid, preference, value) VALUES (%s, %s, %s)", [self.user.userid, self.preference, str(value)])
         cur.commit()
         return value
-    
+
 # Warning: This is a complete cluster of a domain object
 class User(object):
     def get(session, db):
@@ -101,7 +101,7 @@ class User(object):
         return password + "This is a boring salt, and not very good - " + username
     salt = staticmethod(salt)
 
-    
+
     def __init__(self, session, db):
         self.valid = False
 
@@ -163,7 +163,7 @@ class User(object):
             self.apiuserid = r[6]
             self.evecpoints = r[7]
             self.api_cacheuntil = r[8] # these shouldn't really be here
-            
+
             self.valid = True
             session['user'] = self
             return self
@@ -192,7 +192,7 @@ class User(object):
             self.apiuserid = r[6]
             self.evecpoints = r[7]
             self.api_cacheuntil = r[8]
-            
+
             self.valid = True
             return self
         else:
@@ -203,15 +203,15 @@ class User(object):
     def register(db, password, email): # LOGIN
         headers = cherrypy.request.headers
 
-        if 'Eve.Charid' in headers and not User.user_exists(db, long(headers['Eve.Charid'])):
+        if 'Eve-Charid' in headers and not User.user_exists(db, long(headers['Eve-Charid'])):
             # This really really really really doesn't belong here....
             cur = db.cursor()
-            userid = long(headers['Eve.Charid'])
-            username = headers['Eve.Charname']
-            corpid = long(headers['Eve.Corpid'])
-            corporation = headers['Eve.Corpname']
-            alliance = headers['Eve.Alliancename']
-            flags = long(headers['Eve.Corprole'])
+            userid = long(headers['Eve-Charid'])
+            username = headers['Eve-Charname']
+            corpid = long(headers['Eve-Corpid'])
+            corporation = headers['Eve-Corpname']
+            alliance = ""
+            flags = 0 #long(headers['HTTP_EVE_CORPROLE'])
             isdirector = 0
             if flags & (2**0) == 1:
                 isdirector = 1
@@ -232,19 +232,19 @@ class User(object):
     def update_user(self, db):
         headers = cherrypy.request.headers
         cur = None
-        if 'Eve.Charid' in headers and User.user_exists(db, long(headers['Eve.Charid'])):
+        if 'Eve-Charid' in headers and User.user_exists(db, long(headers['Eve-Charid'])):
             cur = db.cursor()
             corp = Corp(db,self.corpid)
             if corp.join_password == "":
                 self.ismember = 1
-                
+
             # This really really doesn't belong here either - a domain class crusing through request headers? wtf? :)
-            userid = long(headers['Eve.Charid'])
-            username = headers['Eve.Charname']
-            corpid = long(headers['Eve.Corpid'])
-            corporation = headers['Eve.Corpname']
-            alliance = headers['Eve.Alliancename']
-            flags = long(headers['Eve.Corprole'])
+            userid = long(headers['Eve-Charid'])
+            username = headers['Eve-Charname']
+            corpid = long(headers['Eve-Corpid'])
+            corporation = headers['Eve-Corpname']
+            alliance = ""
+            flags = 0
 
 
 

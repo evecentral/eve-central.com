@@ -15,7 +15,7 @@
 
 
 h1, h2, h3 {
-	font-family: "trebuchet ms", Tahoma, Verdana, Arial;
+	font-family: sans-serif; 
 }
 
 
@@ -31,13 +31,13 @@ h1 {
 	padding-bottom: 0.5ex;
 }
 
-body {	font-family: Verdana, Arial, Helvetica, sans-serif;
+body {	font-family: sans-serif;
 	margin: 0px;
-	font-size: 10pt;
+
 
 }
 
-a {	 font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold;
+a {	 font-family: sans-serif;
 	color: #7777ee;
 }
 
@@ -45,11 +45,6 @@ a {	 font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold;
 	line-height: 1.5em;
 	margin: 10mm 1.5em 0 1em;
 	padding: 0 1em 1ex 1em;
-	font-size: 10pt;
-}
-
-td {
-	font-size: 10pt;
 }
 
 #footer {
@@ -113,7 +108,7 @@ td {
 
 .treeheader {
 	background-color: #f0f0ff;
-	font-family: "trebuchet ms", Tahoma, Verdana, Arial;
+	font-family: sans-serif;
 }
 
 .adLink {
@@ -136,16 +131,6 @@ td {
            background-color: #ccff99;
            padding: 10px;
            padding-bottom: 20px;
-}
-
-.tradeToolPremium {
-           width: 90%;
-           background-color: #ffff99; /* #99ff99 */
-           background-image: url(newlook/premium.png);
-           background-repeat: no-repeat; 
-           margin-top: 10px;
-           margin-bottom: 10px;
-           padding: 23px;
 }
 
 #systemSearch {

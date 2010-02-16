@@ -27,10 +27,11 @@ tempobj.disabled = true;
 
 <p>Pick the two locations to find trade routes between.</p>
 
-<form method="GET" action="tradefind_display.html" name="tfform">
+<form method="get" action="tradefind_display.html" name="tfform">
+<div>
 Searching for type $qtype
-<input type="hidden" name="qtype" value="$qtype">
-<input type="hidden" name="newsearch" value="1">
+<input type="hidden" name="qtype" value="$qtype" />
+<input type="hidden" name="newsearch" value="1" />
 <table width="70%" border="0">
 <tr><th>From</th><th>To</th></tr>
 
@@ -44,7 +45,7 @@ Searching for type $qtype
 #if len($from_list) == 1
 checked
 #end if
-> $item['name']<br />
+ /> $item['name']<br />
  #end for
 </td>
 
@@ -59,8 +60,7 @@ checked
 #if len($to_list) == 1
 checked
 #end if
-
-> $item['name']<br />
+/> $item['name']<br />
  #end for
 </td>
 </tr>
@@ -75,6 +75,7 @@ checked
 #end if
 <br />
 <i>Note: From and To can be the same location.</i>
+</div>
 </form>
 
 #end def

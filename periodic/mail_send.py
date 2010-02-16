@@ -33,9 +33,9 @@ def main():
             message = message + cache.get("evec_mail_" + str(mailsend))
         except:
             pass
-        if thispass > 50:
-            cont = True
-            break
+#        if thispass > 50:
+#            cont = True
+#            break
 
     smtpsess = smtplib.SMTP('localhost')
     datae = "To: evec-upload@lists.stackworks.net\nPrecedence: bulk\nX-EVEC-UserIdHash: 0" + "\nSubject: Upload\n\n" + message

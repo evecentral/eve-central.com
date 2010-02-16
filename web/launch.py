@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #    EVE-Central.com Codebase
 #    Copyright (C) 2006-2009 StackFoundry LLC and Yann Ramin
 #

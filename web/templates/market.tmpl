@@ -10,20 +10,20 @@ Market Browser
 
 
 <p>
-
-<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the EVE client. See our <a href="/home/leaders.html">leaderboard</a> for most uploads per person.</p>
+<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the EVE client. See our <a href="/home/leaders.html">leaderboard</a> for most uploads per person.
 </p>
 
-<form method="POST" action="market.html">
-<input type="hidden" name="pickregion" value="1">
+<form method="post" action="market.html">
+<div>
+<input type="hidden" name="pickregion" value="1" />
 <table border="0">
 <tr>
 <td><b>1. Filter by regions</b>. Limit the view to regions (Control or shift click to select more than one). Note that the In Game Browser breaks if you select too many regions. So don't. If you don't select anything here, you will be seeing all regions. </td>
-<td><select name="regionlimit" size="7" multiple="1">
+<td><select name="regionlimit" size="7" multiple="multiple">
 	#for $region in $regions
 		<option value="$region['regionid']"
 		#if $region['regionid'] in $regionlimit
-			selected="1"
+			selected="selected"
 		#end if
 
 >$region['regionname']</option>
@@ -33,17 +33,20 @@ Market Browser
 <tr>
 	<td colspan="2"><input type="submit" value="Limit to selected regions" /> (or) <input type="submit" value="Limit to empire regions" name="empire" /> ($len($regionlimit) currently selected). To deselect regions, use ctrl+click, followed by clicking "Limit to selected regions."</td></tr>
 </table>
-
+</div>
 </form>
 <hr />
 
-<p><b>2. View an item</b> 
+<p><b>2. View an item</b></p>
 
-
-<form method="GET" action="typesearch.html">
-Search for a type of item where the name contains (i.e., Afterburner, trit, mexal): <input type="text" name="search"> <input type="submit" value="Search">
+<div>
+<form method="get" action="typesearch.html">
+<div>
+Search for a type of item where the name contains (i.e., Afterburner, trit, mexal): <input type="text" name="search" /> <input type="submit" value="Search" />
 <br />
 This will take you to the Quicklook page automatically if there is only one item with the search string. You can get every item in one big long list by not typing anything.
+</div>
 </form>
+</div>
 
 #end def
