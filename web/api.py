@@ -147,8 +147,8 @@ class Api:
 
             useMinQ = minQ
 
-            if useMinQ == 0 and typeid in [34, 35, 36, 37, 38, 39, 40, 11399]:
-                useMinQ = 10000
+            if useMinQ == 0 and typeid in stats.MINQ_TYPES:
+                useMinQ = MINQ_VOL
 
             prices = stats.item_stat(db, typeid, hours, buysell = False, regionlimit = regionlimit, minQ = useMinQ)
             newprices = {}

@@ -58,7 +58,7 @@ class Home:
         r += "Cache miss: " + str(cache.miss()) + "\n"
         r += "%: " + str(float(cache.hits()) / cache.miss()) + "\n"
         r += "Last key stored: " + cache.last_key_s() + "\n"
-        r += "Last key fetched: " + cache.last_key_f() 
+        r += "Last key fetched: " + cache.last_key_f()
         return r
 
 
@@ -136,8 +136,8 @@ class Home:
 
             typeid = int(typeid)
 
-            if minQ == 0 and typeid in [34, 35, 36, 37, 38, 39, 40, 11399]:
-                minQ = 10000
+            if minQ == 0 and typeid in stats.MINQ_TYPES:
+                minQ = MINQ_VOL
 
             prices = stats.item_stat(db, typeid, hours, buysell = False, regionlimit = regionlimit, minQ = minQ)
             (sell,buy) = stats.item_stat(db, typeid, hours, regionlimit = regionlimit)
@@ -279,7 +279,7 @@ class Home:
             order = session['order']
 
 
-
+        # Fetch and generate the template
         t = None
         if outtype == 'html':
             t = display.template('quicklook.tmpl', session)
@@ -314,8 +314,6 @@ class Home:
 
         (sell, buy) = stats.item_stat(db, typeid, hours, sql_system, regionlimit = regionlimit, minQ = minQ)
 
-
-
         t.b_avg_price = format_price(buy['median'])
         t.b_total_vol = format_long(buy['total_vol'])
         t.b_total_movement = format_long(buy['total_movement'])
@@ -330,12 +328,6 @@ class Home:
         cur_buy = db.cursor()
         cur_sell = db.cursor()
         limit = "LIMIT 10000 OFFSET 0"
-        try:
-            if igbover is False and session['isigb'] == True:
-                limit = "LIMIT 25 OFFSET " + str(int(poffset))
-        except:
-            pass
-
 
         cur_trans = db.cursor()
         cur_trans.execute("SELECT wmt.price,wmt.stationname,wmt.transtime,wmt.quantity FROM wallet_market_transactions AS wmt WHERE typeid = %s ORDER BY transtime DESC LIMIT 10", [typeid])
@@ -359,10 +351,9 @@ class Home:
         buys = []
         sells = []
 
-
-        cache_key = cache.generic_key("evec_quicklook", typeid, regionlimit, usesystem, order, limit, minQ)
+        cache_key = cache.generic_key("evec_quicklook", typeid, regionlimit, usesystem, order, orderdir, borderdir, limit, minQ)
         cache_result = cache.get(cache_key)
-        
+
 
         def run_query():
 
@@ -379,7 +370,7 @@ class Home:
                     rec['stationid'] = r[2]
                     price = float(r[3])
                     string = format_price(price)
-                    
+
                     rec['price'] = string
                     rec['price_raw'] = price
                     rec['volremain'] = format_long(r[4])
@@ -390,7 +381,7 @@ class Home:
                     else:
                         rec['range'] = -2
                     rec['regionname'] = r[7]
-                    
+
                     rec['reportedtime'] = str(r[8])[5:-7]
                     rec['stationname'] = r[9]
                     rec['security'] = str(r[10])[0:3]
@@ -424,7 +415,7 @@ class Home:
         else:
             buys = cache_result[0]
             sells = cache_result[1]
-            
+
 
         t.regions = evec_func.region_list(db)
         t.upload_sug = up_sug
@@ -439,7 +430,7 @@ class Home:
         db.close()
         return t.respond()
 
-    
+
 
     quicklook_html = quicklook
 
