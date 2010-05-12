@@ -17,8 +17,9 @@
 
 
 import sys
-import cmemcache as memcache
-sys.modules['memcache'] = memcache # Hack
+#import cmemcache as memcache
+import memcache
+#sys.modules['memcache'] = memcache # Hack
 sys.path.append('../lib')
 
 import cherrypy
