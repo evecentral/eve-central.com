@@ -23,7 +23,8 @@ from evecentral import evec_func
 from evecentral import cache
 
 CACHE_TIME = 3600
-
+MINQ_TYPES = [34, 35, 36, 37, 38, 39, 40, 11399]
+MINQ_VOL = 10000
 
 def cache_name(typeid, hours, sql_system, regionlimit, buysell, minQ):
     regions = ""
@@ -68,13 +69,14 @@ def calculate_stats(list, weight = None):
     return (med,avg,st,va, maxv, minv)
 
 
-def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysell = True, minQ = 0):
+def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysell = True, minQ = 0, nocache = False):
     global CACHE_TIME
     obj_name = cache_name(typeid, hours, sql_system, regionlimit, buysell, minQ)
 
-    cache_obj = cache.get(obj_name)
-    if cache_obj:
-        return cache_obj
+    if not nocache:
+        cache_obj = cache.get(obj_name)
+        if cache_obj:
+            return cache_obj
 
     sql_age = `hours`+" hours"
     reg_block_stat = evec_func.build_regionquery("current_market", regionlimit)
