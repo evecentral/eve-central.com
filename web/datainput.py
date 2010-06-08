@@ -23,25 +23,33 @@ class BackgroundStatThread(threading.Thread):
     def __init__(self, inqueue):
         self.queue = inqueue
         threading.Thread.__init__(self)
+
+    def perform_stat(self):
+        regionid, typeid = self.queue.get()
+        db = evec_func.db_con()
+
+        minq = 0
+        if typeid in stats.MINQ_TYPES:
+            minq = stats.MINQ_VOL
+
+        (buy,sell) = stats.item_stat(db, typeid, regionlimit = [regionid], nocache = True, minQ = minq)
+        all_stat = stats.item_stat(db, typeid, regionlimit = [regionid], nocache = True, minQ = minq, buysell = False)
+        cur = db.cursor()
+        # Buyup not yet available in stats
+        print "DEBUG stat: ",typeid,regionid,all_stat
+        cur.execute("INSERT INTO trends_type_region (typeid, region, average, median, volume, stddev, buyup, timeat) VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())",
+                    (typeid, regionid, float(all_stat['avg_price']), float(all_stat['median']), float(all_stat['total_vol']), float(all_stat['stddev']), float(0)))
+        db.commit()
+
+        self.queue.task_done()
+        
     def run(self):
         while True:
-            regionid, typeid = self.queue.get()
-            db = evec_func.db_con()
-
-            minq = 0
-            if typeid in stats.MINQ_TYPES:
-                minq = stats.MINQ_VOL
-
-            (buy,sell) = stats.item_stat(db, typeid, regionlimit = [regionid], nocache = True, minQ = minq)
-            all_stat = stats.item_stat(db, typeid, regionlimit = [regionid], nocache = True, minQ = minq, buysell = False)
-            cur = db.cursor()
-            # Buyup not yet available in stats
-            cur.execute("INSERT INTO trends_type_region (typeid, region, average, median, volume, stddev, buyup, NOW()) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                        [typeid, regionid, all_stat['avg_price'], all_stat['median'], all_stat['total_vol'], all_stat['stddev'], 0])
-            cur.commit()
-
-            self.queue.task_done()
-
+            try:
+                self.perform_stat()
+            except Exception,e:
+                print e
+                
 class DataInput:
 
     def __init__(self):
