@@ -110,7 +110,7 @@ class Api:
         return h.quicklook(typeid = typeid, sethours = sethours, regionlimit = regionlimit, usesystem = usesystem, setminQ = setminQ, outtype = 'xml', api = 2.0)
 
     @cherrypy.expose
-    def marketstat(self, hours = "360", minQ = 0, typeid = None, regionlimit = None):
+    def marketstat(self, hours = "360", minQ = 0, typeid = None, regionlimit = None, usesystem = None):
 
         cherrypy.response.headers['Content-Type'] = 'text/xml'
         db = evec_func.db_con()
@@ -140,6 +140,13 @@ class Api:
             db.close()
             return "<evec_api><error>No more than 100 results allowed</error></evec_api>"
 
+        sql_system = " "
+
+        if usesystem:
+            usesystem = int(usesystem)
+            sql_system = " AND current_market.systemid = " + `usesystem` + " "
+
+
         statslist = []
         for typeid in typeids:
 
@@ -150,12 +157,12 @@ class Api:
             if useMinQ == 0 and typeid in [34, 35, 36, 37, 38, 39, 40, 11399]:
                 useMinQ = 10000
 
-            prices = stats.item_stat(db, typeid, hours, buysell = False, regionlimit = regionlimit, minQ = useMinQ)
+            prices = stats.item_stat(db, typeid, hours, sql_system, buysell = False, regionlimit = regionlimit, minQ = useMinQ)
             newprices = {}
             # Reformat prices as 2 digit float strings
             for key in prices.keys():
                 newprices[key] = "%0.2f" % prices[key]
-            (sell,buy) = stats.item_stat(db, typeid, hours, regionlimit = regionlimit, minQ = useMinQ)
+            (sell,buy) = stats.item_stat(db, typeid, hours, sql_system, regionlimit = regionlimit, minQ = useMinQ)
             newsell = {}
             newbuy = {}
             for key in sell.keys():
