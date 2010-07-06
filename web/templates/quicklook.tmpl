@@ -119,16 +119,7 @@ $order['stationname'] ($order['security'])
 
 
 #def body
-
-
-
 <p>
-
-<!-- <img src="/images/market.png" align="right" /> -->
-
-<!-- <img src="http://eve-central-cdn-eur.s3.amazonaws.com/market.png" align="right" /> -->
-
-<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the EVE client.</p>
 
 #if $upload_sug is not None
 <p><b>&gt; </b> <i>Some upload suggestions for <b>
@@ -148,24 +139,7 @@ $order['stationname'] ($order['security'])
 </p>
 #end if
 
-#if $isigb
-<p><h3>IGB Note:</h3> IGB client is limited to viewing 25 entries for the buy and sell list per page, since it can't tolerate large HTML pages. Use an external browser for maximum convenience.</p>
-#end if
-
-#if $isigb
-<p>
-#if $poffset != 0
-#set $pf = $poffset - 25
-<a href="/home/quicklook.html?typeid=$typeid&amp;poffset=$pf">Previous page</a>
-#end if
-#set $pf = $poffset + 25
-<a href="/home/quicklook.html?typeid=$typeid&amp;poffset=$pf">Next page</a>
-</p>
-
-#end if
-
-<table width="100%">
-<tr><td align="left">
+<div>
 Item: <b>$typename</b> (size: $typesize m<sup>3</sup>),
 Looking at regions: 
 #if $len($regionlimit) < 1
@@ -178,31 +152,22 @@ Looking at regions:
 		#end if
 	#end for
 
-</td></tr>
-</table>
+</div>
 
-
-
-
-
+<div class="LHS formBlock">
 <form method="get" action="quicklook.html">
-<div>
-&nbsp;<br />
 Viewing data up to <input type="text" value="$hours" name="sethours" size="5" /> hours old. Minimum Qty: <input type="text" value="$minQ" name="setminQ" size="7" /> (entered for stats, remain for view)
 <input type="hidden" name="typeid" value="$typeid" />
 <input type="submit" value="Refresh" />
-</div>
 </form>
-
-
+</div>
+<div class="RHS formBlock">
 <form method="get" action="typesearch.html">
-<div>
-Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx): <input type="text" name="search" /> <input type="submit" value="Search" />
-</div>
+Search for: <input type="text" name="search" /> <input type="submit" value="Search" />
 </form>
+</div>
 
-<p>Jump to: <a href="#sells">Sell Orders</a> | <a href="#buys">Buy Orders</a></p>
-<p>See a wrong station name? Click the "?" in an out of game browser to send an email giving the correct name!</p>
+
 <table width="100%">
 <tr>
 <td>
@@ -226,22 +191,17 @@ Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx
 <b class="view">Movement <span>(Initial volume - volume remaining)</span></b>: $b_total_movement units
 </p>
 </td></tr></table>
+<p>Jump to: <a href="#sells">Sell Orders</a> | <a href="#buys">Buy Orders</a></p>
 
 
-#if $isigb
-
-#else
 <p class="adLink">
 <b><a href="http://www.shatteredcrystal.com/code.php/eve_online/~325">EVE Online Game Time Codes</a></b> - Support EVE-Central by purchasing them at ShatteredCrystal.com through this affiliate link.</p>
-
-#end if
 
 <a name="trans"></a>
 
 #if $mtransaction
 
 <h3>Latest Transactions (<a href="http://yannramin.com/2009/04/19/api-pulling-going-well-data-starting-to-be-incorporated-and-other-small-changes/">?</a>)</h3>
-<i>BETA!</i>
 <table width="95%">
 <tr><th>Location</th><th>Qty</th><th>Price</th><th>Transaction Time</th></tr>
 
@@ -259,13 +219,11 @@ Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx
 
 #end if
 
+<div id="sell_orders">
 <a name="sells"></a>
 <h3>Sell Orders</h3>
-
-
 $MarketList($sells, "#DDDDEE", "#444477")
-
-<hr />
+</div>
 
 <script type="text/javascript"><!--
 google_ad_client = "pub-8691225504311148";
@@ -286,10 +244,12 @@ google_color_url = "008000";
   src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
 
+<div id="buy_orders">
 <a name="buys"></a>
+
 <h3>Buy Orders</h3>
 
 $MarketList($buys, "#EEEEDD", "#666644")
 
-
+</div>
 #end def

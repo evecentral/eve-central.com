@@ -93,12 +93,25 @@ a {	 font-family: sans-serif;
 
 }
 
+
+.formBlock {
+    background-color: #ddd;
+    padding: 1ex;
+    margin-left: 2ex;
+
+}
+
 .RHS {
 	margin-right: 2.5mm;
 	float: right;
 	clear: right;
 }
 
+.LHS {
+	margin-left: 2.5mm;
+	float: left;
+	clear: left;
+}
 
 .treeView {
 	margin: 1ex 1ex 1ex 2.5ex; /* t r b l */
