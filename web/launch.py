@@ -72,8 +72,9 @@ if __name__=="__main__":
     d = cherrypy.dispatch.RoutesDispatcher()
     d.connect(name = 'corp', route = '/corp/:ticker/:page', controller = Corps(), action='view_page', page = 'index')
 
-    conf = {'/' : {           'tools.staticdir.dir' : ".",
-'tools.staticdir.on' : True }, '/corp' : {'request.dispatch' : d}}
+    conf = {'/' : { 'tools.staticdir.dir' : ".",
+                    'tools.staticdir.on' : True },
+            '/corp' : {'request.dispatch' : d} }
 
     cherrypy.tree.mount(root = Home(), config = conf)
 
