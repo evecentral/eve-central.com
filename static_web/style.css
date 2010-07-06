@@ -140,3 +140,17 @@ a {	 font-family: sans-serif;
 #system1ysearchcontainer { text-align:left;width:20em; } 
 #system2s { position:static;width:20em; }
 #system2ysearchcontainer { text-align:left;width:20em; } 
+
+table {
+    border: 0;
+    border-spacing: 0px;
+}
+
+td {
+    padding: 5px;
+
+}
+
+img {
+    border: 0px;
+}

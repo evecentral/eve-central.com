@@ -7,7 +7,7 @@ $typename - Market Browser - Quick Look At Item
 
 
 #def MarketList($list, $color, $igbcolor)
-<table border="1" cellpadding="5" width="95%">
+<table width="95%">
 
 <tr>
   <th
@@ -16,7 +16,7 @@ $typename - Market Browser - Quick Look At Item
 #if $sortorder == 'regionname':
 bgcolor="#DDDDDD"
 #end if
->Region <a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=1"><img src="/images/down.gif" border="0"></a> </th>
+>Region <a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=0"><img src="/images/up.gif"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=1"><img src="/images/down.gif"></a> </th>
 
 <th
 #if $sortorder == 'stationname':
@@ -25,7 +25,7 @@ bgcolor="#DDDDDD"
 
 
 
->System - Station <a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
+>System - Station <a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=0"><img src="/images/up.gif"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=1"><img src="/images/down.gif"></a>  </th>
 
 <th
 #if $sortorder == 'price':
@@ -33,7 +33,7 @@ bgcolor="#DDDDDD"
 #end if
 
 
- width="50">Price <a href="quicklook.html?typeid=$typeid&amp;setorder=price&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=price&amp;setdir=1"><img src="/images/down.gif" border="0"></a>  </th>
+ width="50">Price <a href="quicklook.html?typeid=$typeid&amp;setorder=price&amp;setdir=0"><img src="/images/up.gif"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=price&amp;setdir=1"><img src="/images/down.gif"></a>  </th>
 
 <th
 #if $sortorder == 'volremain':
@@ -41,7 +41,7 @@ bgcolor="#DDDDDD"
 #end if
 
 
->Qty<a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=0"><img src="/images/up.gif" border="0"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=1"><img src="/images/down.gif" border="0"></a> </th>
+>Qty<a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=0"><img src="/images/up.gif"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=1"><img src="/images/down.gif"></a> </th>
 
 <th
 
@@ -78,9 +78,9 @@ bgcolor="#DDDDDD"
 #end if
  <td>$order['regionname']</td>
  <td>
-<a href="quicklook.html?typeid=$typeid&amp;usesystem=$order['systemid']"><img src="/images/solarsystem.gif" border="0"></a> 
+<a href="quicklook.html?typeid=$typeid&amp;usesystem=$order['systemid']"><img src="/images/solarsystem.gif"></a> 
 $order['stationname'] ($order['security']) 
-<a href="mailto:atrus@stackworks.net?subject=EVEC%20Wrong%20Name&amp;body=Use%20this%20only%20for%20wrong%20station%20names%20NOT%20PRICES%20SystemID:%20$order['systemid']%20StationID:%20$order['stationid']%0dCorrect name is:%20"><font size="-4">?</font></a>
+<!-- <a href="mailto:atrus@stackworks.net?subject=EVEC%20Wrong%20Name&amp;body=Use%20this%20only%20for%20wrong%20station%20names%20NOT%20PRICES%20SystemID:%20$order['systemid']%20StationID:%20$order['stationid']%0dCorrect name is:%20"><font size="-4">?</font></a> -->
 #if $order['range'] > -2
 <br />
 <i>
@@ -164,7 +164,7 @@ $order['stationname'] ($order['security'])
 
 #end if
 
-<table border="0" width="100%">
+<table width="100%">
 <tr><td align="left">
 Item: <b>$typename</b> (size: $typesize m<sup>3</sup>),
 Looking at regions: 
@@ -178,7 +178,7 @@ Looking at regions:
 		#end if
 	#end for
 
-</td><td align="right"><img src="/images/type/${typeid}.png"></td></tr>
+</td></tr>
 </table>
 
 
@@ -194,7 +194,7 @@ Viewing data up to <input type="text" value="$hours" name="sethours" size="5" />
 </div>
 </form>
 
-<hr />
+
 <form method="get" action="typesearch.html">
 <div>
 Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx): <input type="text" name="search" /> <input type="submit" value="Search" />
@@ -203,7 +203,7 @@ Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx
 
 <p>Jump to: <a href="#sells">Sell Orders</a> | <a href="#buys">Buy Orders</a></p>
 <p>See a wrong station name? Click the "?" in an out of game browser to send an email giving the correct name!</p>
-<table border="0" width="100%">
+<table width="100%">
 <tr>
 <td>
 <h3>Quick Selling Statistics</h3>
@@ -242,7 +242,7 @@ Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx
 
 <h3>Latest Transactions (<a href="http://yannramin.com/2009/04/19/api-pulling-going-well-data-starting-to-be-incorporated-and-other-small-changes/">?</a>)</h3>
 <i>BETA!</i>
-<table width="95%" cellpadding="5" border="1">
+<table width="95%">
 <tr><th>Location</th><th>Qty</th><th>Price</th><th>Transaction Time</th></tr>
 
 

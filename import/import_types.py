@@ -47,8 +47,12 @@ for fields in csvread:
     group = int(fields[1])
     print name,volume,published,group,marketgroup,id
 
-    cur.execute("UPDATE types SET typename = %s, published = %s, groupid = %s, marketgroup = %s WHERE typeid = %s", [name, published, group, marketgroup, id])
-    db.commit()
+    try:
+        cur.execute("UPDATE types SET typename = %s, published = %s, groupid = %s, marketgroup = %s WHERE typeid = %s", [name, published, group, marketgroup, id])
+        db.commit()
+    except:
+        db.rollback()
+
 
 
     try:

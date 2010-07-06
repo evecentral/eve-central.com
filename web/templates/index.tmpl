@@ -21,7 +21,12 @@ Welcome to EVE-Central.com, your source for <a href="http://www.eve-online.com/"
 
 <form method="get" action="/home/typesearch.html">
 <div>
-Search for a type of item where the name contains (i.e., Afterburner, trit, mexal): <input type="text" name="search" /> <input type="submit" value="Search" />
+Search for <input type="text" name="search" placeholder="Item name" id="af_field" autofocus> <input type="submit" value="Search" />
+<script>
+    if (!("autofocus" in document.createElement("input"))) {
+      document.getElementById("ad_field").focus();
+    }
+  </script>
 <br />
 </div>
 </form>
