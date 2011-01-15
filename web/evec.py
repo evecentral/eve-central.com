@@ -28,12 +28,13 @@ from evecentral import display
 from evecentral import evec_func
 from evecentral import stats
 from evecentral import cache
+from evecentral import suggest
 
 from numpy import *
 
 import time
 
-from evecentral.evec_func import EVCstate, SorterDict, format_long, format_price, emit_redirect
+from evecentral.evec_func import EVCstate, SorterDict, format_long, format_price, emit_redirect, get_region_id
 
 from usermanager import Users
 from corps import Corps
@@ -943,6 +944,32 @@ class Home:
         return t.respond()
 
     develop_html = develop
+
+    @cherrypy.expose
+    def upload_suggest(self):
+        session = EVCstate()
+        igb = True
+        regionname = ''
+
+        db = evec_func.db_con()
+        try: 
+            regionname = cherrypy.request.headers['Eve-Regionname']
+        except:
+            igb = False
+        
+        t = display.template('upload_suggest.tmpl', session)
+
+        if igb:
+            region = int(get_region_id(db, regionname))
+            sug = suggest.upload_suggest(db, region, "both")
+            t.suggest = sug
+
+        t.igb = igb
+
+        db.close()
+        return t.respond()
+        
+    upload_suggest_html = upload_suggest
 
     @cherrypy.expose
     def reports(self):

@@ -210,6 +210,12 @@ def get_region_name(db, regionid):
     row = cur.fetchone()
     return row[0]
 
+def get_region_id(db, regionname):
+    cur = db.cursor()
+    cur.execute("SELECT regionid FROM regions WHERE regionname = %s", [regionname])
+    row = cur.fetchone()
+    return row[0]
+    
 def get_type_name(db, typeid):
     cur = db.cursor()
     cur.execute("SELECT typename FROM types WHERE typeid = %s", [typeid])
