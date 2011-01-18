@@ -1,0 +1,42 @@
+<html>
+<head>
+<script type="text/javascript">
+var items = [32, 33, 34, 35, 36]; // select typeID from invTypes where marketGroupID is not null
+var index = 0;
+
+function showMarketDetails() {
+  if (isCompleted()) { 
+    pause();
+  } else {
+    CCPEVE.showMarketDetails(items[index++]);
+  }
+}
+
+function isCompleted() {
+  return index >= items.length;
+}
+
+function start() {
+  setInterval ( "showMarketDetails()", 3000 );
+}
+
+function pause() {
+  clearInterval();
+}
+
+function reset() {
+  pause();
+  index = 0;
+} 
+</script>
+</head>
+<body onload="CCPEVE.requestTrust('eve-central.com')"><!--note: once trust is granted, page needs to be reloaded-->
+
+<button type="button" onclick="start()">start</button>
+
+<button type="button" onclick="pause()">pause</button>
+
+<button type="button" onclick="reset()">reset</button>
+
+</body>
+</html>

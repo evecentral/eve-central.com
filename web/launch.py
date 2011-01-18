@@ -40,22 +40,11 @@ import os
 if __name__=="__main__":
     cherrypy.config.update("site.config")
 
+    if os.path.isfile('site.config.local'):
+        cherrypy.config.update("site.config.local")
+
     if not os.path.exists('/tmp/cherry_session'):
         os.mkdir('/tmp/cherry_session')
-
-    mode = 'production'
-
-    try:
-        mode = sys.argv[2]
-    except:
-        pass
-
-
-    if mode == 'devel':
-        cherrypy.config.update({'engine.autoreload_on' : True})
-
-    cherrypy.config.update({'server.socket_port': int(sys.argv[1])})
-
 
     cherrypy.tree.mount(Home(), '/home')
     cherrypy.tree.mount(Api(), '/api', {'/' : { 'tools.sessions.on' : False } })
