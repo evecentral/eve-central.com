@@ -4,7 +4,7 @@
 #import matplotlib.text
 #import matplotlib.dates
 
-import psycopg
+import psycopg2
 import sys
 from mx.DateTime import *
 import datetime
@@ -15,7 +15,7 @@ sys.path.append('../lib/')
 from evecentral import display
 
 #import evec_func
-db = psycopg.connect(database='evec', user='evec', host = 'localhost', port = '9999', serialize = 0)
+db = psycopg2.connect(database='evec', user='evec', host = 'localhost', port = '9999')
 
 
 
@@ -104,4 +104,4 @@ f.close()
 
 cur = db.cursor()
 cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '1 month'")
-cur.commit()
+db.commit()

@@ -36,7 +36,7 @@ class BackgroundStatThread(threading.Thread):
         all_stat = stats.item_stat(db, typeid, regionlimit = [regionid], nocache = True, minQ = minq, buysell = False)
         cur = db.cursor()
         # Buyup not yet available in stats
-        print "DEBUG stat: ",typeid,regionid,all_stat
+        #print "DEBUG stat: ",typeid,regionid,all_stat
         cur.execute("INSERT INTO trends_type_region (typeid, region, average, median, volume, stddev, buyup, timeat) VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())",
                     (typeid, regionid, float(all_stat['avg_price']), float(all_stat['median']), float(all_stat['total_vol']), float(all_stat['stddev']), float(0)))
         db.commit()
