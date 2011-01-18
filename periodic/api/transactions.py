@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../../lib/')
 
-import psycopg
+import psycopg2
 from mx.DateTime import *
 import datetime
 
@@ -23,7 +23,7 @@ def update_last_transid(userid, char_lasttrans, corp_lasttrans):
     
     cur.execute("DELETE FROM api_market_transid WHERE userid = %d", [int(userid)])
     cur.execute("INSERT INTO api_market_transid (userid, char_lasttrans, corp_lasttrans) VALUES (%s, %s, %s)", [userid, char_lasttrans, corp_lasttrans])
-    cur.commit()
+    db.commit()
 
 def fetch_and_validate(u, mode = 'char'):
     apir = ApiRequestor(u, '/' + mode + '/WalletTransactions.xml.aspx')
@@ -109,7 +109,7 @@ def process_xdom(results, hightrans, userid, accountkey):
         vals = [userid, accountkey, txtime, txid, qty, typeName, typeId, price, clientId, clientName, charid, charname, stationId, stationName, txtype, iscorp] 
         
         cur.execute("INSERT INTO wallet_market_transactions (userid, accountkey, transtime, transactionid, quantity, typename, typeid, price, clientid, clientname, characterid, charactername, stationid, stationname, transactiontype, corp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", vals)
-        cur.commit()
+        db.commit()
     return lasttrans
 
 def username_fetch(username):
@@ -174,7 +174,7 @@ def main():
     logger.debug("-------------------------")
     logger.debug("Beginning run")
     
-    db = psycopg.connect(database='evec', user='evec', host = 'localhost', port = '9999', serialize = 0)
+    db = psycopg2.connect(database='evec', user='evec', host = 'localhost', port = '9999')
 
     cur = db.cursor()
     cur.execute("SELECT username FROM users WHERE full_apikey IS NOT NULL OR full_apikey != ''")
@@ -189,7 +189,7 @@ def main():
     cur = db.cursor()
     cur.execute("insert into archive_transactions select * from wallet_market_transactions where transtime < NOW() - interval '7 days'");
     cur.execute("delete from wallet_market_transactions where transtime < NOW() - interval '7 days'");
-    cur.commit()
+    db.commit()
     logger.debug("DONE!")
 
 if __name__ == "__main__":

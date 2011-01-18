@@ -80,7 +80,7 @@ bgcolor="#DDDDDD"
  <td>
 <a href="quicklook.html?typeid=$typeid&amp;usesystem=$order['systemid']"><img src="/images/solarsystem.gif"></a> 
 $order['stationname'] ($order['security']) 
-<!-- <a href="mailto:atrus@stackworks.net?subject=EVEC%20Wrong%20Name&amp;body=Use%20this%20only%20for%20wrong%20station%20names%20NOT%20PRICES%20SystemID:%20$order['systemid']%20StationID:%20$order['stationid']%0dCorrect name is:%20"><font size="-4">?</font></a> -->
+
 #if $order['range'] > -2
 <br />
 <i>
@@ -134,13 +134,13 @@ $order['stationname'] ($order['security'])
 </b>: 
 </i>
 #for $sug in $upload_sug
- $sug,
+ <a href="#" onclick="CCPEVE.showMarketDetails($sug[1])">$sug[0]</a>,
 #end for
 </p>
 #end if
 
 <div>
-Item: <b>$typename</b> (size: $typesize m<sup>3</sup>),
+Item: <a href="#" onclick="CCPEVE.showMarketDetails($typeid)"><b>$typename</b></a> (size: $typesize m<sup>3</sup>),
 Looking at regions: 
 #if $len($regionlimit) < 1
 <i>All regions</i>

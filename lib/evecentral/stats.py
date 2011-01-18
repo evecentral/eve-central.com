@@ -16,7 +16,6 @@
 
 
 from numpy import *
-import cmemcache as memcache
 import hashlib
 
 from evecentral import evec_func
