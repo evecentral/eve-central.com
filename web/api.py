@@ -16,7 +16,7 @@
 
 
 
-import md5
+from hashlib import md5
 import string
 import os
 import Cheetah.Template

@@ -15,7 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import md5
+from hashlib import md5
 import string
 import os
 import Cheetah.Template
