@@ -227,10 +227,9 @@ class Home:
         if len(regionlimit) == 0:
             pass
         elif random.randint(1,50) > 10:
-
             random.shuffle(regionlimit)
             randomregion = regionlimit[0]
-            up_sug = upload_suggest(db, randomregion)
+            up_sug = upload_suggest(db, randomregion, rettype = "both")
 
 
         order = 'price'
@@ -438,7 +437,7 @@ class Home:
     def tradefind_display(self, qtype, fromt, to, set = None, age = 24, cashonhand = 10000000.00, minprofit = 100000, size = 10000, startat = 0, limit = 10, newsearch = "0", sort = "jprofit", prefer_sec = "0"):
 
 
-        mapserver = Pyro.core.getProxyForURI("PYROLOC://localhost:7766/mapserver")
+        mapserver = Pyro.core.PyroURI("PYROLOC://localhost:7766/mapserver").getProxy()
 
 
         session = EVCstate()
