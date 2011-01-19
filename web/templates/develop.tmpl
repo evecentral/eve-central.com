@@ -69,10 +69,12 @@ $paramtable( [ [ 'hours', 'Statistics from the last X specified hours.', False, 
 ['typeid', 'The type ID of the item you are requesting. I.e., 34 for Tritanium. Can be specified more than once', True, True],
 ['minQ', 'The minimum quantity in an order to consider it for the statistics', False, False],
 ['regionlimit', 'Restrict statistics to a region. Can be specified more than once.', False, True]
+['usesystem', 'Restrict statistics to a system.', False, False]
 
  ] )
 <p>
-<b>Example:</b> <a href="http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002</a>
+<b>Examples:</b> <a href="http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002</a><br/>
+<a href="http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142">http://api.eve-central.com/api/marketstat?typeid=34&amp;usesystem=30000142</a>
 </p>
 
 <h3>quicklook</h3>
@@ -115,13 +117,6 @@ $paramtable( [[ 'region', 'The region in which to suggest an upload', True, Fals
 </p>
 
 <p>If you have any questions or wish for more APIs, send me an e-mail. </p>
-
-<h2>Deprecated XML Datafeeds</h2>
-
-<p>We've done some internal URL and system cleanup. These APIs will still work, and many packages support them, but should be considered deprecated. <b>Don't use these for new designs.</b></p>
-<a href="develop_old.html">See the documentation.</a>
-
-
 
 <a id="smtp"></a>
 <h2>Mail-Push Instant Market Log Service</h2>
