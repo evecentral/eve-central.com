@@ -10,6 +10,7 @@ from mx.DateTime import *
 import datetime
 import pickle
 from numpy import *
+import csv
 sys.path.append('../lib/')
 
 from evecentral import display
@@ -42,20 +43,24 @@ def write_dump(file,date):
     global db
     of = open(file, 'w')
     cur = db.cursor()
+
+    # write CSV header
     cur.execute("SELECT orderid,regionid,systemid,stationid,typeid,bid,price,minvolume,volremain,volenter,issued,duration,range,reportedby,reportedtime FROM archive_market WHERE (reportedtime) > %s and (reportedtime) <= %s ", [date+" 00:00:00", date+" 23:59:59"])
     a = cur.fetchone()
-    print >> of, "orderid, regionid, systemid, stationid, typeid, bid, price, minvolume, volremain, volenter, issued, duration, range, reportedby, reportedtime"
+
+    # define format and write data
+    writer = csv.writer(of, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+    writer.writerow(["orderid", "regionid", "systemid", "stationid", "typeid", "bid", "price", "minvolume", "volremain", "volenter", "issued," "duration", "range", "reportedby", "reportedtime"])
+
     record = 0
+
     while a:
 	record += 1
-	for x in a:
-	    print >> of, x, ",",
+        writer.writerow(a)
 	a = cur.fetchone()
 	if record % 1000 == 0:
 	    print record,
-	print >> of
     print
-
 
 
 def do_date(data):
