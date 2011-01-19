@@ -68,10 +68,10 @@ Developer Integration
 $paramtable( [ [ 'hours', 'Statistics from the last X specified hours.', False, False],
 ['typeid', 'The type ID of the item you are requesting. I.e., 34 for Tritanium. Can be specified more than once', True, True],
 ['minQ', 'The minimum quantity in an order to consider it for the statistics', False, False],
-['regionlimit', 'Restrict statistics to a region. Can be specified more than once.', False, True]
+['regionlimit', 'Restrict statistics to a region. Can be specified more than once.', False, True],
 ['usesystem', 'Restrict statistics to a system.', False, False]
+ ])
 
- ] )
 <p>
 <b>Examples:</b> <a href="http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002</a><br/>
 <a href="http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142">http://api.eve-central.com/api/marketstat?typeid=34&amp;usesystem=30000142</a>
