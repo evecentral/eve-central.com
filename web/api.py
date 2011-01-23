@@ -157,12 +157,12 @@ class Api:
             if useMinQ == 0 and typeid in stats.MINQ_TYPES:
                 useMinQ = stats.MINQ_VOL
 
-            prices = stats.item_stat(db, typeid, hours, sql_system, buysell = False, regionlimit = regionlimit, minQ = useMinQ)
+            prices = stats.item_stat(db, typeid, hours, sql_system, regionlimit = regionlimit, buysell = False, minQ = useMinQ)
             newprices = {}
             # Reformat prices as 2 digit float strings
             for key in prices.keys():
                 newprices[key] = "%0.2f" % prices[key]
-            (sell,buy) = stats.item_stat(db, typeid, hours, sql_system, regionlimit = regionlimit, minQ = useMinQ)
+            (sell,buy) = stats.item_stat(db, typeid, hours, sql_system, regionlimit = regionlimit, buysell = True, minQ = useMinQ)
             newsell = {}
             newbuy = {}
             for key in sell.keys():
@@ -171,7 +171,7 @@ class Api:
                 newbuy[key] = "%0.2f" % buy[key]
 
             statslist.append(StatHolder(typeid, newprices, newbuy, newsell))
-
+        
         t = display.template('marketstat_xml.tmpl', None)
         t.types = statslist
 

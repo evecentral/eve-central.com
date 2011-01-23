@@ -43,7 +43,7 @@ def sum_volumes(volenter, volremain):
     return (enter,remain,move)
 
 
-def calculate_stats(list, weight = None):
+def calculate_stats(list, weight = None, sell = False):
     if len(list) == 0:
         return (0,0,0,0,0,0)
 
@@ -63,9 +63,34 @@ def calculate_stats(list, weight = None):
     va = var(sarray)
     maxv = sarray.max()
     minv = sarray.min()
+    percentile = 0
+    
+    if weight is not None:
+        orders = zip(sarray,warray)
+        if sell == True:
+            orders.sort()
+        else:
+            orders.sort(reverse=True)
+        
+        totalVolume = warray.sum()
+        percentileVolume = 0
+        weightedPrice = 0
+        weightedPriceTotal = 0
+        percentilePrices = []
+        percentileVolumes = []
+        
+        for (price, vol_remain) in orders:
+            if percentileVolume < totalVolume/10:
+                percentileVolume = percentileVolume + vol_remain
+                percentilePrices.append(price)
+                percentileVolumes.append(vol_remain)
+            
+        try:
+            percentile = average(percentilePrices, weights = percentileVolumes)
+        except:
+            percentile = 0
 
-
-    return (med,avg,st,va, maxv, minv)
+    return (med,avg,st,va,maxv,minv,percentile)
 
 
 def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysell = True, minQ = 0, nocache = False):
@@ -99,10 +124,12 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
     r = stat.fetchone()
     while r:
         if r[1] == 1:
+            # buy order
             median_price_buy.append(r[0])
             volenter_buy.append(r[3])
             volremain_buy.append(r[2])
         else:
+            # sell order
             median_price_sell.append(r[0])
             volenter_sell.append(r[3])
             volremain_sell.append(r[2])
@@ -111,8 +138,8 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
 
     if buysell:
 
-        res_s = calculate_stats(median_price_sell, volenter_sell)
-        res_b = calculate_stats(median_price_buy, volenter_buy)
+        res_s = calculate_stats(median_price_sell, volremain_sell, True)
+        res_b = calculate_stats(median_price_buy, volremain_buy)
         vol_s = sum_volumes(volenter_sell, volremain_sell)
         vol_b = sum_volumes(volenter_buy, volremain_buy)
 
@@ -124,6 +151,7 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
             emap['stddev'] = r[2]
             emap['max'] = r[4]
             emap['min'] = r[5]
+            emap['percentile'] = r[6]
 
         cache.set(obj_name, (sell, buy), CACHE_TIME)
         return (sell,buy)
@@ -143,6 +171,7 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
         sell['stddev'] = r[2]
         sell['max'] = r[4]
         sell['min'] = r[5]
+        sell['percentile'] = 0
     except:
         sell['avg_price'] = 0
         sell['total_vol'] = 0
@@ -150,6 +179,8 @@ def item_stat(db, typeid, hours = 48, sql_system = " ", regionlimit = [], buysel
         sell['stddev'] = 0
         sell['max'] = 0
         sell['min'] = 0
+        sell['percentile'] = 0
 
         cache.set(obj_name, sell, CACHE_TIME)
+
     return sell
