@@ -110,7 +110,7 @@ class EVCstate:
 
 
 def db_con():
-    svndb = psycopg2.connect(database='evec', user='evec', host = 'localhost', port = '5432')
+    svndb = psycopg2.connect(database='evec', user='evec', host = 'localhost', port = '9999')
     return svndb
 
 
