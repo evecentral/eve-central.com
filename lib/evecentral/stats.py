@@ -74,8 +74,6 @@ def calculate_stats(list, weight = None, sell = False):
         
         totalVolume = warray.sum()
         percentileVolume = 0
-        weightedPrice = 0
-        weightedPriceTotal = 0
         percentilePrices = []
         percentileVolumes = []
         
