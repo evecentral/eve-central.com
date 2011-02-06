@@ -837,7 +837,7 @@ ALTER TABLE ONLY corppages
     ADD CONSTRAINT corppages_corp FOREIGN KEY (corpid) REFERENCES corps(corpid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
-create table trends_type_region (typeid int, region bigint, avgerage float, median float, volume float, stddev float, buyup float, timeat timestamp);
+create table trends_type_region (typeid int, region bigint, average float, median float, volume float, stddev float, buyup float, timeat timestamp);
 
 create index trends_type_region_type_region on trends_type_region(typeid, region);
 

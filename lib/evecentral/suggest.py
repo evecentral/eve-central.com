@@ -20,9 +20,10 @@ import random
 def upload_suggest(db, region, rettype = "names"):
 
     cur = db.cursor()
-    cur.execute("SELECT DISTINCT ON(types.typename) types.typename,types.typeid FROM types, current_market WHERE types.typeid = current_market.typeid AND current_market.regionid = %s AND current_market.reportedtime < (NOW() - interval '2 days') AND current_market.reportedtime > (NOW() - interval '12 days') GROUP BY types.typename,types.typeid,current_market.reportedtime LIMIT 200 OFFSET 0", [region])
+    cur.execute("SELECT types.typename,types.typeid FROM types WHERE types.published = 1 AND types.marketgroup > 0 AND types.typeid NOT IN (SELECT DISTINCT current_market.typeid FROM current_market WHERE current_market.reportedtime > (NOW() - interval '1 days') AND current_market.regionid = %s  ) ORDER BY RANDOM() LIMIT 20", [region])
     l = []
-
+    
+    
     r = cur.fetchone()
     while r:
         if rettype == "names":
@@ -34,6 +35,5 @@ def upload_suggest(db, region, rettype = "names"):
             l.append(tup)
 
         r = cur.fetchone()
-    random.shuffle(l)
 
-    return l[0:20]
+    return l
