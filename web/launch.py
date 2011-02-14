@@ -46,6 +46,8 @@ if __name__=="__main__":
     if not os.path.exists('/tmp/cherry_session'):
         os.mkdir('/tmp/cherry_session')
 
+    cherrypy.config.update({'server.socket_port': int(sys.argv[1])})
+
     cherrypy.tree.mount(Home(), '/home')
     cherrypy.tree.mount(Api(), '/api', {'/' : { 'tools.sessions.on' : False } })
 
