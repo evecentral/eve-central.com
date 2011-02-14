@@ -45,7 +45,7 @@ def sum_volumes(volenter, volremain):
 
 def calculate_stats(list, weight = None, sell = False):
     if len(list) == 0:
-        return (0,0,0,0,0,0)
+        return (0,0,0,0,0,0,0)
 
 
     sarray = array(list, dtype=float)
