@@ -50,7 +50,7 @@ def write_dump(file,date):
 
     # define format and write data
     writer = csv.writer(of, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
-    writer.writerow(["orderid", "regionid", "systemid", "stationid", "typeid", "bid", "price", "minvolume", "volremain", "volenter", "issued," "duration", "range", "reportedby", "reportedtime"])
+    writer.writerow(["orderid", "regionid", "systemid", "stationid", "typeid", "bid", "price", "minvolume", "volremain", "volenter", "issued", "duration", "range", "reportedby", "reportedtime"])
 
     record = 0
 
