@@ -435,7 +435,7 @@ class Home:
     quicklook_html = quicklook
 
     @cherrypy.expose
-    def tradefind_display(self, qtype, fromt, to, set = None, age = 24, cashonhand = 10000000.00, minprofit = 100000, size = 10000, startat = 0, limit = 10, newsearch = "0", sort = "jprofit", prefer_sec = "0"):
+    def tradefind_display(self, qtype, fromt, to, set = None, age = 24, cashonhand = 10000000.00, minprofit = 100000, size = 10000, startat = 0, limit = 50, newsearch = "0", sort = "jprofit", prefer_sec = "0"):
 
 
         mapserver = Pyro.core.PyroURI("PYROLOC://localhost:7766/mapserver").getProxy()
@@ -516,6 +516,7 @@ class Home:
             WHERE
             """ + sql_sec_limit + """
             ts.systemid = tsys.systemid AND fs.systemid = fsys.systemid AND
+            f.minvolume <= 1 AND t.minvolume <= 1 AND
             f.bid = 0 AND t.bid = 1 AND f.systemid = %(fromt)s AND t.systemid = %(to)s AND t.typeid = f.typeid AND t.stationid = ts.stationid AND
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
@@ -548,6 +549,7 @@ class Home:
             WHERE
             """ + sql_sec_limit + """
             ts.systemid = tsys.systemid AND fs.systemid = fsys.systemid AND
+            f.minvolume <= 1 AND t.minvolume <= 1 AND
             f.bid = 0 AND t.bid = 1 AND f.regionid = %(fromt)s AND t.regionid = %(to)s AND t.typeid = f.typeid AND t.stationid = ts.stationid AND
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
@@ -579,6 +581,7 @@ class Home:
             WHERE
             """ + sql_sec_limit + """
             ts.systemid = tsys.systemid AND fs.systemid = fsys.systemid AND
+            f.minvolume <= 1 AND t.minvolume <= 1 AND
             f.bid = 0 AND t.bid = 1 AND f.systemid = %(fromt)s AND t.regionid = %(to)s AND t.typeid = f.typeid AND t.stationid = ts.stationid AND
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
@@ -610,6 +613,7 @@ class Home:
             WHERE
             """ + sql_sec_limit + """
             ts.systemid = tsys.systemid AND fs.systemid = fsys.systemid AND
+            f.minvolume <= 1 AND t.minvolume <= 1 AND
             f.bid = 0 AND t.bid = 1 AND t.typeid = f.typeid AND t.stationid = ts.stationid AND
             f.stationid = fs.stationid AND
             age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
