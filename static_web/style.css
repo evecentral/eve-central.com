@@ -23,6 +23,19 @@ h1, h2, h3 {
 	text-align: right;
 }
 
+.standout {
+    padding: 10px;
+    font-size: 14px;
+    background-color: red;
+    color: #fff;
+}
+.standout, .standout a, .standout a:visited {
+    font-size: 14px;
+    background-color: red;
+    color: #fff;
+}
+
+
 h1 {
 	padding-left: 5px;
 	font-weight: bold;
@@ -70,11 +83,6 @@ a {	 font-family: sans-serif;
 	margin: 0px;
 }
 
-#linkBar a {
-	font-size: 9pt;
-	color: #000000;
-	text-decoration: underline;
-}
 
 #bodyTextFlat {
 	margin: 10mm 1em 0 1em;
