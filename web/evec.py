@@ -351,7 +351,7 @@ class Home:
         buys = []
         sells = []
 
-        cache_key = cache.generic_key("evec_quicklook", typeid, regionlimit, usesystem, order, orderdir, borderdir, limit, minQ)
+        cache_key = cache.generic_key("evec_quicklook", typeid, regionlimit, usesystem, order, orderdir, borderdir, limit, minQ, hours)
         cache_result = cache.get(cache_key)
 
 
