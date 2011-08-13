@@ -1,7 +1,7 @@
-import psycopg
+import psycopg2
 import csv
 
-db = psycopg.connect(database = 'evec', user = 'evec')
+db = psycopg2.connect(database = 'evec', user = 'evec')
 cur = db.cursor()
 
 stat = open("types.txt")
@@ -40,7 +40,7 @@ for fields in csvread:
         pass
     marketgroup = fields[13]
     # Skip non-market items
-    if marketgroup == "null" or marketgroup == "":
+    if marketgroup == "null" or marketgroup == "" or marketgroup == "0.0":
         continue
     marketgroup = int(marketgroup)
 
@@ -57,7 +57,7 @@ for fields in csvread:
 
     try:
         cur.execute("INSERT INTO types (typeid, typename, size, published, groupid, marketgroup) VALUES (%s,%s,%s, %s, %s, %s)", [id, name, volume, published, group, marketgroup])
-        print "Added new type ",id
+        print "Added new type ",id,name
         db.commit()
     except:
         db.rollback()
