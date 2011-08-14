@@ -55,7 +55,9 @@ def calculate_stats(list, weight = None, sell = False):
     else:
         warray = array(weight, dtype=float)
 
-    med = median(sarray)
+    med = 0.0
+    if weight is None:
+        med = median(sarray)
 
     avg = average(sarray, weights = warray)
 
@@ -65,6 +67,7 @@ def calculate_stats(list, weight = None, sell = False):
     minv = sarray.min()
     percentile = 0
     
+    # Calculate the median using weights
     if weight is not None:
         orders = zip(sarray,warray)
         if sell == True:
@@ -76,12 +79,16 @@ def calculate_stats(list, weight = None, sell = False):
         percentileVolume = 0
         percentilePrices = []
         percentileVolumes = []
-        
+
         for (price, vol_remain) in orders:
+            if percentileVolume >= totalVolume / 2.0 and med == 0.0:
+                med = price
+
             if percentileVolume < totalVolume/10:
-                percentileVolume = percentileVolume + vol_remain
                 percentilePrices.append(price)
                 percentileVolumes.append(vol_remain)
+
+            percentileVolume += vol_remain
             
         try:
             percentile = average(percentilePrices, weights = percentileVolumes)
