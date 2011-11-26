@@ -41,7 +41,7 @@ def main():
     datae = "To: evec-upload@lists.stackworks.net\nPrecedence: bulk\nX-EVEC-UserIdHash: 0" + "\nSubject: Upload\n\n" + message
     smtpres = smtpsess.sendmail('uploader@stackworks.net', 'evec-upload@lists.stackworks.net', datae)
     return cont
-    #print datae
+
     
 
 

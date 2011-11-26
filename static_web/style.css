@@ -2,25 +2,25 @@
 .view {position: relative;}
 
 .view span {
-	display: none;
+    display: none;
 }
 .view:hover span {
-	position: absolute;
-	top: 5px;
-	left: 30px;
-	display: block;
-	background: #fdd;
-	border: 1px solid red;
+    position: absolute;
+    top: 5px;
+    left: 30px;
+    display: block;
+    background: #fdd;
+    border: 1px solid red;
 }
 
 
 h1, h2, h3 {
-	font-family: sans-serif; 
+    font-family: Myriad Pro, sans-serif; 
 }
 
 
 .alignRight {
-	text-align: right;
+    text-align: right;
 }
 
 .standout {
@@ -37,61 +37,62 @@ h1, h2, h3 {
 
 
 h1 {
-	padding-left: 5px;
-	font-weight: bold;
-	font-size: 150%;
-	border-bottom: 1px solid;
-	padding-bottom: 0.5ex;
+    padding-left: 5px;
+    font-weight: bold;
+    font-size: 150%;
+    border-bottom: 1px solid;
+    padding-bottom: 0.5ex;
 }
 
-body {	font-family: sans-serif;
-	margin: 0px;
-
-
+body {	
+    font-family: "EVE Neue", sans-serif;
+    margin: 0px;
+    background: #fff;
 }
 
-a {	 font-family: sans-serif;
-	color: #7777ee;
+a {	 
+    font-family: sans-serif;
+    color: #001122;
 }
 
 #bodyText {
-	line-height: 1.5em;
-	margin: 10mm 1.5em 0 1em;
-	padding: 0 1em 1ex 1em;
+    line-height: 1.5em;
+    margin: 10mm 1.5em 0 1em;
+    padding: 0 1em 1ex 1em;
 }
 
 #footer {
-    background-color: #dddddd;
-	padding: 10px;
-	margin-top: 20px;
-	border-top: 4px solid #333333;
-	border-bottom: 4px solid #333333;
+    background-color: #ddd;
+    padding: 10px;
+    margin-top: 20px;
+    border-top: 4px solid #333333;
+    border-bottom: 4px solid #333333;
 }
 
 #linkBar {
-	font-size: 9pt;
+    font-size: 9pt;
 }
 
 #header {
-	white-space: nowrap;
-	background: url(/newlook/spacer.png);
+    white-space: nowrap;
+    background: url(/newlook/spacer.png);
 }
 
 #header img {
-	border: 0px;
-	padding: 0px;
-	margin: 0px;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
 }
 
 
 #bodyTextFlat {
-	margin: 10mm 1em 0 1em;
+    margin: 10mm 1em 0 1em;
 }
 
 #bodyText p {
-	padding-bottom: 1ex;
-	margin: 2ex 0 2ex 0;
-	margin-left: 2ex;
+    padding-bottom: 1ex;
+    margin: 2ex 0 2ex 0;
+    margin-left: 2ex;
 }
 
 #bodyText form {
@@ -110,48 +111,48 @@ a {	 font-family: sans-serif;
 }
 
 .RHS {
-	margin-right: 2.5mm;
-	float: right;
-	clear: right;
+    margin-right: 2.5mm;
+    float: right;
+    clear: right;
 }
 
 .LHS {
-	margin-left: 2.5mm;
-	float: left;
-	clear: left;
+    margin-left: 2.5mm;
+    float: left;
+    clear: left;
 }
 
 .treeView {
-	margin: 1ex 1ex 1ex 2.5ex; /* t r b l */
-	border-left: 1px solid;
-	padding-left: 0.5ex;
+    margin: 1ex 1ex 1ex 2.5ex; /* t r b l */
+    border-left: 1px solid;
+    padding-left: 0.5ex;
 }
 
 .treeheader {
-	background-color: #f0f0ff;
-	font-family: sans-serif;
+    background-color: #f0f0ff;
+    font-family: sans-serif;
 }
 
 .adLink {
-	background-color: #FFFF66;
+    background-color: #FFFF66;
 }
 
 
 .colorAlt {
-	background-color: #DDDDEE;
+    background-color: #DDDDEE;
 }
 
 .tradeTool {
-           width: 90%;
-           background-color: #ccff99;
-           padding: 23px;
-	   margin-bottom: 10px;
+    width: 90%;
+    background-color: #ccff99;
+    padding: 23px;
+    margin-bottom: 10px;
 }
 .userPanel {
-           width: 90%;
-           background-color: #ccff99;
-           padding: 10px;
-           padding-bottom: 20px;
+    width: 90%;
+    background-color: #ccff99;
+    padding: 10px;
+    padding-bottom: 20px;
 }
 
 #systemSearch {

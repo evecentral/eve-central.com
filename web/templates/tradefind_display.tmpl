@@ -79,17 +79,34 @@ checked="1"
 #end if
 
 <hr />
+<table border=0 width=90%>
 #for $trade in $trades
-<p>
-<b>From:</b> $trade['fromstation'] <b>To:</b> $trade['tostation'] <b>Jumps:</b> $trade['distance']<br />
-<b>Type:</b> <a href="quicklook.html?typeid=$trade['typeid']">$trade['typename']</a> <b>Selling:</b> $trade['fprice'] ISK, <b>Buying:</b> $trade['tprice'] ISK <br />
 
-<b>Per-unit profit:</b> $trade['pricediff'] ISK, <b>Units tradeable:</b> $trade['tradeable'] ($trade['fvol'] -&gt; $trade['tvol']), <b><i>Potential profit</i></b>: $trade['profit'] ISK <b><i>Profit per trip:</i></b>: $trade['profit_size'] ISK <b><i>Profit per jump</i></b>: $trade['profit_jumps']
-</p>
+<tr>
+  <td><b>From:</b> $trade['fromstation']</td>
+  <td><b>To:</b> $trade['tostation'] </td>
+  <td><b>Jumps:</b> $trade['distance']</td>
+</tr>
+<tr>
+  <td><b>Type:</b> <a href="quicklook.html?typeid=$trade['typeid']">$trade['typename']</a></td>
+  <td><b>Selling:</b> $trade['fprice'] ISK</td>
+  <td><b>Buying:</b> $trade['tprice'] ISK</td>
+</tr>
 
+<tr>
+  <td><b>Per-unit profit:</b> $trade['pricediff'] ISK</td>
+  <td><b>Units tradeable:</b> $trade['tradeable'] ($trade['fvol'] -&gt; $trade['tvol'])</td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td><b><i>Potential profit</i></b>: $trade['profit'] ISK </td>
+  <td><b><i>Profit per trip:</i></b>: $trade['profit_size'] ISK</td>
+  <td><b><i>Profit per jump</i></b>: $trade['profit_jumps']</td>
+</tr>
+<tr><td>&nbsp;</td></tr>
 
 #end for
-
+</table>
 <hr />
 <p>Page $page.
 #if $page != 1
