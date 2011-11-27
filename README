@@ -37,17 +37,23 @@ amount of work to correctly filter out any embarassing parts.
 Best of luck,
 Yann Ramin <atrus@stackworks.net>
 
+Code is available on GitHub:
+https://github.com/theatrus/eve-central.com
+
+Discussion is available on the Google Group:
+http://groups.google.com/eve-central
+
+Development wiki:
+http://dev.eve-central.com/
 
 * Requirements *
 
-- Python 2.5+ (3.0 not supported)
+- Python 2.7 (3.x not supported)
   - psycopg2
-  - psycopg (for some old bath utilities)
   - Pyro (for the pathfinder server
   - numpy (for statistic calculations)
-  - CherryPy (primary web server)
-- PostgreSQL 8.3+
-
+  - CherryPy 3.2 (primary web server)
+- PostgreSQL 9.0+
 
 * High level view of directories *
 
@@ -68,7 +74,6 @@ static_web/
         server)
 
 pathfinder_src/
-        - C++ implementation of a shortest path server, has partial
-        local copy of boost in pathfinder_src/boost
+        - C++ implementation of a shortest path server
 
 
