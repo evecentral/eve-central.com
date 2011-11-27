@@ -1,5 +1,5 @@
 #    EVE-Central.com Codebase
-#    Copyright (C) 2006-2009 StackFoundry LLC and Yann Ramin
+#    Copyright (C) 2006-2012 StackFoundry LLC and Yann Ramin
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published by

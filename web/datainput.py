@@ -10,7 +10,6 @@ import cherrypy
 
 from evecentral import display
 from evecentral import evec_func
-from evecentral.userlib import User
 from evecentral import cache
 from evecentral import stats
 
