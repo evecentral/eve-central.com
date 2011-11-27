@@ -24,10 +24,6 @@ sys.path.append('../lib')
 
 import cherrypy
 
-
-
-from usermanager import Users
-from corps import Corps
 from datainput import DataInput
 from tradetool import TradeTool
 from evec import Home
@@ -51,21 +47,15 @@ if __name__=="__main__":
     cherrypy.tree.mount(Home(), '/home')
     cherrypy.tree.mount(Api(), '/api', {'/' : { 'tools.sessions.on' : False } })
 
-    cherrypy.tree.mount(Users(), '/users')
-    cherrypy.tree.mount(Corps(), '/corps')
     cherrypy.tree.mount(DataInput(), '/datainput.py', {'/' : { 'tools.sessions.on' : False }})
     cherrypy.tree.mount(TradeTool(), '/tradetool')
     cherrypy.tree.mount(JsonTools(), '/json_tools')
 
 
 
-    # Corp Dispatcher
-    d = cherrypy.dispatch.RoutesDispatcher()
-    d.connect(name = 'corp', route = '/corp/:ticker/:page', controller = Corps(), action='view_page', page = 'index')
-
     conf = {'/' : { 'tools.staticdir.dir' : ".",
                     'tools.staticdir.on' : True },
-            '/corp' : {'request.dispatch' : d} }
+            }
 
     cherrypy.tree.mount(root = Home(), config = conf)
 

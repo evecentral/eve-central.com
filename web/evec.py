@@ -36,8 +36,6 @@ import time
 
 from evecentral.evec_func import EVCstate, SorterDict, format_long, format_price, emit_redirect, get_region_id
 
-from usermanager import Users
-from corps import Corps
 from datainput import DataInput
 from tradetool import TradeTool
 from evecentral.suggest import upload_suggest
@@ -774,28 +772,6 @@ class Home:
 
     tradefind_display_html = tradefind_display
 
-
-    @cherrypy.expose
-    def leaders(self):
-
-        session = EVCstate()
-        t = display.template('leaders.tmpl', session)
-        db = evec_func.db_con()
-
-        cur = db.cursor()
-
-        cur.execute("SELECT username,uploads,userid FROM users WHERE userid != 0 AND uploads > 0 ORDER BY uploads DESC LIMIT 100")
-        r = cur.fetchall()
-
-        r_d = []
-
-        t.results = r
-
-        db.close()
-        return t.respond()
-
-
-    leaders_html = leaders
     @cherrypy.expose
     def tradefind_search(self, qtype, fromt, to):
 
