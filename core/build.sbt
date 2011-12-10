@@ -1,10 +1,4 @@
 
-resolvers ++= Seq (
-  "zentrope" at "http://zentrope.com/maven"
-)
-
-addSbtPlugin("com.zentrope" %% "xsbt-scalate-precompile-plugin" % "1.6")
-
 
 name := "eve-central-ng"
 
