@@ -20,7 +20,7 @@ import random
 def upload_suggest(db, region, rettype = "names"):
 
     cur = db.cursor()
-    cur.execute("SELECT types.typename,types.typeid FROM types WHERE types.published = 1 AND types.marketgroup > 0 AND types.typeid NOT IN (SELECT DISTINCT current_market.typeid FROM current_market WHERE current_market.reportedtime > (NOW() - interval '1 days') AND current_market.regionid = %s  ) ORDER BY RANDOM() LIMIT 20", [region])
+    cur.execute("SELECT types.typename,types.typeid FROM types WHERE types.published = 1 AND types.marketgroup > 0 AND types.typeid NOT IN (SELECT DISTINCT current_market.typeid FROM current_market WHERE current_market.reportedtime > (NOW() - interval '1 hour') AND current_market.regionid = %s  ) ORDER BY RANDOM() LIMIT 20", [region])
     l = []
     
     

@@ -87,13 +87,8 @@ urchinTracker();
 <table border="0" width="98%" cellpadding="0" cellspacing="0">
 <tr>
 <td class="alignRight">
-#if 'user' in $session
-<a href="/users/"><i>$session['user'].username</i></a> <a href="/users/logout.html">Logout</a>
-#else
-<!-- <a href="/users/">Register and Login</a> -->
-<div class="standout">Crucible updates pending release of database information. Don't be alarmed.</div>
+<!-- <div class="standout">Crucible updates pending release of database information. Don't be alarmed.</div> -->
 &nbsp;
-#end if
 
 #set $timehead = gmt()
 
