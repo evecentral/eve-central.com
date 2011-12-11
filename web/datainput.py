@@ -76,7 +76,7 @@ class DataInput:
 
 
     @cherrypy.expose
-    def inputdata(self,typename=None,userid=None,data=None,**kw):
+    def inputdata(self, typename=None, userid=None, data=None, typeid = None, region = None, **kw):
 
         response = ""
 
@@ -107,32 +107,19 @@ class DataInput:
 
         cur = db.cursor()
 
-        try:
-            line = data[0]
-            typeid = line[2]
-            region = line[11]
-        except:
-            return
+        if not typeid and not region:
+            try:
+                line = data[0]
+                typeid = line[2]
+                region = line[11]
+            except:
+                return
 
         response += "Beginning your upload of "+typename+"\n"
         response += "TypeID: " + typeid + " RegionID: " + region + "\n"
         #cur.execute('SET TRANSACTION ISOLATION LEVEL READ COMMITTED')
 
-        # Pre-validate the data coming in
-        #for line in data:
-        #    if long(typeid) != long(line[2]):
-        #        print "REJECT due to mismatched typeids"
-        #        return # fail
-        #    cur.execute('SELECT typeid,regionid FROM current_market WHERE orderid = %s', [line[4]])
-        #    r = cur.fetchone()
-        #    if r:
-        #        if long(r[0]) != long(typeid) or long(r[1]) != long(region):
-        #            print "REJECT due to mismatched typeids in DB - type",r[0],"==",typeid," or ",r[1], "==", region
-        #            return # invalid data
-
-
         cur.execute('DELETE FROM current_market WHERE typeid = %s AND regionid = %s', [typeid, region])
-
 
         derived_region = 0
         derived_typeid = 0
