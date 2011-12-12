@@ -58,7 +58,7 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#565d60', endColorstr='#767d80', GradientType=0); /* IE8 and down */
 }
 .subhead .inner {
-  padding: 36px 0 27px;
+  padding: 56px 0 27px;
 }
 .subhead h1,
 .subhead p {
@@ -86,4 +86,73 @@
 */}
 .footer p {
   color: #555;
+}
+
+
+/* Quickstart section for getting le code
+-------------------------------------------------- */
+.quickstart {
+  background-color: #f5f5f5;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#f9f9f9), to(#f5f5f5));
+  background-image: -moz-linear-gradient(#f9f9f9, #f5f5f5);
+  background-image: -ms-linear-gradient(#f9f9f9, #f5f5f5);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f9f9f9), color-stop(100%, #f5f5f5));
+  background-image: -webkit-linear-gradient(#f9f9f9, #f5f5f5);
+  background-image: -o-linear-gradient(#f9f9f9, #f5f5f5);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#f5f5f5', GradientType=0)";
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#f5f5f5', GradientType=0);
+  background-image: linear-gradient(#f9f9f9, #f5f5f5);
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #eee;
+}
+.quickstart .container {
+  margin-bottom: 0;
+}
+.quickstart .row {
+  margin: 0 -20px;
+  -webkit-box-shadow: 1px 0 0 #f9f9f9;
+     -moz-box-shadow: 1px 0 0 #f9f9f9;
+          box-shadow: 1px 0 0 #f9f9f9;
+}
+.quickstart [class*="span"] {
+  width: 285px;
+  height: 117px;
+  margin-left: 0;
+  padding: 17px 20px 26px;
+  border-left: 1px solid #eee;
+  -webkit-box-shadow: inset 1px 0 0 #f9f9f9;
+     -moz-box-shadow: inset 1px 0 0 #f9f9f9;
+          box-shadow: inset 1px 0 0 #f9f9f9;
+}
+.quickstart [class*="span"]:last-child {
+  border-right: 1px solid #eee;
+  width: 286px;
+}
+.quickstart h6,
+.quickstart p {
+  line-height: 18px;
+  text-align: center;
+  margin-bottom: 9px;
+  color: #333;
+}
+.quickstart .mute {
+			color: #999;
+}
+.quickstart .current-version,
+.quickstart .current-version a {
+  color: #999;
+}
+.quickstart h6 {
+  color: #999;
+}
+.quickstart input[type="text"] {
+   display: block; 
+  width: 275px;
+  height: 40px;
+  line-height: 1;
+
+  margin: 0 0 9px;
+  white-space: nowrap;
+  overflow: hidden;
 }
