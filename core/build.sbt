@@ -26,17 +26,20 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
 
 libraryDependencies += "postgresql" % "postgresql" % "9.1-901.jdbc4"
 
-libraryDependencies += "cc.spray" % "spray-server" % "0.9.0-SNAPSHOT"
+libraryDependencies += "cc.spray" % "spray-server" % "0.9.0-SNAPSHOT" changing()
 
-libraryDependencies += "net.liftweb" % "lift-json" % "2.0"
+libraryDependencies += "cc.spray" % "spray-client" % "0.9.0-SNAPSHOT" changing()
 
-libraryDependencies += "cc.spray.can" % "spray-can" % "0.9.2-SNAPSHOT"
+//libraryDependencies += "net.liftweb" % "lift-json" % "2.0"
+
+libraryDependencies += "cc.spray.can" % "spray-can" % "0.9.2-SNAPSHOT" changing()
 
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.1"
 
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "0.9.29"
 
 
+libraryDependencies += "cc.spray.json" %% "spray-json" % "1.0.1" % "compile" withSources()
 
 
 
