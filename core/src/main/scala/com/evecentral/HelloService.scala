@@ -7,10 +7,7 @@ import cc.spray.Directives
 
 trait HelloService extends Directives {
 
-  def getOrders = {
-    val r = Actor.registry.actorsFor[com.evecentral.Markets]
-    r(0)
-  }
+  def getOrders = { val r = (Actor.registry.actorsFor[com.evecentral.Markets]); r(0) }
 
   val helloService = {
     path("orders") {
@@ -19,8 +16,9 @@ trait HelloService extends Directives {
           completeWith {
             (getOrders ? GetOrdersFor(Nil, Nil)).as[Seq[MarketOrder]] match {
               case Some(x) => x(0).orderId.toString
-              case _ => "Nothing!"
+              case None => "None"
             }
+
           }
         }
       }
