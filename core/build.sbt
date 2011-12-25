@@ -20,7 +20,7 @@ libraryDependencies += "se.scalablesolutions.akka" % "akka-actor" % "1.3-RC1"
 
 libraryDependencies += "se.scalablesolutions.akka" % "akka-stm" % "1.3-RC1"
 
-libraryDependencies += "com.twitter" % "querulous" % "2.1.5"
+libraryDependencies += "com.twitter" % "querulous" % "2.6.5"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
 
@@ -38,6 +38,7 @@ libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.1"
 
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "0.9.29"
 
+libraryDependencies += "org.fusesource.scalate" % "scalate-core" % "1.5.3"
 
 libraryDependencies += "cc.spray.json" %% "spray-json" % "1.0.1" % "compile" withSources()
 

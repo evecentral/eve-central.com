@@ -27,7 +27,8 @@ object Boot extends App {
       List(
         Supervise(httpService, Permanent),
         Supervise(rootService, Permanent),
-        Supervise(sprayCanServer, Permanent)
+        Supervise(sprayCanServer, Permanent),
+        Supervise(actorOf(new Markets()), Permanent)
       )
     )
   )
