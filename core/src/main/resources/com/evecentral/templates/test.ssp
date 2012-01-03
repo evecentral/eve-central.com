@@ -1,0 +1,6 @@
+#{
+  import java.util.Date
+  val now = new Date
+}#
+
+Hello the time is ${now}. This is a reload test.

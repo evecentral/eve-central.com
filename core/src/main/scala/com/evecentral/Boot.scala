@@ -11,14 +11,22 @@ import cc.spray.{SprayCanRootService, HttpService}
 object Boot extends App {
 
 
-  LoggerFactory.getLogger(getClass) // initialize SLF4J early
+  LoggerFactory.getLogger(getClass)
+  // initialize SLF4J early
 
-  val mainModule = new HelloService {
-    // bake your module cake here
+  val mainModule = new APIService {
   }
 
-  val httpService    = actorOf(new HttpService(mainModule.helloService))
-  val rootService    = actorOf(new SprayCanRootService(httpService))
+  val staticModule = new StaticService {
+
+  }
+
+  val frontEndService = new FrontEndService {}
+
+  val httpService = actorOf(new HttpService(mainModule.helloService))
+  val httpStaticService = actorOf(new HttpService(staticModule.staticService))
+  val httpFeService = actorOf(new HttpService(frontEndService.frontEndService))
+  val rootService = actorOf(new SprayCanRootService(httpService, httpStaticService, httpFeService))
   val sprayCanServer = actorOf(new HttpServer())
 
   Supervisor(
@@ -26,6 +34,8 @@ object Boot extends App {
       OneForOneStrategy(List(classOf[Exception]), 3, 100),
       List(
         Supervise(httpService, Permanent),
+        Supervise(httpStaticService, Permanent),
+        Supervise(httpFeService, Permanent),
         Supervise(rootService, Permanent),
         Supervise(sprayCanServer, Permanent),
         Supervise(actorOf(new Markets()), Permanent)

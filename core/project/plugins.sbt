@@ -3,7 +3,7 @@ resolvers ++= Seq (
   "zentrope" at "http://zentrope.com/maven"
 )
 
-addSbtPlugin("com.zentrope" %% "xsbt-scalate-precompile-plugin" % "1.6")
+addSbtPlugin("com.zentrope" %% "xsbt-scalate-precompile-plugin" % "1.7")
 
 resolvers += "retronym-releases" at "http://retronym.github.com/repo/releases"
 

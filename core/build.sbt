@@ -42,6 +42,8 @@ libraryDependencies += "org.fusesource.scalate" % "scalate-core" % "1.5.3"
 
 libraryDependencies += "cc.spray.json" %% "spray-json" % "1.0.1" % "compile" withSources()
 
+seq(com.zentrope.ScalatePlugin.scalateTemplateSettings : _*)
+
 
 
 
