@@ -28,12 +28,6 @@ dumps. For example, market transaction information, user login
 information, e-mail addresses, API keys, and corporation website contents. These
 all include sensitive personal information.
 
-Not all code is available in the initial dump, nor is the old
-historical eve-central.com code available (back when it ran under
-mod_python and was even more ghastly). The internal git  repository was
-never intended to be a "public" release, and would take a significant
-amount of work to correctly filter out any embarassing parts.
-
 Best of luck,
 Yann Ramin <atrus@stackworks.net>
 
@@ -46,7 +40,7 @@ http://groups.google.com/eve-central
 Development wiki:
 http://dev.eve-central.com/
 
-* Requirements *
+* Requirements (old tech) *
 
 - Python 2.7 (3.x not supported)
   - psycopg2
@@ -77,3 +71,14 @@ pathfinder_src/
         - C++ implementation of a shortest path server
 
 
+Next Generation Project
+-----------------------
+
+EVE-Central is currently under a revitalization project, and is transition architectures.
+In a way, we're going "3.0", and the new version number reflects that.
+
+The new code base is in Scala (http://scala-lang.org) with Akka (http://akka.io/),
+and Spray (http://spray.cc).
+
+Watch the "core" directory for developments in this area. It will take a month or two
+in order to get to a usable state.
