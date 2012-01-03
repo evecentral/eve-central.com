@@ -1,21 +1,20 @@
-package com.evecentral
+package com.evecentral.api
 
 import cc.spray.http.MediaTypes._
 import java.util.concurrent.TimeUnit
 import akka.actor.{PoisonPill, Actor, Scheduler}
 import cc.spray.Directives
-import cc.spray.ScalateSupport
 
 trait APIService extends Directives {
 
-  def getOrders = { val r = (Actor.registry.actorsFor[com.evecentral.Markets]); r(0) }
+  def getOrders = { val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0) }
 
   val helloService = {
-    path("orders") {
+    path("api3/orders") {
       get {
         respondWithMediaType(`text/plain`) {
           completeWith {
-            (getOrders ? GetOrdersFor(Nil, Nil)).as[Seq[MarketOrder]] match {
+            (getOrders ? GetOrdersFor(true, Nil, Nil)).as[Seq[MarketOrder]] match {
               case Some(x) => x(0).orderId.toString
               case None => "None"
             }

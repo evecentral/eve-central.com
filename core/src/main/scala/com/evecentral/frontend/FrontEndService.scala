@@ -1,4 +1,4 @@
-package com.evecentral
+package com.evecentral.frontend
 
 import cc.spray.http.MediaTypes._
 import java.util.concurrent.TimeUnit

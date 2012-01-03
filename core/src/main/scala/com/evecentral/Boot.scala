@@ -1,6 +1,5 @@
 package com.evecentral
 
-
 import akka.config.Supervision._
 import akka.actor.{Supervisor, Actor}
 import Actor._
@@ -8,18 +7,18 @@ import cc.spray.can.HttpServer
 import org.slf4j.LoggerFactory
 import cc.spray.{SprayCanRootService, HttpService}
 
+import com.evecentral.frontend.FrontEndService
+import com.evecentral.api._
+
 object Boot extends App {
 
 
   LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
-  val mainModule = new APIService {
-  }
+  val mainModule = new APIService {}
 
-  val staticModule = new StaticService {
-
-  }
+  val staticModule = new StaticService {}
 
   val frontEndService = new FrontEndService {}
 
@@ -38,7 +37,7 @@ object Boot extends App {
         Supervise(httpFeService, Permanent),
         Supervise(rootService, Permanent),
         Supervise(sprayCanServer, Permanent),
-        Supervise(actorOf(new Markets()), Permanent)
+        Supervise(actorOf(new GetOrdersActor()), Permanent)
       )
     )
   )
