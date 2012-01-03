@@ -13,7 +13,7 @@ class Markets extends Actor with ActorUtil {
 
 
   private def orderList(filter : GetOrdersFor) = {
-    val query = Database.coredb
+    val query = Database.coreDb
     query.select("SELECT orderid,price FROM current_market LIMIT 10") { row =>
       MarketOrder(row.getLong("orderid"), row.getLong("price"))
     }

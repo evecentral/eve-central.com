@@ -44,7 +44,7 @@ libraryDependencies += "cc.spray.json" %% "spray-json" % "1.0.1" % "compile" wit
 
 seq(com.zentrope.ScalatePlugin.scalateTemplateSettings : _*)
 
-
+seq(assemblySettings: _*)
 
 
 
