@@ -46,5 +46,8 @@ seq(com.zentrope.ScalatePlugin.scalateTemplateSettings : _*)
 
 seq(assemblySettings: _*)
 
+seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
+
+
 
 
