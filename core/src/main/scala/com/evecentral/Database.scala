@@ -7,10 +7,10 @@ import org.postgresql.Driver
 object Database {
 
   def coreDb = DatabaseConfig(
-    driver = "org.postgresql.Driver"
-    jdbcURL = "jdbc:postgresql:localhost:evec",
-  "username":"evec",
-  "password" : "evec"
+    driver = "org.postgresql.Driver",
+    jdbcURL = "jdbc:postgresql://localhost/evec",
+    username = "evec",
+    password =  "evec"
   )
 
   def concatQuery(fieldName: String, items: Seq[Any]): String = {

@@ -19,44 +19,56 @@ object QueryDefaults {
 object StaticProvider {
   lazy val systemsMap = {
     var m = Map[Long, String]()
-    Database.coreDb.select("SELECT systemid,systemname FROM systems") {
-      row =>
-        val sysid = row.getLong("systemid")
-        val name = row.getString("systemname")
-        m = m ++ Map(sysid -> name)
+    Database.coreDb.transaction {
+      tx =>
+      tx.selectAndProcess("SELECT systemid,systemname FROM systems") {
+        row =>
+          val sysid = row.nextLong match { case Some(x) => x }
+          val name = row.nextString match { case Some(x) => x }
+          m = m ++ Map(sysid -> name)
+      }
     }
     m
   }
 
   lazy val stationsMap = {
     var m = Map[Long, String]()
-    Database.coreDb.select("SELECT stationid,stationname FROM stations") {
-      row =>
-        val sysid = row.getLong("stationid")
-        val name = row.getString("stationname")
-        m = m ++ Map(sysid -> name)
+    Database.coreDb.transaction{
+      tx =>
+        tx.selectAndProcess("SELECT stationid,stationname FROM stations") {
+        row =>
+          val sysid = row.nextLong match { case Some(x) => x }
+          val name = row.nextString match { case Some(x) => x }
+          m = m ++ Map(sysid -> name)
+      }
     }
     m
   }
 
   lazy val regionsMap = {
     var m = Map[Long, String]()
-    Database.coreDb.select("SELECT regionid,regionname FROM regions") {
-      row =>
-        val sysid = row.getLong("regionid")
-        val name = row.getString("regionname")
-        m = m ++ Map(sysid -> name)
+    Database.coreDb.transaction {
+      tx =>
+        tx.selectAndProcess("SELECT regionid,regionname FROM regions") {
+          row =>
+            val sysid = row.nextLong match { case Some(x) => x }
+            val name = row.nextString match { case Some(x) => x }
+            m = m ++ Map(sysid -> name)
+    }
     }
     m
   }
 
   lazy val typesMap = {
     var m = Map[Long, String]()
-    Database.coreDb.select("SELECT typeid,typename FROM types") {
-      row =>
-        val sysid = row.getLong("typeid")
-        val name = row.getString("typename")
-        m = m ++ Map(sysid -> name)
+    Database.coreDb.transaction {
+      tx =>
+        tx.selectAndProcess("SELECT typeid,typename FROM types") {
+        row =>
+          val sysid = row.nextLong match { case Some(x) => x }
+          val name = row.nextString match { case Some(x) => x }
+          m = m ++ Map(sysid -> name)
+      }
     }
     m
   }

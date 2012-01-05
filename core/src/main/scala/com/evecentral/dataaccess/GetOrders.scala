@@ -6,10 +6,11 @@ import akka.actor.Actor
 import akka.event.EventHandler
 import Actor._
 import com.evecentral.{ActorUtil, Database}
+import net.noerd.prequel.IntFormattable
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Long, system: Long)
 
-case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours : Long)
+case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long)
 
 
 class GetOrdersActor extends Actor with ActorUtil with DefaultActorPool
@@ -18,8 +19,14 @@ with ActiveFuturesPressureCapacitor
 with SmallestMailboxSelector
 with BasicNoBackoffFilter {
 
-  private def orderList(filter: GetOrdersFor) = {
-    val query = Database.coreDb
+  def extract[T](t: Option[T]): T = {
+    t match {
+      case Some(x) => x
+    }
+  }
+
+  private def orderList(filter: GetOrdersFor): Seq[MarketOrder] = {
+    val db = Database.coreDb
     val regionLimit = Database.concatQuery("regionid", filter.regions)
     val typeLimit = Database.concatQuery("typeid", filter.types)
     val bid = filter.bid match {
@@ -27,16 +34,19 @@ with BasicNoBackoffFilter {
       case _ => 0
     }
 
-    query.select("SELECT typeid,orderid,stationid,systemid,bid,price FROM current_market WHERE bid = ? AND (" +
-      typeLimit + ") AND (" +
-      regionLimit + ") AND price > 0.15 LIMIT 10", bid) {
-      row =>
-        MarketOrder(row.getLong("typeid"),
-          row.getLong("orderid"),
-          row.getLong("price"),
-          row.getBoolean("bid"),
-          row.getLong("stationid"),
-          row.getLong("systemid"))
+
+
+
+    db.transaction {
+      tx =>
+
+        tx.select("SELECT typeid,orderid,price,bid,stationid,systemid FROM current_market WHERE bid = ? AND (" +
+          typeLimit + ") AND (" +
+          regionLimit + ") AND price > 0.15 LIMIT 10", IntFormattable(bid)) {
+          row =>
+            MarketOrder(extract(row.nextLong), extract(row.nextLong), extract(row.nextDouble), extract(row.nextBoolean),
+              extract(row.nextLong), extract(row.nextLong));
+        }
     }
   }
 
