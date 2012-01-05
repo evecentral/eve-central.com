@@ -12,7 +12,8 @@ import java.net.URLDecoder
 
 import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
-import scala.xml.NodeSeq
+import scala.xml._
+import scala.collection.breakOut
 import com.evecentral.dataaccess._
 
 
@@ -78,11 +79,19 @@ trait APIv2Service extends Directives {
       case x : List[String] => Some(x(0).toLong)
     }
   }
+  
+  def regionName(regions : List[Long]) : NodeSeq = {
+      regions.foldLeft(Seq[Node]()) {
+      (i, regionid) =>
+        i ++ <region>{StaticProvider.regionsMap(regionid)}</region>
+      }
+  }
 
   def queryQuicklook(typeid : Long, setHours : Long, regionLimit: List[Long],
-                     usesystem : Option[Long], minq : Option[Long] ) : NodeSeq = {
+                     usesystem : Option[Long], qminq : Option[Long] ) : NodeSeq = {
 
-
+    val minq = qminq match { case Some(x) => x case None => QueryDefaults.minQ(typeid) }
+    
     val buyq = GetOrdersFor(true, List(typeid), regionLimit, usesystem match { case None => Nil case Some(x) => List[Long](x) }, setHours)
     val selq = GetOrdersFor(false, List(typeid), regionLimit, usesystem match { case None => Nil case Some(x) => List[Long](x) }, setHours)
 
@@ -93,7 +102,7 @@ trait APIv2Service extends Directives {
       <quicklook>
         <item>{typeid}</item>
         <itemname>{StaticProvider.typesMap(typeid)}</itemname>
-        <regions></regions>
+        <regions>{regionName(regionLimit)}</regions>
         <hours>{setHours}</hours>
         <minqty>{minq}</minqty>
       </quicklook>

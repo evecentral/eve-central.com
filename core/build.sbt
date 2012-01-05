@@ -16,11 +16,11 @@ resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/
 
 resolvers += "Akka Repository" at "http://akka.io/repository/"
 
-libraryDependencies += "se.scalablesolutions.akka" % "akka-actor" % "1.3-RC1"
+libraryDependencies += "se.scalablesolutions.akka" % "akka-actor" % "1.3-RC4"
 
-libraryDependencies += "se.scalablesolutions.akka" % "akka-stm" % "1.3-RC1"
+libraryDependencies += "se.scalablesolutions.akka" % "akka-stm" % "1.3-RC4"
 
-libraryDependencies += "com.twitter" % "querulous" % "2.6.5"
+libraryDependencies += "net.noerd" % "prequel_2.9.1" % "0.3.6"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
 

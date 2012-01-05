@@ -1,9 +1,17 @@
 package com.evecentral
 
-import com.twitter.querulous.evaluator.QueryEvaluator
+import net.noerd.prequel.DatabaseConfig
+
+import org.postgresql.Driver
 
 object Database {
-  def coreDb = QueryEvaluator("localhost", "evec", "evec", "evec", Map[String, String](), "jdbc:postgresql")
+
+  def coreDb = DatabaseConfig(
+    driver = "org.postgresql.Driver"
+    jdbcURL = "jdbc:postgresql:localhost:evec",
+  "username":"evec",
+  "password" : "evec"
+  )
 
   def concatQuery(fieldName: String, items: Seq[Any]): String = {
     if (items.length == 0) "1=1"
