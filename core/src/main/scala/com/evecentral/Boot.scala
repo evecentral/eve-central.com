@@ -16,23 +16,25 @@ object Boot extends App {
   LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
-  val mainModule = new APIService {}
-
+  val apiModule = new APIService {}
+  val apiv2Module = new APIv2Service {}
   val staticModule = new StaticService {}
 
   val frontEndService = new FrontEndService {}
 
-  val httpService = actorOf(new HttpService(mainModule.helloService))
+  val httpApiService = actorOf(new HttpService(apiModule.helloService))
+  val httpApiv2Service = actorOf(new HttpService(apiv2Module.v2Service))
   val httpStaticService = actorOf(new HttpService(staticModule.staticService))
   val httpFeService = actorOf(new HttpService(frontEndService.frontEndService))
-  val rootService = actorOf(new SprayCanRootService(httpService, httpStaticService, httpFeService))
+  val rootService = actorOf(new SprayCanRootService(httpApiService, httpApiv2Service, httpStaticService, httpFeService))
   val sprayCanServer = actorOf(new HttpServer())
 
   Supervisor(
     SupervisorConfig(
       OneForOneStrategy(List(classOf[Exception]), 3, 100),
       List(
-        Supervise(httpService, Permanent),
+        Supervise(httpApiService, Permanent),
+        Supervise(httpApiv2Service, Permanent),
         Supervise(httpStaticService, Permanent),
         Supervise(httpFeService, Permanent),
         Supervise(rootService, Permanent),
