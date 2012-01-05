@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import cc.spray.{SprayCanRootService, HttpService}
 
 import com.evecentral.frontend.FrontEndService
+import com.evecentral.dataaccess._
 import com.evecentral.api._
 
 object Boot extends App {
@@ -16,7 +17,7 @@ object Boot extends App {
   LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
-  val apiModule = new APIService {}
+  val apiModule = new APIv3Service {}
   val apiv2Module = new APIv2Service {}
   val staticModule = new StaticService {}
 
@@ -28,6 +29,10 @@ object Boot extends App {
   val httpFeService = actorOf(new HttpService(frontEndService.frontEndService))
   val rootService = actorOf(new SprayCanRootService(httpApiService, httpApiv2Service, httpStaticService, httpFeService))
   val sprayCanServer = actorOf(new HttpServer())
+
+  val systemsMap = StaticProvider.systemsMap
+  val stationsMAp = StaticProvider.stationsMap
+  val typesMap = StaticProvider.typesMap
 
   Supervisor(
     SupervisorConfig(

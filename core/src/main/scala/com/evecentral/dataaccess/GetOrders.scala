@@ -1,4 +1,4 @@
-package com.evecentral.api
+package com.evecentral.dataaccess
 
 import akka.dispatch.Future
 import akka.routing._
@@ -9,7 +9,7 @@ import com.evecentral.{ActorUtil, Database}
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Long, system: Long)
 
-case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long])
+case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours : Long)
 
 
 class GetOrdersActor extends Actor with ActorUtil with DefaultActorPool

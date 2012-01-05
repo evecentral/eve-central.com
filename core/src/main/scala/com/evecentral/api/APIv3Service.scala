@@ -6,8 +6,10 @@ import akka.actor.{PoisonPill, Actor, Scheduler}
 import cc.spray.Directives
 import cc.spray.directives.IntNumber
 
+import com.evecentral.dataaccess._
 
-trait APIService extends Directives {
+
+trait APIv3Service extends Directives {
 
   def getOrders = {
     val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0)
@@ -20,7 +22,7 @@ trait APIService extends Directives {
           get {
             respondWithMediaType(`text/plain`) {
               completeWith {
-                (getOrders ? GetOrdersFor(true, List[Long](typeid), Nil)).as[Seq[MarketOrder]] match {
+                (getOrders ? GetOrdersFor(true, List[Long](typeid), Nil, Nil, 24)).as[Seq[MarketOrder]] match {
                   case Some(x) => x(0).orderId.toString
                   case None => "None"
                 }
@@ -29,14 +31,7 @@ trait APIService extends Directives {
             }
           }
       }
-    } ~
-      path("shutdown") {
-        (post | parameter('method ! "post")) {
-          ctx =>
-            Scheduler.scheduleOnce(() => Actor.registry.foreach(_ ! PoisonPill), 1000, TimeUnit.MILLISECONDS)
-            ctx.complete("Will shutdown server in 1 second...")
-        }
-      }
+    }
   }
 
 }

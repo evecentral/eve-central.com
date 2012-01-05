@@ -12,6 +12,9 @@ import java.net.URLDecoder
 
 import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
+import scala.xml.NodeSeq
+import com.evecentral.dataaccess._
+
 
 private[api] trait BaseParser extends Parser {
 
@@ -60,21 +63,56 @@ trait APIv2Service extends Directives {
     RepeatQueryParser.parse(new URI(uri).getRawQuery)
   }
 
-  def getOrders = {
+  def ordersActor = {
     val r = (Actor.registry.actorsFor[GetOrdersActor]);
     r(0)
   }
+  
+  def paramsFromQuery(name: String, params : List[(String,  String)]) : List[String] = {
+    params.foldLeft(List[String]()) { (i, s) => if (s._1 == name) s._2 :: i else i  }
+  }
+  
+  def singleParam[T](name: String,  params: List[(String,  String)]) : Option[Long] = {
+    paramsFromQuery(name, params) match {
+      case Nil => None
+      case x : List[String] => Some(x(0).toLong)
+    }
+  }
 
+  def queryQuicklook(typeid : Long, setHours : Long, regionLimit: List[Long],
+                     usesystem : Option[Long], minq : Option[Long] ) : NodeSeq = {
+
+
+    val buyq = GetOrdersFor(true, List(typeid), regionLimit, usesystem match { case None => Nil case Some(x) => List[Long](x) }, setHours)
+    val selq = GetOrdersFor(false, List(typeid), regionLimit, usesystem match { case None => Nil case Some(x) => List[Long](x) }, setHours)
+
+    val buyr = ordersActor ? buyq
+    val selr = ordersActor ? selq
+
+    <evec_api version="2.0" method="quicklook">
+      <quicklook>
+        <item>{typeid}</item>
+        <itemname>{StaticProvider.typesMap(typeid)}</itemname>
+        <regions></regions>
+        <hours>{setHours}</hours>
+        <minqty>{minq}</minqty>
+      </quicklook>
+    </evec_api>
+  }
+  
   val v2Service = {
-    path("api/orders") {
+    path("api/quicklook") {
       get {
 
           respondWithContentType(`text/xml`) {
               ctx =>
               val params = extractListOfParams(ctx.request.uri)
-              ctx.complete(<xml>
-                {params.toString}
-              </xml>)
+              val typeid = singleParam("typeid", params) match { case Some(x) => x case None => 34 }
+              val setHours = singleParam("sethours", params) match { case Some(x) => x case None => 24 }
+              val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong)
+              val usesystem = singleParam("usesystem", params)
+              val minq = singleParam("setminQ", params) // We need more logic for single param
+              ctx.complete(queryQuicklook(typeid, setHours, regionLimit, usesystem, minq))
 
           }
       }
