@@ -8,6 +8,10 @@ object QueryDefaults {
     (i, s) => i ++ Map(s -> minQLarge)
   }
 
+  /**
+   * Determine a sane minimum quantity. For minerals, this is usually set higher than
+   * other values. The minQExceptions list maps the quantities.
+   */
   def minQ(typeid: Long): Long = {
     minQExceptions.getOrElse(typeid, 1)
   }
@@ -21,6 +25,10 @@ case class SolarSystem(systemid: Long, name: String, security: Double, region: R
  * A provider of static data which has all be loaded into memory.
  */
 object StaticProvider {
+
+  /**
+   * Maps a systemId to a solarsystem.
+   */
   lazy val systemsMap = {
     var m = Map[Long, SolarSystem]()
     Database.coreDb.transaction {
@@ -32,16 +40,15 @@ object StaticProvider {
           val security = row.nextDouble match { case Some(x) => x }
           val regionid = row.nextLong match { case Some(x) => x }
           val constellationid = row.nextLong match { case Some(x) => x }
-          regionsMap.get(regionid) match {
-            case Some(region) => m = m ++ Map(sysid -> SolarSystem(sysid, name, security, region, constellationid))
-            case None => m
-          }
-          
+          m = m ++ Map(sysid -> SolarSystem(sysid, name, security, regionsMap(regionid), constellationid))
       }
     }
     m
   }
 
+  /**
+   * Maps a station ID to a station
+   */
   lazy val stationsMap = {
     var m = Map[Long, Station]()
     Database.coreDb.transaction{
@@ -51,13 +58,16 @@ object StaticProvider {
           val staid = row.nextLong match { case Some(x) => x }
           val name = row.nextString match { case Some(x) => x }
           val sysid = row.nextLong match { case Some(x) => x }
-          
-          m = m ++ Map(sysid -> Station(staid, name, systemsMap(sysid)))
+
+          m = m ++ Map(staid -> Station(staid, name, systemsMap(sysid)))
       }
     }
     m
   }
 
+  /**
+   * Maps a region ID to a Region
+   */
   lazy val regionsMap = {
     var m = Map[Long, Region]()
     Database.coreDb.transaction {

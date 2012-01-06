@@ -83,9 +83,26 @@ trait APIv2Service extends Directives {
   def regionName(regions: List[Long]): NodeSeq = {
     regions.foldLeft(Seq[Node]()) {
       (i, regionid) =>
-        i ++ <region>
-          {StaticProvider.regionsMap(regionid).name}
-        </region>
+        i ++ <region>{StaticProvider.regionsMap(regionid).name}</region>
+    }
+  }
+
+  def showOrders(orders: Option[Seq[MarketOrder]]): NodeSeq = {
+    orders match {
+      case None => Seq[Node]()
+      case Some(o) => o.foldLeft(Seq[Node]()) {
+        (i, order) =>
+          i ++ <order id={order.orderId.toString}>
+            <region>{order.region.regionid}</region>
+            <station>{order.station.stationid}</station>
+            <station_name>{order.station.name}</station_name>
+            <security>{order.system.security}</security>
+            <range>{order.range}</range>
+            <price>{order.price}</price>
+            <vol_remain>{order.volremain}</vol_remain>
+            <min_volume>{order.minVolume}</min_volume>
+          </order>
+      }
     }
   }
 
@@ -111,21 +128,13 @@ trait APIv2Service extends Directives {
 
     <evec_api version="2.0" method="quicklook">
       <quicklook>
-        <item>
-          {typeid}
-        </item>
-        <itemname>
-          {StaticProvider.typesMap(typeid)}
-        </itemname>
-        <regions>
-          {regionName(regionLimit)}
-        </regions>
-        <hours>
-          {setHours}
-        </hours>
-        <minqty>
-          {minq}
-        </minqty>
+        <item>{typeid}</item>
+        <itemname>{StaticProvider.typesMap(typeid)}</itemname>
+        <regions>{regionName(regionLimit)}</regions>
+        <hours>{setHours}</hours>
+        <minqty>{minq}</minqty>
+        <sell_orders>{showOrders(selr.as[Seq[MarketOrder]])}</sell_orders>
+        <buy_orders>{showOrders(buyr.as[Seq[MarketOrder]])}</buy_orders>
       </quicklook>
     </evec_api>
   }
