@@ -4,17 +4,19 @@ import akka.config.Supervision._
 import akka.actor.{Supervisor, Actor}
 import Actor._
 import cc.spray.can.HttpServer
-import org.slf4j.LoggerFactory
+
 import cc.spray.{SprayCanRootService, HttpService}
 
 import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
 
+ 
+
 object Boot extends App {
 
 
-  LoggerFactory.getLogger(getClass)
+  //LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
   val apiModule = new APIv3Service {}
@@ -23,12 +25,14 @@ object Boot extends App {
 
   val frontEndService = new FrontEndService {}
 
+  val config = cc.spray.can.ServerConfig(host = "0.0.0.0")
+  
   val httpApiService = actorOf(new HttpService(apiModule.helloService))
   val httpApiv2Service = actorOf(new HttpService(apiv2Module.v2Service))
   val httpStaticService = actorOf(new HttpService(staticModule.staticService))
   val httpFeService = actorOf(new HttpService(frontEndService.frontEndService))
   val rootService = actorOf(new SprayCanRootService(httpApiService, httpApiv2Service, httpStaticService, httpFeService))
-  val sprayCanServer = actorOf(new HttpServer())
+  val sprayCanServer = actorOf(new HttpServer(config))
 
   val systemsMap = StaticProvider.systemsMap
   val stationsMAp = StaticProvider.stationsMap
