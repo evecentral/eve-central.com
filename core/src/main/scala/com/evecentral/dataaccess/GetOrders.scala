@@ -42,7 +42,7 @@ with BasicNoBackoffFilter {
 
         tx.select("SELECT typeid,orderid,price,bid,stationid,systemid FROM current_market WHERE bid = ? AND (" +
           typeLimit + ") AND (" +
-          regionLimit + ") AND price > 0.15 LIMIT 10", IntFormattable(bid)) {
+          regionLimit + ") AND price > 0.15 ", IntFormattable(bid)) {
           row =>
             MarketOrder(extract(row.nextLong), extract(row.nextLong), extract(row.nextDouble), extract(row.nextBoolean),
               extract(row.nextLong), extract(row.nextLong));

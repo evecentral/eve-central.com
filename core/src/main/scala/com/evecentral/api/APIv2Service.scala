@@ -1,19 +1,17 @@
 package com.evecentral.api
 
 import cc.spray.http.MediaTypes._
-import akka.actor.{PoisonPill, Actor, Scheduler}
-import cc.spray.{Pass, Directives}
+import akka.actor.{Actor}
+import cc.spray.{Directives}
 import cc.spray.http._
 
-
-import org.parboiled.scala._
 import java.net.URI
 import java.net.URLDecoder
 
 import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
 import scala.xml._
-import scala.collection.breakOut
+
 import com.evecentral.dataaccess._
 
 
@@ -86,7 +84,7 @@ trait APIv2Service extends Directives {
     regions.foldLeft(Seq[Node]()) {
       (i, regionid) =>
         i ++ <region>
-          {StaticProvider.regionsMap(regionid)}
+          {StaticProvider.regionsMap(regionid).name}
         </region>
     }
   }
