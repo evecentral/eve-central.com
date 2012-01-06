@@ -3,6 +3,23 @@ import sqlite3
 
 import sys
 
+
+def import_regions(dbs,db):
+    cur = db.cursor()
+    curs = dbs.cursor()
+    curs.execute('SELECT regionID,regionName FROM mapRegions')
+    for row in curs:
+        print row[0],'=',row[1]
+        cur.execute('SELECT regionid FROM regions WHERE regionid = %s', (row[0],))
+        r = cur.fetchone()
+        if r:
+            cur.execute('UPDATE regions SET regionname = %s WHERE regionid = %s', (row[1], row[0]))
+        else:
+            cur.execute('INSERT INTO regions (regionid, regionname) VALUES (%s, %s)', (row[0], row[1]))
+            print "INSERT"
+        db.commit()
+
+
 def import_systems(dbs,db):
     cur = db.cursor()
     curs = dbs.cursor()
@@ -39,6 +56,7 @@ def import_stations(dbs,db):
 def main(sqle):
     db = psycopg2.connect(database = 'evec', user = 'evec')
     dbs = sqlite3.connect(sqle)
+    import_regions(dbs, db)
     import_systems(dbs, db)
     import_stations(dbs, db)
 
