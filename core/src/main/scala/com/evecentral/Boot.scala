@@ -11,7 +11,6 @@ import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
 
- 
 
 object Boot extends App {
 
@@ -20,13 +19,20 @@ object Boot extends App {
   // initialize SLF4J early
 
   val apiModule = new APIv3Service {}
-  val apiv2Module = new APIv2Service {}
+  val apiv2Module = new APIv2Service {
+    Supervisor(
+      SupervisorConfig(OneForOneStrategy(List(classOf[Exception]), 3, 100),
+        List(
+          Supervise(quicklookActor, Permanent)
+        )
+      ))
+  }
   val staticModule = new StaticService {}
 
   val frontEndService = new FrontEndService {}
 
   val config = cc.spray.can.ServerConfig(host = "0.0.0.0")
-  
+
   val httpApiService = actorOf(new HttpService(apiModule.helloService))
   val httpApiv2Service = actorOf(new HttpService(apiv2Module.v2Service))
   val httpStaticService = actorOf(new HttpService(staticModule.staticService))

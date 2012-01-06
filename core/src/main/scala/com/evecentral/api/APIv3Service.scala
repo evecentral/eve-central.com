@@ -22,10 +22,11 @@ trait APIv3Service extends Directives {
           get {
             respondWithMediaType(`text/plain`) {
               completeWith {
-                (getOrders ? GetOrdersFor(true, List[Long](typeid), Nil, Nil, 24)).as[Seq[MarketOrder]] match {
-                  case Some(x) => x(0).orderId.toString
-                  case None => "None"
-                }
+                //(getOrders ? GetOrdersFor(true, List[Long](typeid), Nil, Nil, 24)).as[Seq[MarketOrder]] match {
+                 // case Some(x) => x(0).orderId.toString
+                  //case None => "None"
+                "Hello!"
+                //}
 
               }
             }
