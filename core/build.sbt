@@ -42,6 +42,13 @@ libraryDependencies += "org.fusesource.scalate" % "scalate-core" % "1.5.3"
 
 libraryDependencies += "cc.spray.json" %% "spray-json" % "1.0.1" % "compile" withSources()
 
+libraryDependencies += "net.sf.jung" % "jung-algorithms" % "2.0.1"
+
+libraryDependencies += "net.sf.jung" % "jung-graph-impl" % "2.0.1"
+
+
+
+
 seq(com.zentrope.ScalatePlugin.scalateTemplateSettings : _*)
 
 seq(assemblySettings: _*)

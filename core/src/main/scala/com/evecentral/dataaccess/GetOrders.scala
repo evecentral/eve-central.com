@@ -5,15 +5,15 @@ import akka.routing._
 import akka.actor.Actor
 import akka.event.EventHandler
 import Actor._
-import net.noerd.prequel.IntFormattable
 import com.evecentral.{ECActorPool, ActorUtil, Database}
 import org.joda.time.{DateTime, Period}
 import org.postgresql.util.PGInterval
+import net.noerd.prequel.{StringFormattable, IntFormattable}
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
                        volremain: Int,  volenter: Int, minVolume: Int, expires: Period, reportedAt: DateTime)
 
-case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long)
+case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24)
 
 
 class GetOrdersActor extends ECActorPool {
@@ -28,6 +28,8 @@ class GetOrdersActor extends ECActorPool {
     val db = Database.coreDb
     val regionLimit = Database.concatQuery("regionid", filter.regions)
     val typeLimit = Database.concatQuery("typeid", filter.types)
+    val systems = Database.concatQuery("systemid", filter.systems)
+    val hours = filter.hours + " hours"
     val bid = filter.bid match {
       case true => 1
       case _ => 0
@@ -37,9 +39,10 @@ class GetOrdersActor extends ECActorPool {
       tx =>
 
         tx.select("SELECT typeid,orderid,price,bid,stationid,systemid,regionid,range,volremain,volenter,minvolume,duration,reportedtime" +
-          " FROM current_market WHERE bid = ? AND (" +
+          " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND bid = ? AND (" +
           typeLimit + ") AND (" +
-          regionLimit + ") AND price > 0.15 ", IntFormattable(bid)) {
+          regionLimit + ") AND ( " +
+          systems + ") AND price > 0.15 ", StringFormattable(hours), IntFormattable(bid)) {
           row =>
             MarketOrder(extract(row.nextLong), extract(row.nextLong), extract(row.nextDouble), extract(row.nextBoolean),
               StaticProvider.stationsMap(extract(row.nextLong)),
