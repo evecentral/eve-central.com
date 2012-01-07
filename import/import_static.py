@@ -3,6 +3,20 @@ import sqlite3
 
 import sys
 
+def import_jumps(dbs, db):
+    cur = db.cursor()
+    curs = dbs.cursor()
+    curs.execute('SELECT fromRegionID,fromConstellationID,fromSolarSystemID,toSolarSystemID,toConstellationID,toRegionID FROM mapSolarSystemJumps')
+    for row in curs:
+        print row[2],"to",row[3]
+        cur.execute('SELECT fromsystem FROM jumps WHERE fromsystem = %s AND tosystem = %s', (row[2], row[3]))
+        r = cur.fetchone()
+        if not r:
+            cur.execute('INSERT INTO jumps (fromregion, fromconstellation, fromsystem, tosystem, toconstellation, toregion) VALUES (%s,%s,%s,%s,%s,%s)',
+                        (row[0], row[1], row[2], row[3], row[4], row[5]))
+            print "INSERT"
+        db.commit()
+        
 
 def import_regions(dbs,db):
     cur = db.cursor()
@@ -56,6 +70,7 @@ def import_stations(dbs,db):
 def main(sqle):
     db = psycopg2.connect(database = 'evec', user = 'evec')
     dbs = sqlite3.connect(sqle)
+    import_jumps(dbs, db)
     import_regions(dbs, db)
     import_systems(dbs, db)
     import_stations(dbs, db)
