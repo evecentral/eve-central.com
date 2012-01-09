@@ -11,12 +11,13 @@ import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
 import routes.RouteFinderActor
+import org.slf4j.LoggerFactory
 
 
 object Boot extends App {
 
 
-  //LoggerFactory.getLogger(getClass)
+  LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
   val apiModule = new APIv3Service {}
