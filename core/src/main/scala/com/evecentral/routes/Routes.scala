@@ -18,7 +18,7 @@ case class Jump(from: SolarSystem, to: SolarSystem, secChange : Boolean = false)
 /**
  * Helper for Jung Dijkstra's
  */
-private class JumpExtractor(secWeight : Int = 1000) extends org.apache.commons.collections15.Transformer[Jump,  java.lang.Number] {
+private class JumpExtractor(secWeight : Int = 100) extends org.apache.commons.collections15.Transformer[Jump,  java.lang.Number] {
   def transform(j: Jump) : Number = {
     j.secChange match {
       case true => secWeight
@@ -85,7 +85,7 @@ class RouteFinderActor extends Actor {
             val to = row.nextInt match {
               case Some(x) => StaticProvider.systemsMap(x)
             }
-            val jump = Jump(from, to, (from.security < 0.5) || (to.security < 0.5))
+            val jump = Jump(from, to, (from.security >= 0.5) && (to.security < 0.5))
             val edges = new edu.uci.ics.jung.graph.util.Pair[SolarSystem](from,to)
             graph.addEdge(jump, edges, EdgeType.DIRECTED)
 
