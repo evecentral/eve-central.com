@@ -35,7 +35,7 @@ object Boot extends App {
 
   val config = cc.spray.can.ServerConfig(host = "0.0.0.0")
 
-  val httpApiService = actorOf(new HttpService(apiModule.helloService))
+  val httpApiService = actorOf(new HttpService(apiModule.api3Service))
   val httpApiv2Service = actorOf(new HttpService(apiv2Module.v2Service))
   val httpStaticService = actorOf(new HttpService(staticModule.staticService))
   val httpFeService = actorOf(new HttpService(frontEndService.frontEndService))

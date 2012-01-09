@@ -8,6 +8,11 @@ import java.net.URLDecoder
 import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
 
+/**
+ * A helper object for dealing with parameter lists, especially ones
+ * containing repeated parameters which don't play nice with spray's
+ * single-map implementation of them.
+ */
 object ParameterHelper {
   def paramsFromQuery(name: String, params: List[(String, String)]): List[String] = {
     params.foldLeft(List[String]()) {
@@ -28,7 +33,10 @@ object ParameterHelper {
 
 }
 
-
+/**
+ * Either we use reflection shenanigans to get to BaseParser in spray,
+ * or we just duplicate it here :-/
+ */
 private[evecentral] trait BaseParser extends Parser {
 
   def parse[A](rule: Rule1[A], input: String): Either[String, A] = {
@@ -41,6 +49,11 @@ private[evecentral] trait BaseParser extends Parser {
 
 }
 
+/**
+ * Shamelessly stolen and adapted from spray-base.
+ * Parses query lists with repeated parameters - an old legacy from EC
+ * (but something that cherrypy did out of the box)
+ */
 object RepeatQueryParser extends BaseParser {
 
   def QueryString: Rule1[List[(String, String)]] = rule(

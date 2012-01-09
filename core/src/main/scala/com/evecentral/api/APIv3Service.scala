@@ -14,12 +14,10 @@ import cc.spray.typeconversion.SprayJsonSupport
 
 trait APIv3Service extends Directives with DefaultJsonProtocol with SprayJsonSupport {
 
-  def path = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
-  def getOrders = {
-    val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0)
-  }
+  def pathActor = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
+  def ordersActor = { val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0) }
 
-  val helloService = {
+  val api3Service = {
     pathPrefix("api3") {
       path("distance/from" / IntNumber / "to" / IntNumber) {
         (fromid, toid) =>
@@ -28,7 +26,7 @@ trait APIv3Service extends Directives with DefaultJsonProtocol with SprayJsonSup
               ctx =>
               val from = StaticProvider.systemsMap(fromid)
               val to = StaticProvider.systemsMap(toid)
-              ctx.complete((path ? DistanceBetween(from, to)).as[Int] match {
+              ctx.complete((pathActor ? DistanceBetween(from, to)).as[Int] match {
                   case Some(x) => Map("distance" -> x)
                   case _ => throw new Exception("No value returned")
                 }

@@ -1,6 +1,5 @@
 package com.evecentral.frontend
 
-import com.evecentral.frontend.Formatter
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 
