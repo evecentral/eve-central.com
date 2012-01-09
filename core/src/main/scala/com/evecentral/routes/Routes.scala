@@ -50,11 +50,11 @@ class RouteFinderActor extends Actor {
     dsp = new DijkstraShortestPath[SolarSystem, Jump](graph, new JumpExtractor(), true)
   }
 
-  def routeDistance(from: SolarSystem, to: SolarSystem) : Int = {
+  private[routes] def routeDistance(from: SolarSystem, to: SolarSystem) : Int = {
     route(from, to).length
   }
 
-  def route(from: SolarSystem, to: SolarSystem) : Seq[Jump] = {
+  private[routes] def route(from: SolarSystem, to: SolarSystem) : Seq[Jump] = {
     dsp.getPath(from, to) asScala
   }
 

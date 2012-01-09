@@ -22,6 +22,8 @@ libraryDependencies += "se.scalablesolutions.akka" % "akka-stm" % "1.3-RC4"
 
 libraryDependencies += "se.scalablesolutions.akka" % "akka-testkit" % "1.3-RC4"
 
+libraryDependencies += "se.scalablesolutions.akka" % "akka-slf4j" % "1.3-RC4"
+
 libraryDependencies += "net.noerd" % "prequel_2.9.1" % "0.3.6"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
@@ -42,7 +44,7 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "0.9.29"
 
 libraryDependencies += "org.fusesource.scalate" % "scalate-core" % "1.5.3"
 
-libraryDependencies += "cc.spray.json" %% "spray-json" % "1.0.1" % "compile" withSources()
+libraryDependencies += "cc.spray.json" %% "spray-json" % "1.1.0-SNAPSHOT" % "compile" changing() withSources()
 
 libraryDependencies += "net.sf.jung" % "jung-algorithms" % "2.0.1"
 
