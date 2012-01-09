@@ -20,6 +20,8 @@ libraryDependencies += "se.scalablesolutions.akka" % "akka-actor" % "1.3-RC4"
 
 libraryDependencies += "se.scalablesolutions.akka" % "akka-stm" % "1.3-RC4"
 
+libraryDependencies += "se.scalablesolutions.akka" % "akka-testkit" % "1.3-RC4"
+
 libraryDependencies += "net.noerd" % "prequel_2.9.1" % "0.3.6"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
@@ -45,6 +47,8 @@ libraryDependencies += "cc.spray.json" %% "spray-json" % "1.0.1" % "compile" wit
 libraryDependencies += "net.sf.jung" % "jung-algorithms" % "2.0.1"
 
 libraryDependencies += "net.sf.jung" % "jung-graph-impl" % "2.0.1"
+
+libraryDependencies += "org.scalaj" %% "scalaj-collection" % "1.2"
 
 
 

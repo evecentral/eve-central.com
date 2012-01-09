@@ -6,7 +6,8 @@ import org.postgresql.Driver
 
 object Database {
 
-  def coreDb = DatabaseConfig(
+
+  lazy val coreDb = DatabaseConfig(
     driver = "org.postgresql.Driver",
     jdbcURL = "jdbc:postgresql://localhost/evec",
     username = "evec",

@@ -10,6 +10,7 @@ import cc.spray.{SprayCanRootService, HttpService}
 import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
+import routes.RouteFinderActor
 
 
 object Boot extends App {
@@ -54,7 +55,9 @@ object Boot extends App {
         Supervise(httpFeService, Permanent),
         Supervise(rootService, Permanent),
         Supervise(sprayCanServer, Permanent),
-        Supervise(actorOf(new GetOrdersActor()), Permanent)
+        Supervise(actorOf(new GetOrdersActor()), Permanent),
+        Supervise(actorOf(new RouteFinderActor()), Permanent)
+
       )
     )
   )
