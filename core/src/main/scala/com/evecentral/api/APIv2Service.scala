@@ -9,10 +9,11 @@ import scala.xml._
 import com.evecentral.dataaccess._
 import cc.spray.{RequestContext, Directives}
 import cc.spray.typeconversion.DefaultMarshallers
-import akka.routing.DefaultActorPool
-import com.evecentral.ECActorPool
+
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
+
+import com.evecentral.{ECActorPool}
 
 
 class QuickLookQuery extends ECActorPool {
@@ -20,10 +21,12 @@ class QuickLookQuery extends ECActorPool {
   import com.evecentral.ParameterHelper._
 
 
-  def instance = actorOf(new Actor with DefaultMarshallers {
+  def instance = actorOf(new Actor with DefaultMarshallers  {
     def receive = {
       case ctx: RequestContext =>
-        val params = extractListOfParams(ctx.request.uri)
+
+        val params = listFromContext(ctx)
+
         val typeid = singleParam("typeid", params) match {
           case Some(x) => x
           case None => 34
@@ -121,12 +124,28 @@ trait APIv2Service extends Directives {
 
   val v2Service = {
     path("api/quicklook") {
-      get {
+      (get | post) {
             ctx =>
               (quicklookActor ! ctx)
 
         }
       
+    } ~ path("api/goofy") {
+      get {
+        respondWithContentType(`text/html`) {
+        completeWith {
+          <html>
+            <body>
+              <form method="POST" action="/api/quicklook">
+                  <input type="text" name="typeid" value="2003"/>
+                  <input type="text" name="regionlimit" value="10000049"/>
+                  <input type="submit" value="Go"/>
+              </form>
+             </body>
+            </html>
+        }
+        }
+      }
     }
   }
 

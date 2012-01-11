@@ -7,6 +7,8 @@ import java.net.URLDecoder
 
 import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
+import cc.spray.RequestContext
+import java.nio.charset.Charset
 
 /**
  * A helper object for dealing with parameter lists, especially ones
@@ -14,23 +16,38 @@ import org.parboiled.errors.ErrorUtils
  * single-map implementation of them.
  */
 object ParameterHelper {
-  def paramsFromQuery(name: String, params: List[(String, String)]): List[String] = {
+  
+  type ML = List[(String,  String)]
+  
+  def paramsFromQuery(name: String, params: ML: List[String] = {
     params.foldLeft(List[String]()) {
       (i, s) => if (s._1 == name) s._2 :: i else i
     }
   }
 
-  def extractListOfParams(uri: String): List[(String, String)] = {
+  def extractListOfParams(uri: String): ML = {
     RepeatQueryParser.parse(new URI(uri).getRawQuery)
   }
 
-  def singleParam[T](name: String, params: List[(String, String)]): Option[Long] = {
+  def singleParam[T](name: String, params: ML: Option[Long] = {
     paramsFromQuery(name, params) match {
       case Nil => None
       case x: List[String] => Some(x(0).toLong)
     }
   }
 
+  def listFromContext(ctx : RequestContext) : ML = {
+    val formdata = ctx.request.content match {
+      case Some(c) => Some(new String(c.buffer, Charset.forName("UTF-8")))
+      case None => None
+    }
+
+    formdata match {
+      case None => extractListOfParams(ctx.request.uri)
+      case Some(fd) => extractListOfParams(ctx.request.uri + "?" + fd)
+    }
+  }
+  
 }
 
 /**
