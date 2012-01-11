@@ -1,8 +1,27 @@
-
 <footer class="footer">
     <div class="container">
         <p class="pull-right"></p>
-        <p>&copy; 2012 StackFoundry LLC</p>
+
+        <p>&copy; 2012 StackFoundry LLC. For help, please contact <a href="mailto:support@eve-central.com">support@eve-central.com</a></p>
+        <p> Support EVE-Central by purchasing EVE Time Codes at <a href="http://www.shatteredcrystal.com/code.php/eve_online/~325">Shattered Crystal</a></p>
+        <p>
+            Material related to EVE-Online is used with limited permission of CCP
+            Games hf. No official affiliation or endorsement by CCP Games hf is stated or implied. </p>
+
+        <p>
+
+            <script type="text/javascript"><!--
+google_ad_client = "ca-pub-8691225504311148";
+/* Big Banner */
+google_ad_slot = "8769907779";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+            </script>
+            <script type="text/javascript"
+                    src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+            </script>
+        </p>
     </div>
 </footer>
 </body>

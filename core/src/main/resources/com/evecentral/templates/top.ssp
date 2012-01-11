@@ -28,7 +28,7 @@
                 <li><a href="#about">Orders and Statistics</a></li>
                 <li><a href="#contact">Trade Routes</a></li>
                 <li><a href="#contact">Comparison</a></li>
-                <li><a href="#contact">Contribute</a></li>
+                <li><a href="/contribute">Contribute</a></li>
             </ul>
             <!--
             <p class="pull-right">Logged in as <a href="#">username</a></p>
