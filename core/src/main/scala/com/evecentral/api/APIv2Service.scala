@@ -37,7 +37,7 @@ class QuickLookQuery extends ECActorPool {
         }
         val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
         val usesystem = singleParam("usesystem", params)
-        val minq = singleParam("setminQ", params) // We need more logic for single param
+        val minq = singleParam("setminQ", params)
         ctx.complete(queryQuicklook(typeid, setHours, regionLimit, usesystem, minq))
     }
   })
@@ -60,7 +60,7 @@ class QuickLookQuery extends ECActorPool {
 
   val dateOnly = DateTimeFormat.forPattern("yyyy-MM-dd")
 
-  val dateTime = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss")
+  val dateTime = DateTimeFormat.forPattern("MM-dd hh:mm:ss")
 
   def showOrders(orders: Option[Seq[MarketOrder]]): NodeSeq = {
     orders match {
