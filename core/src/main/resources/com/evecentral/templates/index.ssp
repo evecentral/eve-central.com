@@ -1,0 +1,131 @@
+${render("top.ssp")}
+
+
+<div class="jumbotron subhead" id="overview">
+    <div class="inner">
+        <div class="container">
+            <h1>EVE-Central: The Market Aggregator and Toolkit</h1>
+
+            <p class="lead">View orders and get statistics across the entire EVE-Online market</p>
+        </div>
+    </div>
+</div>
+
+<div class="quickstart">
+    <div class="container">
+        <div class="row">
+            <div class="span5">
+                <h6>Price Snapshots</h6>
+
+                <p>Tritanium: 3 ISK</p>
+
+                <p>Tritanium: 3 ISK</p>
+
+                <p>Tritanium: 3 ISK</p>
+            </div>
+            <div class="span5">
+                <h6>Search the Market</h6>
+
+                <form>
+                    <fieldset>
+                        <input name="typename" type="text" placeholder="Search the market by name">
+                    </fieldset>
+                </form>
+                <p><a href="#" class="mute">Customize Search</a></p>
+            </div>
+            <div class="span5">
+                <h6>Contribute Data</h6>
+
+                <p>Don't worry, its pain free!</p>
+
+                <p><a href="/software" class="btn">Download Market Scanner</a></p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">&nbsp;</div>
+</div>
+
+<div class="container">
+
+    <div class="page-header">
+        <h1>How it Works
+            <small>And how to help</small>
+        </h1>
+    </div>
+
+
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="span16">
+
+            <p>The EVE-Online Market is missing some key functionality, including not being able to browse the
+                markets in a region you are not in. By collecting views of the market from players such as yourself
+                via our software, EVE-Central provides a more complete picture of the market. Participating in the
+                community is easy - simply download our market client, and everthing is automatic!
+
+            <p><a class="btn" href="/software">Download our Market Scanner &raquo;</a></p>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="span8">
+            <h2>Heading</h2>
+
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
+                mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
+                mollis euismod. Donec sed odio dui. </p>
+
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span8">
+            <h2>Heading</h2>
+
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
+                porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+                ut fermentum massa justo sit amet risus.</p>
+
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+    </div>
+    <hr>
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="span6">
+            <h2>Heading</h2>
+
+            <p>Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere
+                velit aliquet. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Duis
+                mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
+
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span5">
+            <h2>Heading</h2>
+
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
+                mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
+                mollis euismod. Donec sed odio dui. </p>
+
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span5">
+            <h2>Heading</h2>
+
+            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula
+                porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+                ut fermentum massa justo sit amet risus.</p>
+
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+    </div>
+
+
+</div>
+
+${render("footer.ssp")}
+
+

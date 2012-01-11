@@ -11,7 +11,7 @@ trait FrontEndService extends Directives with ScalateSupport {
   val frontEndService = {
       path("") {
         get {
-          render("com/evecentral/templates/test.ssp", Map())
+          render("com/evecentral/templates/index.ssp", Map())
         }
       }
   }

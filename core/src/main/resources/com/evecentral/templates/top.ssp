@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>EVE-Central</title>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/evec.css" rel="stylesheet">
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="#"><img src="/static/images/evec_logo.png"></a>
+            <ul class="nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#about">Orders and Statistics</a></li>
+                <li><a href="#contact">Trade Routes</a></li>
+                <li><a href="#contact">Comparison</a></li>
+                <li><a href="#contact">Contribute</a></li>
+            </ul>
+            <!--
+            <p class="pull-right">Logged in as <a href="#">username</a></p>
+            -->
+            <form class="pull-right">
+                <input type="text" placeholder="Market search">
+            </form>
+        </div>
+
+    </div>
+</div>
