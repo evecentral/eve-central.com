@@ -19,7 +19,7 @@ object ParameterHelper {
   
   type ML = List[(String,  String)]
   
-  def paramsFromQuery(name: String, params: ML: List[String] = {
+  def paramsFromQuery(name: String, params: ML): List[String] = {
     params.foldLeft(List[String]()) {
       (i, s) => if (s._1 == name) s._2 :: i else i
     }
@@ -29,7 +29,7 @@ object ParameterHelper {
     RepeatQueryParser.parse(new URI(uri).getRawQuery)
   }
 
-  def singleParam[T](name: String, params: ML: Option[Long] = {
+  def singleParam[T](name: String, params: ML): Option[Long] = {
     paramsFromQuery(name, params) match {
       case Nil => None
       case x: List[String] => Some(x(0).toLong)
