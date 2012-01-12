@@ -25,7 +25,8 @@ object Boot extends App {
     Supervisor(
       SupervisorConfig(OneForOneStrategy(List(classOf[Exception]), 3, 100),
         List(
-          Supervise(quicklookActor, Permanent)
+          Supervise(quicklookActor, Permanent),
+          Supervise(marketstatActor, Permanent)
         )
       ))
   }

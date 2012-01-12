@@ -13,6 +13,9 @@ class OrderStatistics(over: Seq[MarketOrder], highToLow: Boolean = false) {
   
   lazy val median = OrderStatistics.median(sorted, (volume.toDouble / 2.0))
   lazy val fivePercent = OrderStatistics.buyup(sorted, (volume * .05).toLong)
+
+  lazy val max = OrderStatistics.max(over)
+  lazy val min = OrderStatistics.min(over)
 }
 
 object OrderStatistics {
@@ -24,10 +27,28 @@ object OrderStatistics {
     new OrderStatistics(over, highToLow)
   }
   
+  def max(over: Seq[MarketOrder]) : Double = {
+    over.isEmpty match {
+      case false =>
+        over.maxBy(_.price).price
+      case true =>
+        0.0
+    }
+  }
+  
+  def min(over: Seq[MarketOrder]) : Double = {
+    over.isEmpty match {
+      case false =>
+        over.minBy(_.price).price
+      case true =>
+        0.0
+    }
+  }
+  
   def volume(over: Seq[MarketOrder]): Long = {
     over.isEmpty match {
       case false =>
-        over.foldLeft(0)((a, b) => a + b.volenter)
+        over.foldLeft(0.toLong)((a, b) => a + b.volenter)
       case true =>
         0
     }

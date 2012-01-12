@@ -11,7 +11,7 @@ import org.postgresql.util.PGInterval
 import net.noerd.prequel.{StringFormattable, IntFormattable}
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
-                       volremain: Int,  volenter: Int, minVolume: Int, expires: Period, reportedAt: DateTime) {
+                       volremain: Long,  volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {
   val weightPrice = price * volenter
 }
 
@@ -19,7 +19,7 @@ object MarketOrder {
   implicit def pimpMoToDouble(m: MarketOrder) : Double = { m.price }
 }
 
-case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24)
+case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24, minq: Long = 1)
 
 
 class GetOrdersActor extends ECActorPool {
@@ -40,7 +40,7 @@ class GetOrdersActor extends ECActorPool {
       case true => 1
       case _ => 0
     }
-
+    
     db.transaction {
       tx =>
 
@@ -54,7 +54,7 @@ class GetOrdersActor extends ECActorPool {
               StaticProvider.stationsMap(extract(row.nextLong)),
               StaticProvider.systemsMap(extract(row.nextLong)),
               StaticProvider.regionsMap(extract(row.nextLong)), extract(row.nextInt),
-              extract(row.nextInt), extract(row.nextInt), extract(row.nextInt),
+              extract(row.nextLong), extract(row.nextLong), extract(row.nextLong),
               new Period(extract(row.nextObject).asInstanceOf[PGInterval].getSeconds.toLong),
               new DateTime(extract(row.nextDate))
             );

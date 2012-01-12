@@ -11,20 +11,18 @@ trait ActorUtil {
     (f: Future[Any]) => f.value.get.fold(c.sendException(_),c.tell(_))
 }
 
-trait ECActorPool extends Actor with DefaultActorPool with BoundedCapacityStrategy
-with ActiveFuturesPressureCapacitor
+trait ECActorPool extends Actor with DefaultActorPool
+with FixedCapacityStrategy
 with SmallestMailboxSelector
 with BasicNoBackoffFilter {
 
   def receive = _route
 
-  def lowerBound = 4
-
-  def upperBound = 8
-
-  def rampupRate = 0.1
+  def limit = 4
 
   def partialFill = true
+
+  def rampupRate = 1
 
   def selectionCount = 1 
 }
