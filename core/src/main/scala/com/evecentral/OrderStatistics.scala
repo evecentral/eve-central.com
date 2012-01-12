@@ -11,7 +11,7 @@ class OrderStatistics(over: Seq[MarketOrder], highToLow: Boolean = false) {
   lazy val stdDev = OrderStatistics.stdDev(variance)
   lazy val sorted = OrderStatistics.sorted(over, highToLow)
   
-  lazy val median = OrderStatistics.median(sorted, volume / 2)
+  lazy val median = OrderStatistics.median(sorted, (volume.toDouble / 2.0))
   lazy val fivePercent = OrderStatistics.buyup(sorted, (volume * .05).toLong)
 }
 
@@ -38,22 +38,24 @@ object OrderStatistics {
   
   /**
    * A bad imperative median
+   *
    */
-  def median(sorted: Seq[MarketOrder], volumeTo: Long): Double = {
+  def median(sorted: Seq[MarketOrder], volumeTo: Double): Double = {
     sorted.isEmpty match {
 
       case false =>
-        
+        var rest = sorted
         var sumVolume: Long = 0
-        var position = 0
+        
         while (sumVolume <= volumeTo) {
-          sumVolume += sorted(position).volenter
-          position += 1
+          sumVolume += rest.head.volenter
+          if (sumVolume < volumeTo)
+            rest = rest.tail
         }
-        if (position >= sorted.length)
-          sorted(position-1).price
+        if (sorted.length % 2 == 0 && rest.length > 1)
+          (rest.head.price + rest.tail.head.price) / 2.0
         else
-          sorted(position).price
+          rest.head.price
       case true =>
         0.0
     }

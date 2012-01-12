@@ -22,4 +22,38 @@ class OrderStatisticsTest extends FunSuite with ShouldMatchers {
     os.fivePercent should equal(1)
     os.median should equal(1)
   }
+  
+  test("Zero stats") {
+    val orders = List()
+    val os = new OrderStatistics(orders)
+    os.avg should equal(0)
+    os.volume should equal(0)
+    os.stdDev should equal(0)
+    os.variance should equal(0)
+    os.median should equal(0)
+    os.fivePercent should equal(0)
+  }
+  
+  test("Two stat") {
+    val orders = List(makeOrder(1,1), makeOrder(2,1))
+    val os = new OrderStatistics(orders)
+    os.avg should equal(1.5)
+    os.wavg should equal(1.5)
+    os.median should equal(1.5)
+  }
+
+  test("Three stat") {
+    val orders = List(makeOrder(1,1), makeOrder(2,1), makeOrder(3,1))
+    val os = new OrderStatistics(orders)
+    os.avg should equal(2)
+    os.wavg should equal(2)
+    os.median should equal(2)
+  }
+  
+  test("Two state uneven") {
+    val orders = List(makeOrder(1,1), makeOrder(2,1000))
+    val os = new OrderStatistics(orders)
+    os.median should equal(2)
+    os.fivePercent should be (1.999 plusOrMinus 0.0001)
+  }
 }
