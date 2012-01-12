@@ -20,6 +20,10 @@ object OrderStatistics {
   import MarketOrder._
 
 
+  def apply(over: Seq[MarketOrder], highToLow: Boolean = false) : OrderStatistics = {
+    new OrderStatistics(over, highToLow)
+  }
+  
   def volume(over: Seq[MarketOrder]): Long = {
     over.isEmpty match {
       case false =>
@@ -71,7 +75,7 @@ object OrderStatistics {
         
         while (sumVolume <= volumeTo) {
           sumVolume += left.head.volenter
-          orders = orders ++ List[MarketOrder](left.head)
+          orders =  List[MarketOrder](left.head) ++ orders
           left = left.tail
         }
         wavg(orders, sumVolume)
