@@ -12,7 +12,7 @@ import net.noerd.prequel.{StringFormattable, IntFormattable}
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
                        volremain: Int,  volenter: Int, minVolume: Int, expires: Period, reportedAt: DateTime) {
-  val weightPrice = price * volremain
+  val weightPrice = price * volenter
 }
 
 object MarketOrder {
