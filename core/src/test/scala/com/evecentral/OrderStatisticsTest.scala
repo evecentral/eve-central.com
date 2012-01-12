@@ -55,6 +55,7 @@ class OrderStatisticsTest extends FunSuite with ShouldMatchers {
     val os = OrderStatistics(orders)
     os.median should equal(2)
     os.fivePercent should be (1.999 plusOrMinus 0.0001)
+    os.wavg should be (1.99 plusOrMinus 0.01)
   }
   
   test("Lots of orders") {
@@ -69,5 +70,7 @@ class OrderStatisticsTest extends FunSuite with ShouldMatchers {
     os.volume should equal (num)
     os.avg should equal (1)
     os.median should equal(1)
+    os.fivePercent should equal(1)
+    os.wavg should equal (1)
   }
 }
