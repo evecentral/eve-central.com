@@ -35,4 +35,8 @@ object Formatter {
       case y => "%.02f" format (y)
     }
   }
+
+
+  def priceString(a: Double) : String = { "%.2f" format (a) }
+
 }

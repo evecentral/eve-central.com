@@ -13,10 +13,10 @@ import cc.spray.typeconversion.DefaultMarshallers
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
-import com.evecentral.{ECActorPool}
 import com.evecentral.ParameterHelper._
 
-import com.evecentral.OrderStatistics
+import com.evecentral.{OrderStatistics, ECActorPool}
+import com.evecentral.frontend.Formatter.priceString
 
 trait BaseOrderQuery {
 
@@ -69,6 +69,7 @@ class QuickLookQuery extends ECActorPool with BaseOrderQuery {
   val dateTime = DateTimeFormat.forPattern("MM-dd hh:mm:ss")
 
   def showOrders(orders: Option[Seq[MarketOrder]]): NodeSeq = {
+    
     orders match {
       case None => Seq[Node]()
       case Some(o) => o.foldLeft(Seq[Node]()) {
@@ -79,7 +80,7 @@ class QuickLookQuery extends ECActorPool with BaseOrderQuery {
             <station_name>{order.station.name}</station_name>
             <security>{order.system.security}</security>
             <range>{order.range}</range>
-            <price>{order.price}</price>
+            <price>{priceString(order.price)}</price>
             <vol_remain>{order.volremain}</vol_remain>
             <min_volume>{order.minVolume}</min_volume>
             <expires>{dateOnly.print(new DateTime().plus(order.expires))}</expires>
@@ -148,20 +149,14 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
 
   def subGroupXml(alls: OrderStatistics) : NodeSeq = {
     <volume>{alls.volume}</volume>
-      <avg>{alls.wavg}</avg>
-      <max>{alls.max}</max>
-      <min>{alls.min}</min>
-      <stddev>{alls.stdDev}</stddev>
-      <median>{alls.median}</median>
-      <percentile>{alls.fivePercent}</percentile>
+      <avg>{priceString(alls.wavg)}</avg>
+      <max>{priceString(alls.max)}</max>
+      <min>{priceString(alls.min)}</min>
+      <stddev>{priceString(alls.stdDev)}</stddev>
+      <median>{priceString(alls.median)}</median>
+      <percentile>{priceString(alls.fivePercent)}</percentile>
   }
-  
-  def completeAsMOS(o: Option[Seq[MarketOrder]]) : Seq[MarketOrder] = {
-    o match {
-      case Some(o) => o
-      case None => List[MarketOrder]()
-    }
-  }
+
   
   def typeXml(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]) : NodeSeq = {
     val numminq = minq match {
@@ -184,8 +179,8 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
     /**
      * !TODO: This could be nicer - allow partial XML generation without waiting on the orders actor
      */
-    val selr = completeAsMOS(self.as[Seq[MarketOrder]])
-    val buyr = completeAsMOS(buyf.as[Seq[MarketOrder]])
+    val selr = self.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
+    val buyr = buyf.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
 
     val allr = selr ++ buyr // Warning: Linear append
     val alls = OrderStatistics(allr)
