@@ -19,44 +19,45 @@ object MarketOrder {
   implicit def pimpMoToDouble(m: MarketOrder) : Double = { m.price }
 }
 
-case class GetOrdersFor(bid: Boolean, types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24, minq: Long = 1)
+case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24, minq: Long = 1)
 
 
 class GetOrdersActor extends ECActorPool {
-
-  def extract[T](t: Option[T]): T = {
-    t match {
-      case Some(x) => x
-    }
-  }
-
+  /**
+   * This query does a lot of internal SQL building and not a prepared statement. I'm sorry,
+   * but at least everything is typesafe :-)
+   */
   private def orderList(filter: GetOrdersFor): Seq[MarketOrder] = {
     val db = Database.coreDb
     val regionLimit = Database.concatQuery("regionid", filter.regions)
     val typeLimit = Database.concatQuery("typeid", filter.types)
     val systems = Database.concatQuery("systemid", filter.systems)
     val hours = filter.hours + " hours"
+
     val bid = filter.bid match {
-      case true => 1
-      case _ => 0
+      case Some(b) => b match {
+        case true => "bid = 1"
+        case _ => "bid = 0"
+      }
+      case None => "1=1"
     }
     
     db.transaction {
       tx =>
 
         tx.select("SELECT typeid,orderid,price,bid,stationid,systemid,regionid,range,volremain,volenter,minvolume,duration,reportedtime" +
-          " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND bid = ? AND (" +
+          " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND " + bid + " AND (" +
           typeLimit + ") AND (" +
           regionLimit + ") AND ( " +
-          systems + ") AND price > 0.15 ", StringFormattable(hours), IntFormattable(bid)) {
+          systems + ") AND price > 0.15 ", StringFormattable(hours)) {
           row =>
-            MarketOrder(extract(row.nextLong), extract(row.nextLong), extract(row.nextDouble), extract(row.nextBoolean),
-              StaticProvider.stationsMap(extract(row.nextLong)),
-              StaticProvider.systemsMap(extract(row.nextLong)),
-              StaticProvider.regionsMap(extract(row.nextLong)), extract(row.nextInt),
-              extract(row.nextLong), extract(row.nextLong), extract(row.nextLong),
-              new Period(extract(row.nextObject).asInstanceOf[PGInterval].getSeconds.toLong),
-              new DateTime(extract(row.nextDate))
+            MarketOrder(row.nextLong.get, row.nextLong.get, row.nextDouble.get, row.nextBoolean get,
+              StaticProvider.stationsMap(row.nextLong get),
+              StaticProvider.systemsMap(row.nextLong get),
+              StaticProvider.regionsMap(row.nextLong get), row.nextInt get,
+              row.nextLong get, row.nextLong get, row.nextLong get,
+              new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong),
+              new DateTime(row.nextDate.get)
             );
         }
     }
@@ -64,7 +65,7 @@ class GetOrdersActor extends ECActorPool {
 
   def instance = actorOf(new Actor {
     def receive = {
-      case x: GetOrdersFor => self.reply(orderList(x))
+      case x: GetOrdersFor => self.channel ! orderList(x)
     }
   })
 }

@@ -97,11 +97,11 @@ class QuickLookQuery extends ECActorPool with BaseOrderQuery {
       case None => QueryDefaults.minQ(typeid)
     }
 
-    val buyq = GetOrdersFor(true, List(typeid), regionLimit, usesystem match {
+    val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesystem match {
       case None => Nil
       case Some(x) => List[Long](x)
     }, setHours)
-    val selq = GetOrdersFor(false, List(typeid), regionLimit, usesystem match {
+    val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesystem match {
       case None => Nil
       case Some(x) => List[Long](x)
     }, setHours)
@@ -168,11 +168,11 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
       case Some(q) => q
       case None => QueryDefaults.minQ(typeid)
     }
-    val buyq = GetOrdersFor(true, List(typeid), regionLimit, usesystem match {
+    val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesystem match {
       case None => Nil
       case Some(x) => List[Long](x)
     }, setHours, numminq)
-    val selq = GetOrdersFor(false, List(typeid), regionLimit, usesystem match {
+    val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesystem match {
       case None => Nil
       case Some(x) => List[Long](x)
     }, setHours, numminq)

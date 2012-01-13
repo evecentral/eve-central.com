@@ -1,21 +1,60 @@
 package com.evecentral
 
-import dataaccess.MarketOrder
+import dataaccess.{GetOrdersFor, MarketOrder}
 import scala.math._
+import org.joda.time.DateTime
 
-class OrderStatistics(over: Seq[MarketOrder], highToLow: Boolean = false) {
-  lazy val volume = OrderStatistics.volume(over)
-  lazy val wavg = OrderStatistics.wavg(over, volume)
-  lazy val avg = OrderStatistics.avg(over)
-  lazy val variance = OrderStatistics.variance(over, avg)
-  lazy val stdDev = OrderStatistics.stdDev(variance)
+trait OrderStatistics {
+  def volume : Long
+  def wavg : Double
+  def avg : Double
+  def variance : Double
+  def stdDev : Double
+
+  def median : Double
+  def fivePercent : Double
+
+  def max : Double
+  def min : Double
+}
+
+private class CachedOrderStatistics(forQuery: GetOrdersFor, atTime: DateTime, private[this] var from: OrderStatistics) extends OrderStatistics {
+  private val _volume = from.volume
+  private val _wavg = from.wavg
+  private val _avg = from.avg
+  private val _variance = from.variance
+  private val _stdDev = from.stdDev
+  private val _median = from.median
+  private val _fivePercent = from.median
+  private val _max = from.max
+  private val _min = from.min
+
+  override def volume = _volume
+  override def wavg = _wavg
+  override def avg = _avg
+  override def variance = _variance
+  override def stdDev = _stdDev
+  override def median = _median
+  override def fivePercent = _fivePercent
+  override def max = _max
+  override def min = _min
+
+
+}
+
+private class LazyOrderStatistics(over: Seq[MarketOrder], highToLow: Boolean = false) extends OrderStatistics {
+  override lazy val volume = OrderStatistics.volume(over)
+  override lazy val wavg = OrderStatistics.wavg(over, volume)
+  override lazy val avg = OrderStatistics.avg(over)
+  override lazy val variance = OrderStatistics.variance(over, avg)
+  override lazy val stdDev = OrderStatistics.stdDev(variance)
   lazy val sorted = OrderStatistics.sorted(over, highToLow)
-  
-  lazy val median = OrderStatistics.median(sorted, (volume.toDouble / 2.0))
-  lazy val fivePercent = OrderStatistics.buyup(sorted, (volume * .05).toLong)
 
-  lazy val max = OrderStatistics.max(over)
-  lazy val min = OrderStatistics.min(over)
+  override lazy val median = OrderStatistics.median(sorted, (volume.toDouble / 2.0))
+  override lazy val fivePercent = OrderStatistics.buyup(sorted, (volume * .05).toLong)
+
+  override lazy val max = OrderStatistics.max(over)
+  override lazy val min = OrderStatistics.min(over)
 }
 
 object OrderStatistics {
@@ -24,7 +63,11 @@ object OrderStatistics {
 
 
   def apply(over: Seq[MarketOrder], highToLow: Boolean = false) : OrderStatistics = {
-    new OrderStatistics(over, highToLow)
+    new LazyOrderStatistics(over, highToLow)
+  }
+
+  def cached(query: GetOrdersFor, data: OrderStatistics) : OrderStatistics = {
+    new CachedOrderStatistics(query, new DateTime(), data)
   }
   
   def max(over: Seq[MarketOrder]) : Double = {

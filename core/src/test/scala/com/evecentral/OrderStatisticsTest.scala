@@ -72,5 +72,16 @@ class OrderStatisticsTest extends FunSuite with ShouldMatchers {
     os.median should equal(1)
     os.fivePercent should equal(1)
     os.wavg should equal (1)
+
+  }
+  
+  test("Cached facade") {
+    val orders = List(makeOrder(1,1), makeOrder(2,1000))
+    val os = OrderStatistics(orders)
+    os.median should equal(2)
+    os.fivePercent should be (1.999 plusOrMinus 0.0001)
+    os.wavg should be (1.99 plusOrMinus 0.01)
+    val p = OrderStatistics.cached(null, os)
+    p.wavg should be (1.99 plusOrMinus 0.01)
   }
 }
