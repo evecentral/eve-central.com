@@ -125,10 +125,20 @@ class QuickLookQuery extends ECActorPool with BaseOrderQuery {
 
 }
 
+case class MarketstatQuery(ctx: RequestContext)
+case class EvemonQuery(ctx: RequestContext)
+
 class MarketStatActor extends ECActorPool with BaseOrderQuery {
+
   def instance = actorOf(new Actor with DefaultMarshallers  {
     def receive = {
-      case ctx: RequestContext =>
+      case EvemonQuery(ctx) =>
+        val types = List(34, 35, 36, 37, 38, 39, 40, 11399).map(StaticProvider.typesMap(_))
+
+        ctx.complete(<minerals>
+          {types.map(evemonMineral(_))}
+          </minerals>)
+      case MarketstatQuery(ctx) =>
 
         val params = listFromContext(ctx)
 
@@ -147,6 +157,16 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
     }
   })
 
+  def evemonMineral(mineral: MarketType) : NodeSeq = {
+    val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
+    val r = (ordersActor ? buyq).as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
+    val s = OrderStatistics(r)
+    <mineral>
+      <name>{mineral.name}</name>
+      <price>{priceString(s.wavg)}</price>
+    </mineral>
+  }
+
   def subGroupXml(alls: OrderStatistics) : NodeSeq = {
     <volume>{alls.volume}</volume>
       <avg>{priceString(alls.wavg)}</avg>
@@ -157,21 +177,24 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
       <percentile>{priceString(alls.fivePercent)}</percentile>
   }
 
-  
-  def typeXml(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]) : NodeSeq = {
+  def fetchOrdersFor(typeid: Long, setHours: Long, regionLimit: Seq[Long],
+                     usesystem: Option[Long], minq: Option[Long]) : (Seq[MarketOrder], Seq[MarketOrder]) = {
+
     val numminq = minq match {
       case Some(q) => q
       case None => QueryDefaults.minQ(typeid)
     }
+
     val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesystem match {
       case None => Nil
       case Some(x) => List[Long](x)
     }, setHours, numminq)
+
     val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesystem match {
       case None => Nil
       case Some(x) => List[Long](x)
     }, setHours, numminq)
-    
+
     val self = (ordersActor ? selq)
     val buyf = (ordersActor ? buyq)
 
@@ -181,6 +204,12 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
      */
     val selr = self.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
     val buyr = buyf.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
+    (selr, buyr)
+  }
+  
+  def typeXml(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]) : NodeSeq = {
+
+    val (buyr, selr) = fetchOrdersFor(typeid, setHours, regionLimit, usesystem, minq)
 
     val allr = selr ++ buyr // Warning: Linear append
     val alls = OrderStatistics(allr)
@@ -222,25 +251,30 @@ trait APIv2Service extends Directives {
               (quicklookActor ! ctx)
 
         }
-    } ~ path("api/marketstat") {
+    } ~ path("api/marketstat") { // Todo: this feels too repetitive, fix it
       (get | post) {
         ctx =>
-          (marketstatActor ! ctx)
+          (marketstatActor ! MarketstatQuery(ctx))
       }
+    } ~ path("api/evemon") {
+      (get | post) {
+        ctx =>
+          (marketstatActor ! EvemonQuery(ctx))
     } ~ path("api/goofy") {
-      get {
-        respondWithContentType(`text/html`) {
-        completeWith {
-          <html>
-            <body>
-              <form method="POST" action="/api/quicklook">
-                  <input type="text" name="typeid" value="2003"/>
-                  <input type="text" name="regionlimit" value="10000049"/>
-                  <input type="submit" value="Go"/>
-              </form>
-             </body>
-            </html>
-        }
+        get {
+          respondWithContentType(`text/html`) {
+            completeWith {
+              <html>
+                <body>
+                  <form method="POST" action="/api/quicklook">
+                      <input type="text" name="typeid" value="2003"/>
+                      <input type="text" name="regionlimit" value="10000049"/>
+                      <input type="submit" value="Go"/>
+                  </form>
+                </body>
+              </html>
+            }
+          }
         }
       }
     }
