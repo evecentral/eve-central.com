@@ -27,7 +27,7 @@ class CachedOrderStatistics(val forQuery: GetOrdersFor, private[this] var from: 
   private val _variance = from.variance
   private val _stdDev = from.stdDev
   private val _median = from.median
-  private val _fivePercent = from.median
+  private val _fivePercent = from.fivePercent
   private val _max = from.max
   private val _min = from.min
 
