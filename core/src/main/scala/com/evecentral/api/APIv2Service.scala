@@ -15,14 +15,19 @@ import org.joda.time.format.DateTimeFormat
 
 import com.evecentral.ParameterHelper._
 
-import com.evecentral.{OrderStatistics, ECActorPool}
 import com.evecentral.frontend.Formatter.priceString
+import com.evecentral._
 
 trait BaseOrderQuery {
 
 
   def ordersActor = {
     val r = (Actor.registry.actorsFor[GetOrdersActor]);
+    r(0)
+  }
+  
+  def statCache = {
+    val r = (Actor.registry.actorsFor[OrderCacheActor]);
     r(0)
   }
 
@@ -159,8 +164,8 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
 
   def evemonMineral(mineral: MarketType) : NodeSeq = {
     val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
-    val r = (ordersActor ? buyq).as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
-    val s = OrderStatistics(r)
+    val s = fetchCachedStats(buyq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq)), buyq)
+
     <mineral>
       <name>{mineral.name}</name>
       <price>{priceString(s.wavg)}</price>
@@ -177,44 +182,40 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
       <percentile>{priceString(alls.fivePercent)}</percentile>
   }
 
-  def fetchOrdersFor(typeid: Long, setHours: Long, regionLimit: Seq[Long],
-                     usesystem: Option[Long], minq: Option[Long]) : (Seq[MarketOrder], Seq[MarketOrder]) = {
-
-    val numminq = minq match {
-      case Some(q) => q
-      case None => QueryDefaults.minQ(typeid)
-    }
-
-    val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesystem match {
-      case None => Nil
-      case Some(x) => List[Long](x)
-    }, setHours, numminq)
-
-    val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesystem match {
-      case None => Nil
-      case Some(x) => List[Long](x)
-    }, setHours, numminq)
-
-    val self = (ordersActor ? selq)
+  def fetchOrdersFor(buyq: GetOrdersFor) : Seq[MarketOrder] = {
     val buyf = (ordersActor ? buyq)
-
-
-    /**
-     * !TODO: This could be nicer - allow partial XML generation without waiting on the orders actor
-     */
-    val selr = self.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
-    val buyr = buyf.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
-    (selr, buyr)
+    buyf.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
   }
-  
+
+  def fetchCachedStats(query: GetOrdersFor) = {
+    val r = (statCache ? GetCacheFor(query))
+    r.as[OrderStatistics]
+  }
+
+  def storeCachedStats(stats: OrderStatistics, query: GetOrdersFor) : OrderStatistics = {
+    val cached = OrderStatistics.cached(query, stats)
+    (statCache! RegisterCacheFor(cached))
+    cached
+  }
+
   def typeXml(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]) : NodeSeq = {
 
-    val (buyr, selr) = fetchOrdersFor(typeid, setHours, regionLimit, usesystem, minq)
+    val numminq = minq getOrElse QueryDefaults.minQ(typeid)
+    val usesys = usesystem match {
+      case None => Nil
+      case Some(x) => List[Long](x)
+    }
+    
+    val allq = GetOrdersFor(None, List(typeid), regionLimit, usesys, setHours, numminq)
+    val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
+    val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
+    
+    
 
-    val allr = selr ++ buyr // Warning: Linear append
-    val alls = OrderStatistics(allr)
-    val sels = OrderStatistics(selr)
-    val buys = OrderStatistics(buyr)
+    val alls = fetchCachedStats(allq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
+    val sels = fetchCachedStats(buyq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq)), buyq)
+    val buys = fetchCachedStats(selq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
+
     <type id={typeid.toString}>
       <buy>
         {subGroupXml(buys)}

@@ -1,8 +1,10 @@
 package com.evecentral
 
-import dataaccess.{GetOrdersFor, MarketOrder}
+import dataaccess.{Region, MarketType, GetOrdersFor, MarketOrder}
 import scala.math._
 import org.joda.time.DateTime
+import akka.actor.Actor
+import collection.mutable.ConcurrentMap
 
 trait OrderStatistics {
   def volume : Long
@@ -18,7 +20,7 @@ trait OrderStatistics {
   def min : Double
 }
 
-private class CachedOrderStatistics(forQuery: GetOrdersFor, atTime: DateTime, private[this] var from: OrderStatistics) extends OrderStatistics {
+class CachedOrderStatistics(val forQuery: GetOrdersFor, private[this] var from: OrderStatistics) extends OrderStatistics {
   private val _volume = from.volume
   private val _wavg = from.wavg
   private val _avg = from.avg
@@ -66,8 +68,8 @@ object OrderStatistics {
     new LazyOrderStatistics(over, highToLow)
   }
 
-  def cached(query: GetOrdersFor, data: OrderStatistics) : OrderStatistics = {
-    new CachedOrderStatistics(query, new DateTime(), data)
+  def cached(query: GetOrdersFor, data: OrderStatistics) : CachedOrderStatistics = {
+    new CachedOrderStatistics(query, data)
   }
   
   def max(over: Seq[MarketOrder]) : Double = {
@@ -171,5 +173,31 @@ object OrderStatistics {
       val squared = list.foldLeft(0.0)((x, y) => x + squaredDifference(y, average))
       squared / list.length.toDouble
     case true => 0.0
+  }
+}
+
+case class RegisterCacheFor(cache: CachedOrderStatistics)
+
+case class GetCacheFor(query: GetOrdersFor)
+
+case class PoisonCache(region: Region, marketType: MarketType)
+
+class OrderCacheActor extends Actor {
+  
+  private val cacheHash = scala.collection.mutable.HashMap[GetOrdersFor, OrderStatistics]()
+  
+  override def preStart() {
+    cacheHash.clear()
+  } 
+  
+  
+  def receive = {
+    case GetCacheFor(query) => 
+      cacheHash.get(query)
+    case RegisterCacheFor(cached) =>
+      cacheHash.put(cached.forQuery, cached)
+    case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
+      // @TODO: Make this non-linear-time
+      cacheHash.keySet.foreach(of => if ((of.regions.contains(region.regionid) || of.regions.isEmpty) && of.types == mtype) cacheHash.remove(of))
   }
 }

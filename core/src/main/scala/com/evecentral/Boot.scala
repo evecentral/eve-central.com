@@ -58,7 +58,8 @@ object Boot extends App {
         Supervise(rootService, Permanent),
         Supervise(sprayCanServer, Permanent),
         Supervise(actorOf(new GetOrdersActor()), Permanent),
-        Supervise(actorOf(new RouteFinderActor()), Permanent)
+        Supervise(actorOf(new RouteFinderActor()), Permanent),
+        Supervise(actorOf(new OrderCacheActor()), Permanent)
 
       )
     )
