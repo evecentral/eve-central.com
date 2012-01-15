@@ -988,8 +988,8 @@ textarea[readonly] {
   border-radius: 3px 0 0 3px;
 }
 .input-prepend .active, .input-append .active {
-  background: #a9dba9;
-  border-color: #46a546;
+  background: #c8e5d4;
+  border-color: #5fb583;
 }
 .input-prepend .add-on {
   *margin-top: 1px;
@@ -1263,11 +1263,11 @@ table .headerSortUp.blue, table .headerSortDown.blue {
   background-color: #c3d5d6;
 }
 table .green {
-  color: #46a546;
-  border-bottom-color: #46a546;
+  color: #5fb583;
+  border-bottom-color: #5fb583;
 }
 table .headerSortUp.green, table .headerSortDown.green {
-  background-color: #cdeacd;
+  background-color: #eaf6ef;
 }
 table .red {
   color: #9d261d;
@@ -1843,18 +1843,18 @@ footer {
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
 .btn.success, .alert-message.success {
-  background-color: #57a957;
+  background-color: #376a4c;
   background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#62c462), to(#57a957));
-  background-image: -moz-linear-gradient(top, #62c462, #57a957);
-  background-image: -ms-linear-gradient(top, #62c462, #57a957);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #62c462), color-stop(100%, #57a957));
-  background-image: -webkit-linear-gradient(top, #62c462, #57a957);
-  background-image: -o-linear-gradient(top, #62c462, #57a957);
-  background-image: linear-gradient(top, #62c462, #57a957);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#62c462', endColorstr='#57a957', GradientType=0);
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#5fb583), to(#376a4c));
+  background-image: -moz-linear-gradient(top, #5fb583, #376a4c);
+  background-image: -ms-linear-gradient(top, #5fb583, #376a4c);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5fb583), color-stop(100%, #376a4c));
+  background-image: -webkit-linear-gradient(top, #5fb583, #376a4c);
+  background-image: -o-linear-gradient(top, #5fb583, #376a4c);
+  background-image: linear-gradient(top, #5fb583, #376a4c);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5fb583', endColorstr='#376a4c', GradientType=0);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  border-color: #57a957 #57a957 #3d773d;
+  border-color: #376a4c #376a4c #1d3828;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
 .btn.info, .alert-message.info {
@@ -1875,15 +1875,15 @@ footer {
 .btn {
   cursor: pointer;
   display: inline-block;
-  background-color: #faf0ae;
+  background-color: #e6e6e6;
   background-repeat: no-repeat;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fdf9de), color-stop(25%, #fdf9de), to(#faf0ae));
-  background-image: -webkit-linear-gradient(#fdf9de, #fdf9de 25%, #faf0ae);
-  background-image: -moz-linear-gradient(top, #fdf9de, #fdf9de 25%, #faf0ae);
-  background-image: -ms-linear-gradient(#fdf9de, #fdf9de 25%, #faf0ae);
-  background-image: -o-linear-gradient(#fdf9de, #fdf9de 25%, #faf0ae);
-  background-image: linear-gradient(#fdf9de, #fdf9de 25%, #faf0ae);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fdf9de', endColorstr='#faf0ae', GradientType=0);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), color-stop(25%, #ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+  background-image: -moz-linear-gradient(top, #ffffff, #ffffff 25%, #e6e6e6);
+  background-image: -ms-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+  background-image: -o-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+  background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
   padding: 5px 14px 6px;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
   color: #333;
@@ -2425,7 +2425,7 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   background-color: #f89406;
 }
 .label.success {
-  background-color: #46a546;
+  background-color: #5fb583;
 }
 .label.notice {
   background-color: #95b5b7;
