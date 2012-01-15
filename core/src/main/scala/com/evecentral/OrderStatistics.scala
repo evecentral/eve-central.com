@@ -193,7 +193,7 @@ class OrderCacheActor extends Actor {
   
   def receive = {
     case GetCacheFor(query) => 
-      cacheHash.get(query)
+      self.channel ! cacheHash.get(query)
     case RegisterCacheFor(cached) =>
       cacheHash.put(cached.forQuery, cached)
     case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types

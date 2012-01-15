@@ -17,6 +17,7 @@ import com.evecentral.ParameterHelper._
 
 import com.evecentral.frontend.Formatter.priceString
 import com.evecentral._
+import org.slf4j.LoggerFactory
 
 trait BaseOrderQuery {
 
@@ -135,6 +136,8 @@ case class EvemonQuery(ctx: RequestContext)
 
 class MarketStatActor extends ECActorPool with BaseOrderQuery {
 
+  private val log = LoggerFactory.getLogger(getClass)
+  
   def instance = actorOf(new Actor with DefaultMarshallers  {
     def receive = {
       case EvemonQuery(ctx) =>
@@ -187,9 +190,9 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
     buyf.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
   }
 
-  def fetchCachedStats(query: GetOrdersFor) = {
+  def fetchCachedStats(query: GetOrdersFor) : Option[OrderStatistics] = {
     val r = (statCache ? GetCacheFor(query))
-    r.as[OrderStatistics]
+    r.as[Option[OrderStatistics]] getOrElse  None
   }
 
   def storeCachedStats(stats: OrderStatistics, query: GetOrdersFor) : OrderStatistics = {
@@ -209,8 +212,6 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
     val allq = GetOrdersFor(None, List(typeid), regionLimit, usesys, setHours, numminq)
     val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
     val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
-    
-    
 
     val alls = fetchCachedStats(allq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
     val sels = fetchCachedStats(buyq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq)), buyq)
