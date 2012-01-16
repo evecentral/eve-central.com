@@ -6,8 +6,8 @@ object StationNameUtility {
   def shorten(name: String) : String = {
 
     val split = "Moon ".r.replaceAllIn(name, "M").split(" - ")
-    val head = split.reverse.tail.reverse.mkString(" - ")
-    val words = split.last.split(" ").map(s => s.charAt(0)).mkString
+    val head = split.reverse.tail.reverse.mkString(" - ") // I'm sorry
+    val words = split.last.split(" ").fold("")((c,s) => c + s.charAt(0))
     head + " - " + words
   }
 }
