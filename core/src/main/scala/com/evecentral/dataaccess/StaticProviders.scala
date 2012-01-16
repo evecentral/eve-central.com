@@ -2,6 +2,17 @@ package com.evecentral.dataaccess
 
 import com.evecentral.Database
 
+object StationNameUtility {
+  def shorten(name: String) : String = {
+
+    val split = "Moon ".r.replaceAllIn(name, "M").split(" - ")
+    val head = split.reverse.tail.reverse.mkString(" - ")
+    val words = split.last.split(" ").map(s => s.charAt(0)).mkString
+    head + " - " + words
+  }
+}
+
+
 object QueryDefaults {
   val minQLarge: Long = 10001
   lazy val minQExceptions = List[Long](34, 35, 36, 37, 38, 39, 40, 11399).foldLeft(Map[Long, Long]()) {
@@ -19,7 +30,7 @@ object QueryDefaults {
 
 case class Region(regionid: Long, name: String)
 
-case class Station(stationid: Long, name: String, system: SolarSystem)
+case class Station(stationid: Long, name: String, shortName: String, system: SolarSystem)
 
 case class SolarSystem(systemid: Long, name: String, security: Double, region: Region, constellationid: Long)
 
@@ -71,8 +82,8 @@ object StaticProvider {
             val staid = row.nextLong.get
             val name = row.nextString.get
             val sysid = row.nextLong.get
-
-            m = m ++ Map(staid -> Station(staid, name, systemsMap(sysid)))
+            val shortName = StationNameUtility.shorten(name)
+            m = m ++ Map(staid -> Station(staid, name, shortName, systemsMap(sysid)))
         }
     }
     m
