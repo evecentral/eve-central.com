@@ -239,17 +239,30 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
   }
 
 }
+///////////////////////////////////////////////////////////////////////////////////
+case class OldUploadPayload(ctx: RequestContext, typename: Option[String], userid: Option[String], data: String,  typeid: Option[String], region: Option[String])
 
+class OldUploadServiceActor extends ECActorPool {
+
+  def instance = actorOf(new Actor with DefaultMarshallers with Directives  {
+    def receive = {
+      case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
+        ctx.complete("Done")
+      }
+    }
+  })
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
 trait APIv2Service extends Directives {
 
   val quicklookActor = actorOf(new QuickLookQuery())
-
   val marketstatActor = actorOf(new MarketStatActor())
+  val olduploadActor = actorOf(new OldUploadServiceActor())
 
   val v2Service = {
     path("api/quicklook") {
       (get | post) {
-            ctx =>
+        ctx =>
               (quicklookActor ! ctx)
 
         }
@@ -262,20 +275,28 @@ trait APIv2Service extends Directives {
       (get | post) {
         ctx =>
           (marketstatActor ! EvemonQuery(ctx))
+      }
+    } ~ path("datainput.py/inputdata") {
+      post {
+        formFields("typename"?, "userid"?, "data", "typeid"?, "region"?) {
+          (typename, userid, data, typeid, region) =>
+            olduploadActor ! OldUploadPayload(_, typename, userid, data, typeid, region)
+        }
+
+      }
     } ~ path("api/goofy") {
-        get {
-          respondWithContentType(`text/html`) {
-            completeWith {
-              <html>
-                <body>
-                  <form method="POST" action="/api/quicklook">
-                      <input type="text" name="typeid" value="2003"/>
-                      <input type="text" name="regionlimit" value="10000049"/>
-                      <input type="submit" value="Go"/>
-                  </form>
-                </body>
-              </html>
-            }
+      get {
+        respondWithContentType(`text/html`) {
+          completeWith {
+            <html>
+              <body>
+                <form method="POST" action="/api/quicklook">
+                    <input type="text" name="typeid" value="2003"/>
+                    <input type="text" name="regionlimit" value="10000049"/>
+                    <input type="submit" value="Go"/>
+                </form>
+              </body>
+            </html>
           }
         }
       }
