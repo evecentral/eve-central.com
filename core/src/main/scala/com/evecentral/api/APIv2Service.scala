@@ -10,7 +10,6 @@ import com.evecentral.dataaccess._
 import cc.spray.{RequestContext, Directives}
 import cc.spray.typeconversion.DefaultMarshallers
 
-import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
 import com.evecentral.ParameterHelper._
@@ -18,6 +17,8 @@ import com.evecentral.ParameterHelper._
 import com.evecentral.frontend.Formatter.priceString
 import com.evecentral._
 import org.slf4j.LoggerFactory
+import org.joda.time.DateTime
+
 
 trait BaseOrderQuery {
 
@@ -241,13 +242,78 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
 }
 ///////////////////////////////////////////////////////////////////////////////////
 case class OldUploadPayload(ctx: RequestContext, typename: Option[String], userid: Option[String], data: String,  typeid: Option[String], region: Option[String])
+case class UploadCsvRow(line: String) {
+  private[this] val fields = line.split(",")
+  val price = fields(0).toDouble
+  val volRemain = fields(1).toLong
+  val marketTypeId = fields(2).toInt
+  val range = fields(3).toInt
+  val orderId = fields(4).toLong
+  val volEntered = fields(5).toLong
+  val minVolume = fields(6).toLong
+  val bid = fields(7).toBoolean
+  val issued = new DateTime(fields(8))
+  val duration = fields(9).toInt
+  val stationId = fields(10).toLong
+  val regionId = fields(11).toLong
+  val solarSystemId = fields(12).toLong
+  val jumps = fields(13).toInt
+}
+
+class MailDispatchActor extends Actor {
+  import akka.actor.Scheduler
+  import java.util.concurrent.TimeUnit
+  import javax.mail.internet.{InternetAddress, MimeMessage}
+  import java.util.{Date, Properties}
+  import javax.mail._
+  
+  private val log = LoggerFactory.getLogger(getClass)
+
+  
+  case class SendNow()
+
+  override def preStart { Scheduler.schedule(self, SendNow(), 5*60, 5*60, TimeUnit.SECONDS) }
+
+  private val sendRows = new scala.collection.mutable.Queue[UploadCsvRow]()
+
+  private def sendEmailNow {
+    try {
+      val props = new Properties();
+      props.put("mail.smtp.host", "localhost");
+      props.put("mail.debug", "true");
+      val session = Session.getInstance(props);
+      val msg = new MimeMessage(session)
+      msg.setFrom(new InternetAddress("uploader@stackworks.net"))
+      val address = Array[javax.mail.Address](new InternetAddress("evec-upload@lists.stackworks.net"));
+      msg.setRecipients(Message.RecipientType.TO, address);
+      msg.setSubject("Upload");
+      msg.setSentDate(new Date());
+
+      val text = "price,volRemaining,typeID,range,orderID,volEntered,minVolume,bid,issued,duration,stationID,regionID,solarSystemID,jumps,source\n" + sendRows.mkString("\n")
+      msg.setText(text)
+      Transport.send(msg)
+      sendRows.clear()
+    } catch {
+      case mex : MessagingException =>
+        log.error("Can't send message: ", mex)
+    }
+  }
+
+  def receive = {
+    case data : Seq[UploadCsvRow] => sendRows ++ data
+    case SendNow() => sendEmailNow
+  }
+}
 
 class OldUploadServiceActor extends ECActorPool {
 
   def instance = actorOf(new Actor with DefaultMarshallers with Directives  {
     def receive = {
       case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
-        ctx.complete("Done")
+        val lines = data.split("\n").tail
+        val rows = lines.map(UploadCsvRow(_))
+
+        ctx.complete("Ok!")
       }
     }
   })

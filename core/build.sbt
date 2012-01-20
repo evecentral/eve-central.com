@@ -52,7 +52,7 @@ libraryDependencies += "net.sf.jung" % "jung-graph-impl" % "2.0.1"
 
 libraryDependencies += "org.scalaj" %% "scalaj-collection" % "1.2"
 
-
+libraryDependencies += "javax.mail" % "mail" % "1.4.4"
 
 
 seq(com.zentrope.ScalatePlugin.scalateTemplateSettings : _*)
