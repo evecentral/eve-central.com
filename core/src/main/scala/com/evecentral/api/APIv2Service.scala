@@ -272,7 +272,7 @@ class MailDispatchActor extends Actor {
   
   case class SendNow()
 
-  override def preStart { Scheduler.schedule(self, SendNow(), 5*60, 5*60, TimeUnit.SECONDS) }
+  override def preStart { Scheduler.schedule(self, SendNow(), 5, 5*60, TimeUnit.SECONDS) }
 
   private val sendRows = new scala.collection.mutable.Queue[UploadCsvRow]()
 
@@ -301,18 +301,27 @@ class MailDispatchActor extends Actor {
 
   def receive = {
     case data : Seq[UploadCsvRow] => sendRows ++ data
-    case SendNow() => sendEmailNow
+    case SendNow() => if (sendRows.nonEmpty) sendEmailNow
   }
 }
 
 class OldUploadServiceActor extends ECActorPool {
 
+  def mailActor = Actor.registry.actorFor[MailDispatchActor].get
+  
   def instance = actorOf(new Actor with DefaultMarshallers with Directives  {
+    
+    def procData(rows: Seq[UploadCsvRow]) {
+      mailActor ! rows
+
+    }
+    
     def receive = {
       case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
         val lines = data.split("\n").tail
         val rows = lines.map(UploadCsvRow(_))
-
+        if (rows.nonEmpty)
+          procData(rows)
         ctx.complete("Ok!")
       }
     }
