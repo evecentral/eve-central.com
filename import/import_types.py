@@ -1,7 +1,7 @@
 import psycopg2
 import csv
 
-db = psycopg2.connect(database = 'evec', user = 'evec')
+db = psycopg2.connect(database = 'evec', user = 'evec', port = 9999)
 cur = db.cursor()
 
 stat = open("types.txt")
@@ -33,6 +33,8 @@ for fields in csvread:
 
     description = fields[3].strip()
     volume = float(fields[7])
+    if volume == 0:
+        volume = 0.001
 
     try:
         published = int(fields[12])
