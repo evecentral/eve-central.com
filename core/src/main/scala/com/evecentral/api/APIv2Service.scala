@@ -24,10 +24,10 @@ trait BaseOrderQuery {
 
 
   def ordersActor = {
-    val r = (Actor.registry.actorsFor[GetOrdersActor]);
+    val r = Actor.registry.actorsFor[GetOrdersActor]
     r(0)
   }
-  
+
   def statCache = {
     val r = (Actor.registry.actorsFor[OrderCacheActor]);
     r(0)
@@ -280,7 +280,7 @@ class MailDispatchActor extends Actor {
     try {
       val props = new Properties();
       props.put("mail.smtp.host", "localhost");
-      props.put("mail.debug", "true");
+      props.put("mail.debug", "false");
       val session = Session.getInstance(props);
       val msg = new MimeMessage(session)
       msg.setFrom(new InternetAddress("uploader@stackworks.net"))
@@ -307,7 +307,10 @@ class MailDispatchActor extends Actor {
 
 class OldUploadServiceActor extends ECActorPool {
 
-  def mailActor = Actor.registry.actorFor[MailDispatchActor].get
+  def mailActor = {
+    val r = Actor.registry.actorsFor[MailDispatchActor]
+    r(0)
+  }
   
   def instance = actorOf(new Actor with DefaultMarshallers with Directives  {
     
