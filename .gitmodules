@@ -1,0 +1,3 @@
+[submodule "fe_src/bootstrap2"]
+	path = fe_src/bootstrap2
+	url = git://github.com/theatrus/bootstrap-evecentral.git
