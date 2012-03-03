@@ -16,6 +16,7 @@ import com.evecentral.ParameterHelper._
 
 import com.evecentral.frontend.Formatter.priceString
 import com.evecentral._
+import frontend.DateFormats
 import org.slf4j.LoggerFactory
 import org.joda.time.DateTime
 
@@ -71,10 +72,6 @@ class QuickLookQuery extends ECActorPool with BaseOrderQuery {
     }
   }
 
-  val dateOnly = DateTimeFormat.forPattern("yyyy-MM-dd")
-
-  val dateTime = DateTimeFormat.forPattern("MM-dd hh:mm:ss")
-
   def showOrders(orders: Option[Seq[MarketOrder]]): NodeSeq = {
     
     orders match {
@@ -90,8 +87,8 @@ class QuickLookQuery extends ECActorPool with BaseOrderQuery {
             <price>{priceString(order.price)}</price>
             <vol_remain>{order.volremain}</vol_remain>
             <min_volume>{order.minVolume}</min_volume>
-            <expires>{dateOnly.print(new DateTime().plus(order.expires))}</expires>
-            <reported_time>{dateTime.print(order.reportedAt)}</reported_time>
+            <expires>{DateFormats.dateOnly.print(new DateTime().plus(order.expires))}</expires>
+            <reported_time>{DateFormats.dateTime.print(order.reportedAt)}</reported_time>
           </order>
       }
     }
@@ -258,6 +255,11 @@ case class UploadCsvRow(line: String) {
   val regionId = fields(11).toLong
   val solarSystemId = fields(12).toLong
   val jumps = fields(13).toInt
+
+  override def toString = Seq("%0.2f".format(price), volRemain.toString,  marketTypeId.toString, range.toString, orderId.toString,
+    volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.dateTime.print(issued), duration.toString, stationId.toString,
+    regionId.toString, solarSystemId.toString,
+    jumps.toString).mkString(",")
 }
 
 class MailDispatchActor extends Actor {

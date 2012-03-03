@@ -1,5 +1,15 @@
 package com.evecentral.frontend
 
+import org.joda.time.format.DateTimeFormat
+
+object DateFormats {
+
+  val dateOnly = DateTimeFormat.forPattern("yyyy-MM-dd")
+
+  val dateTime = DateTimeFormat.forPattern("MM-dd hh:mm:ss")
+
+}
+
 private object Thousands {
   def unapply(z: Double) : Option[String] = {
     if (z / 1000.0 >= 1 && z / 900000.0 < 1)
