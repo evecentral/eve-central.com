@@ -60,7 +60,7 @@ ${render("top.ssp")}
 
     <!-- Example row of columns -->
     <div class="row">
-        <div class="span10">
+        <div class="span6">
 
             <p>The EVE-Online Market is missing some key functionality, including not being able to browse the
                 markets in a region you are not in. By collecting views of the market from players such as yourself
@@ -70,7 +70,7 @@ ${render("top.ssp")}
             <p><a class="btn primary" href="/contribute">Download our Market Scanner &raquo;</a></p>
         </div>
 
-        <div class="span3 offset3">
+        <div class="span4 offset1">
             <h3>Site Updates</h3>
             <p>News and updates to EVE-Central are posted to our <a href="http://yannramin.com/category/eve-central">blog</a>.</p>
             <p><a class="btn" href="http://yannramin.com/category/eve-central">Site News &raquo;</a></p>
@@ -81,7 +81,7 @@ ${render("top.ssp")}
 
     <!-- Example row of columns -->
     <div class="row">
-        <div class="span6">
+        <div class="span4">
             <h2>Simple Trade Routes</h2>
 
             <p>Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere
@@ -90,7 +90,7 @@ ${render("top.ssp")}
 
             <p><a class="btn" href="#">View details &raquo;</a></p>
         </div>
-        <div class="span5">
+        <div class="span4">
             <h2>Heading</h2>
 
             <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
@@ -99,7 +99,7 @@ ${render("top.ssp")}
 
             <p><a class="btn" href="#">View details &raquo;</a></p>
         </div>
-        <div class="span5">
+        <div class="span4">
             <h2>Developers</h2>
 
             <p>EVE-Central has a comprehensive API to allow integration with third party software and web sites.</p>
