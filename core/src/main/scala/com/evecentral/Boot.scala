@@ -10,6 +10,7 @@ import cc.spray.{SprayCanRootService, HttpService}
 import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
+import mail.MailDispatchActor
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
 
