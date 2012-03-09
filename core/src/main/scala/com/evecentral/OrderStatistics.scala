@@ -199,5 +199,6 @@ class OrderCacheActor extends Actor {
     case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
       // @TODO: Make this non-linear-time
       cacheHash.keySet.foreach(of => if ((of.regions.contains(region.regionid) || of.regions.isEmpty) && of.types == mtype) cacheHash.remove(of))
+      self.channel ! true
   }
 }

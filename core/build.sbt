@@ -24,7 +24,7 @@ libraryDependencies += "se.scalablesolutions.akka" % "akka-testkit" % "1.3.1"
 
 libraryDependencies += "se.scalablesolutions.akka" % "akka-slf4j" % "1.3.1"
 
-libraryDependencies += "net.noerd" % "prequel_2.9.1" % "0.3.6"
+libraryDependencies += "net.noerd" %% "prequel" % "0.3.6" changing()
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
 
