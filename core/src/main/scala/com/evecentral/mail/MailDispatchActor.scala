@@ -36,7 +36,7 @@ class MailDispatchActor extends Actor {
       msg.setSubject("Upload");
       msg.setSentDate(new Date());
 
-      val text = "price,volRemaining,typeID,range,orderID,volEntered,minVolume,bid,issued,duration,stationID,regionID,solarSystemID,jumps,source\n" + sendRows.mkString("\n")
+      val text = "price,volRemaining,typeID,range,orderID,volEntered,minVolume,bid,issued,duration,stationID,regionID,solarSystemID,jumps,source,generatedAt\n" + sendRows.mkString("\n")
       msg.setText(text)
       Transport.send(msg)
       sendRows.clear()
