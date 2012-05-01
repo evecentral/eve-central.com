@@ -2,7 +2,6 @@ package com.evecentral.api
 
 import cc.spray.json._
 import cc.spray.http.MediaTypes._
-import java.util.concurrent.TimeUnit
 import akka.actor.{PoisonPill, Actor, Scheduler}
 import cc.spray.Directives
 import cc.spray.directives.IntNumber
@@ -18,7 +17,7 @@ trait APIv3Service extends Directives with DefaultJsonProtocol with SprayJsonSup
   def ordersActor = { val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0) }
 
   val api3Service = {
-    pathPrefix("api3") {
+    pathPrefix("api") {
       path("distance/from" / IntNumber / "to" / IntNumber) {
         (fromid, toid) =>
           get {
@@ -48,6 +47,27 @@ trait APIv3Service extends Directives with DefaultJsonProtocol with SprayJsonSup
               }
             }
           }
+      } ~ /* Upload support for unified formats */
+      path("upload") {
+        get {
+          parameter("data") { data =>
+            completeWith {
+              "1"
+            }
+          }
+        }~
+          post {
+            formFields("data") { data =>
+              completeWith {
+                "1"
+              }
+            }
+          }
+      } ~
+      path ("syndicate") {
+        completeWith {
+          "1"
+        }
       }
     }
   }
