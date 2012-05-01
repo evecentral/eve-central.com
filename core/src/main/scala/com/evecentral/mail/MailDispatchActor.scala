@@ -18,12 +18,13 @@ class MailDispatchActor extends Actor {
   case class SendNow()
 
   override def preStart {
-    Scheduler.schedule(self, SendNow(), 5, 5 * 60, TimeUnit.SECONDS)
+    Scheduler.schedule(self, SendNow, 5, 5 * 60, TimeUnit.SECONDS)
   }
 
   private val sendRows = new scala.collection.mutable.Queue[UploadCsvRow]()
 
   private def sendEmailNow {
+    log.info("Starting mail dispatch")
     try {
       val props = new Properties();
       props.put("mail.smtp.host", "localhost");
@@ -48,6 +49,6 @@ class MailDispatchActor extends Actor {
 
   def receive = {
     case data: Seq[UploadCsvRow] => sendRows ++ data
-    case SendNow() => if (sendRows.nonEmpty) sendEmailNow
+    case SendNow => if (sendRows.nonEmpty) sendEmailNow
   }
 }

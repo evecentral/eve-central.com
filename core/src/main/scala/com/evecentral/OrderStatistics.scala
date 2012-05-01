@@ -2,9 +2,8 @@ package com.evecentral
 
 import dataaccess.{Region, MarketType, GetOrdersFor, MarketOrder}
 import scala.math._
-import org.joda.time.DateTime
-import akka.actor.Actor
-import collection.mutable.ConcurrentMap
+import akka.actor.{Scheduler, Actor}
+import java.util.concurrent.TimeUnit
 
 trait OrderStatistics {
   def volume : Long
@@ -182,12 +181,16 @@ case class GetCacheFor(query: GetOrdersFor)
 
 case class PoisonCache(region: Region, marketType: MarketType)
 
+case class PoisonAllCache()
+
 class OrderCacheActor extends Actor {
   
   private val cacheHash = scala.collection.mutable.HashMap[GetOrdersFor, OrderStatistics]()
   
   override def preStart() {
     cacheHash.clear()
+    Scheduler.schedule(self, PoisonAllCache, 5, 5 * 60, TimeUnit.SECONDS)
+
   } 
   
   
@@ -196,6 +199,8 @@ class OrderCacheActor extends Actor {
       self.channel ! cacheHash.get(query)
     case RegisterCacheFor(cached) =>
       cacheHash.put(cached.forQuery, cached)
+    case PoisonAllCache =>
+      cacheHash.clear()
     case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
       // @TODO: Make this non-linear-time
       cacheHash.keySet.foreach(of => if ((of.regions.contains(region.regionid) || of.regions.isEmpty) && of.types == mtype) cacheHash.remove(of))
