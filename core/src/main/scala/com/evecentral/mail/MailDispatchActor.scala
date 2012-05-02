@@ -17,8 +17,9 @@ class MailDispatchActor extends Actor {
 
   case class SendNow()
 
-  override def preStart {
-    Scheduler.schedule(self, SendNow, 5, 5 * 60, TimeUnit.SECONDS)
+  override def preStart() {
+    log.info("Starting the mail service schedule")
+    Scheduler.schedule(self, SendNow, 0, 5 * 60, TimeUnit.SECONDS)
   }
 
   private val sendRows = new scala.collection.mutable.Queue[UploadCsvRow]()
@@ -48,7 +49,8 @@ class MailDispatchActor extends Actor {
   }
 
   def receive = {
-    case data: Seq[UploadCsvRow] => sendRows ++ data
-    case SendNow => if (sendRows.nonEmpty) sendEmailNow
+    case data: Seq[UploadCsvRow] => { sendRows ++ data; log.info("Scheduling mail of " + data); }
+    case SendNow => if (sendRows.nonEmpty) sendEmailNow else log.info("No mail to send")
+    case _ => log.error("mail dispatch didn't know what to do - wrong type")
   }
 }
