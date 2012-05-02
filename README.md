@@ -40,6 +40,11 @@ http://groups.google.com/eve-central
 Development wiki:
 http://dev.eve-central.com/
 
+* Requirements (new tech) *
+- Java 6 u24 or Java 7 (JDK)
+- SBT (Scala Simple Build Tool)
+- PostgreSQL 9.0+
+
 * Requirements (old tech) *
 
 - Python 2.7 (3.x not supported)
@@ -50,6 +55,9 @@ http://dev.eve-central.com/
 - PostgreSQL 9.0+
 
 * High level view of directories *
+
+core/
+        - SBT Driven Scala project (version "3.0")
 
 db/
         - Database schemas
