@@ -32,7 +32,7 @@ class OldUploadServiceActor extends ECActorPool {
               rows.foreach { row =>
                 statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if(row.bid) 1 else 0, row.price,
                   row.orderId, row.minVolume, row.volRemain, row.volEntered,
-                  row.issued, row.duration, row.range)
+                  row.issued, row.duration.toString + " days", row.range)
               }
           }
 
@@ -44,7 +44,7 @@ class OldUploadServiceActor extends ECActorPool {
             statement =>
               rows.foreach { row =>
                 statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if (row.bid) 1 else 0, row.price, row.orderId, row.minVolume, row.volRemain,
-                row.volEntered, row.issued, row.duration, row.range, 0)
+                row.volEntered, row.issued, row.duration.toString + " days", row.range, 0)
               }
           }
       }
