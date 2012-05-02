@@ -4,6 +4,7 @@ import dataaccess.{Region, MarketType, GetOrdersFor, MarketOrder}
 import scala.math._
 import akka.actor.{Scheduler, Actor}
 import java.util.concurrent.TimeUnit
+import org.slf4j.LoggerFactory
 
 trait OrderStatistics {
   def volume : Long
@@ -186,10 +187,11 @@ case class PoisonAllCache()
 class OrderCacheActor extends Actor {
   
   private val cacheHash = scala.collection.mutable.HashMap[GetOrdersFor, OrderStatistics]()
-  
+  private val log = LoggerFactory.getLogger(getClass)
+
   override def preStart() {
     cacheHash.clear()
-    Scheduler.schedule(self, PoisonAllCache, 5, 5 * 60, TimeUnit.SECONDS)
+    Scheduler.schedule(self, PoisonAllCache, 5, 60, TimeUnit.MINUTES)
 
   } 
   
@@ -200,10 +202,11 @@ class OrderCacheActor extends Actor {
     case RegisterCacheFor(cached) =>
       cacheHash.put(cached.forQuery, cached)
     case PoisonAllCache =>
+      log.info("Poisoning all cache entries")
       cacheHash.clear()
     case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
       // @TODO: Make this non-linear-time
-      cacheHash.keySet.foreach(of => if ((of.regions.contains(region.regionid) || of.regions.isEmpty) && of.types == mtype) cacheHash.remove(of))
+      cacheHash.keySet.foreach(of => if ((of.regions.contains(region.regionid) || of.regions.isEmpty) && of.types == mtype) { cacheHash.remove(of); log.info("Removing from cache " + of) } )
       self.channel ! true
   }
 }

@@ -42,6 +42,7 @@ class MailDispatchActor extends Actor {
       msg.setText(text)
       Transport.send(msg)
       sendRows.clear()
+      log.info("Mail dispatched! " + text.size + " bytes")
     } catch {
       case mex: MessagingException =>
         log.error("Can't send message: ", mex)
@@ -49,7 +50,7 @@ class MailDispatchActor extends Actor {
   }
 
   def receive = {
-    case data: Seq[UploadCsvRow] => { sendRows++= data; log.info("Scheduling mail - " + sendRows.size + " entries"); }
+    case data: Seq[UploadCsvRow] => { sendRows++= data; log.info("Appending to mail - " + sendRows.size + " entries"); }
     case SendNow => { if (sendRows.nonEmpty) sendEmailNow else log.info("No mail to send") }
     case _ => log.error("mail dispatch didn't know what to do - wrong type")
   }
