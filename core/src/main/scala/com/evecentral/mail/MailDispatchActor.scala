@@ -49,7 +49,7 @@ class MailDispatchActor extends Actor {
   }
 
   def receive = {
-    case data: Seq[UploadCsvRow] => { sendRows ++ data; log.info("Scheduling mail of " + data); }
+    case data: Seq[UploadCsvRow] => { sendRows++= data; log.info("Scheduling mail - " + sendRows.size + " entries"); }
     case SendNow => { if (sendRows.nonEmpty) sendEmailNow else log.info("No mail to send") }
     case _ => log.error("mail dispatch didn't know what to do - wrong type")
   }
