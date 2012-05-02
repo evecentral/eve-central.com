@@ -21,13 +21,15 @@ object Boot extends App {
   LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
+  val akkaConfig = akka.config.Config.config
   val apiModule = new APIv3Service {}
   val apiv2Module = new APIv2Service {}
   val staticModule = new StaticService {}
 
   val frontEndService = new FrontEndService {}
 
-  val config = cc.spray.can.ServerConfig(host = "0.0.0.0", parserConfig = MessageParserConfig(maxUriLength = 16384))
+  val config = cc.spray.can.ServerConfig(host = "0.0.0.0", port = akkaConfig.getInt("server-port", 8080),
+    parserConfig = MessageParserConfig(maxUriLength = 16384))
 
   val httpApiService = actorOf(new HttpService(apiModule.api3Service))
   val httpApiv2Service = actorOf(new HttpService(apiv2Module.v2Service))
