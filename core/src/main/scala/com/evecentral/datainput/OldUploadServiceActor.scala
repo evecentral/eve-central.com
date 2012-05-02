@@ -30,7 +30,7 @@ class OldUploadServiceActor extends ECActorPool {
             "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'evec_upload_cache')") {
             statement =>
               rows.foreach { row =>
-                statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, row.bid, row.price,
+                statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if(row.bid) 1 else 0, row.price,
                   row.orderId, row.minVolume, row.volRemain, row.volEntered,
                   row.issued, row.duration, row.range)
               }
@@ -43,7 +43,7 @@ class OldUploadServiceActor extends ECActorPool {
           "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)") {
             statement =>
               rows.foreach { row =>
-                statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, row.bid, row.price, row.orderId, row.minVolume, row.volRemain,
+                statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if (row.bid) 1 else 0, row.price, row.orderId, row.minVolume, row.volRemain,
                 row.volEntered, row.issued, row.duration, row.range, 0)
               }
           }

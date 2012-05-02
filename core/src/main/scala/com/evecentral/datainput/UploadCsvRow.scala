@@ -14,7 +14,13 @@ case class UploadCsvRow(line: String) {
   val volEntered = fields(5).toDouble.toLong
   val minVolume = fields(6).toDouble.toLong
   val bid = fields(7).toBoolean
-  val issued = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").parseDateTime(fields(8))
+  val issued = {
+    try {
+      DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").parseDateTime(fields(8))
+    } catch {
+      case _ => DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(fields(8))
+    }
+  }
   val duration = fields(9).toDouble.toLong
   val stationId = fields(10).toLong
   val regionId = fields(11).toLong
@@ -22,7 +28,7 @@ case class UploadCsvRow(line: String) {
   val jumps = fields(13).toInt
   val generatedAt = { val dt = new DateTime(); val fmt = ISODateTimeFormat.dateTime(); fmt.print(dt); }
 
-  override def toString = Seq("%0.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
+  override def toString  = Seq("%0.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
     volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.dateTime.print(issued), duration.toString, stationId.toString,
     regionId.toString, solarSystemId.toString,
     jumps.toString, generatedAt).mkString(",")
