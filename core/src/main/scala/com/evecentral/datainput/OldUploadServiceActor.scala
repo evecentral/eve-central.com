@@ -74,7 +74,7 @@ class OldUploadServiceActor extends ECActorPool {
         val rows = lines.map(UploadCsvRow(_))
         if (rows.nonEmpty)
           procData(rows)
-        ctx.complete("Ok!")
+        ctx.complete("Beginning your upload of " + typeid + "\nTypeID: 0 RegionID: 0\nComplete! Thank you for your contribution to EVE-Central.com!")
       }
     }
   })
