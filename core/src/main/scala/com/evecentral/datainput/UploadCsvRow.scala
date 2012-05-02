@@ -26,10 +26,15 @@ case class UploadCsvRow(line: String) {
   val regionId = fields(11).toLong
   val solarSystemId = fields(12).toLong
   val jumps = fields(13).toInt
+  val source = try {
+    fields(14)
+  } catch {
+    case _ => "Unknown"
+  }
   val generatedAt = { val dt = new DateTime(); val fmt = ISODateTimeFormat.dateTime(); fmt.print(dt); }
 
-  override def toString  = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
-    volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.dateTime.print(issued), duration.toString, stationId.toString,
+    override def toString = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
+    volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.sqlDateTime.print(issued), duration.toString, stationId.toString,
     regionId.toString, solarSystemId.toString,
-    jumps.toString, generatedAt).mkString(",")
+    jumps.toString, source.toString, generatedAt).mkString(",")
 }
