@@ -20,9 +20,9 @@ object ParameterHelper {
   type ML = List[(String,  String)]
   
   def paramsFromQuery(name: String, params: ML): List[String] = {
-    params.foldLeft(List[String]()) {
+    (params.foldLeft(List[String]()) {
       (i, s) => if (s._1 == name) s._2 :: i else i
-    }
+    }).reverse
   }
 
   def extractListOfParams(uri: String): ML = {
