@@ -22,16 +22,7 @@ object Boot extends App {
   // initialize SLF4J early
 
   val apiModule = new APIv3Service {}
-  val apiv2Module = new APIv2Service {
-    Supervisor(
-      SupervisorConfig(OneForOneStrategy(List(classOf[Exception]), 3, 100),
-        List(
-          Supervise(quicklookActor, Permanent),
-          Supervise(marketstatActor, Permanent),
-          Supervise(olduploadActor, Permanent)
-        )
-      ))
-  }
+  val apiv2Module = new APIv2Service {}
   val staticModule = new StaticService {}
 
   val frontEndService = new FrontEndService {}
@@ -49,9 +40,9 @@ object Boot extends App {
   val stationsMAp = StaticProvider.stationsMap
   val typesMap = StaticProvider.typesMap
 
-  Supervisor(
+  val supervisor = Supervisor(
     SupervisorConfig(
-      OneForOneStrategy(List(classOf[Exception]), 3, 100),
+      OneForOneStrategy(List(Class[_ <: Throwable]), 100, 100),
       List(
         Supervise(httpApiService, Permanent),
         Supervise(httpApiv2Service, Permanent),
@@ -59,6 +50,9 @@ object Boot extends App {
         Supervise(httpFeService, Permanent),
         Supervise(rootService, Permanent),
         Supervise(sprayCanServer, Permanent),
+        Supervise(apiv2Module.quicklookActor, Permanent),
+        Supervise(apiv2Module.marketstatActor, Permanent),
+        Supervise(apiv2Module.olduploadActor, Permanent),
         Supervise(actorOf(new GetOrdersActor()), Permanent),
         Supervise(actorOf(new RouteFinderActor()), Permanent),
         Supervise(actorOf(new OrderCacheActor()), Permanent),
@@ -67,4 +61,5 @@ object Boot extends App {
       )
     )
   )
+  supervisor.start
 }
