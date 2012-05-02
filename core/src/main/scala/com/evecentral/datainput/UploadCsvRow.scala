@@ -2,7 +2,7 @@ package com.evecentral.datainput
 
 import org.joda.time.DateTime
 import com.evecentral.frontend.DateFormats
-import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
 
 case class UploadCsvRow(line: String) {
   private[this] val fields = line.split(",")
@@ -14,7 +14,7 @@ case class UploadCsvRow(line: String) {
   val volEntered = fields(5).toDouble.toLong
   val minVolume = fields(6).toDouble.toLong
   val bid = fields(7).toBoolean
-  val issued = new DateTime(fields(8))
+  val issued = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").parseDateTime(fields(8))
   val duration = fields(9).toDouble.toLong
   val stationId = fields(10).toLong
   val regionId = fields(11).toLong
