@@ -4,7 +4,26 @@ import org.joda.time.DateTime
 import com.evecentral.frontend.DateFormats
 import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
 
-case class UploadCsvRow(line: String) {
+trait UploadRecord {
+  def price : Double
+  def volRemain : Long
+  def marketTypeId : Int
+  def range : Int
+  def orderId : Long
+  def volEntered : Long
+  def minVolume : Long
+  def bid : Boolean
+  def issued : DateTime
+  def duration : Long
+  def stationId : Long
+  def regionId : Long
+  def solarSystemId : Long
+  def jumps : Int
+  def source : String
+  def generatedAt : DateTime
+}
+
+case class UploadCsvRow(line: String) extends UploadRecord {
   private[this] val fields = line.split(",")
   val price = fields(0).toDouble
   val volRemain = fields(1).toDouble.toLong
@@ -33,7 +52,7 @@ case class UploadCsvRow(line: String) {
   }
   val generatedAt = { val dt = new DateTime(); val fmt = ISODateTimeFormat.dateTime(); fmt.print(dt); }
 
-    override def toString = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
+  override def toString = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
     volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.sqlDateTime.print(issued), duration.toString, stationId.toString,
     regionId.toString, solarSystemId.toString,
     jumps.toString, source.toString, generatedAt).mkString(",")
