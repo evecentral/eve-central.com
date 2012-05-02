@@ -3,7 +3,6 @@ package com.evecentral
 import akka.config.Supervision._
 import akka.actor.{Supervisor, Actor}
 import Actor._
-import cc.spray.can.HttpServer
 
 import cc.spray.{SprayCanRootService, HttpService}
 
@@ -13,6 +12,7 @@ import com.evecentral.api._
 import mail.MailDispatchActor
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
+import cc.spray.can.{MessageParserConfig, HttpServer}
 
 
 object Boot extends App {
@@ -36,7 +36,7 @@ object Boot extends App {
 
   val frontEndService = new FrontEndService {}
 
-  val config = cc.spray.can.ServerConfig(host = "0.0.0.0")
+  val config = cc.spray.can.ServerConfig(host = "0.0.0.0", parserConfig = MessageParserConfig(maxUriLength = 16384))
 
   val httpApiService = actorOf(new HttpService(apiModule.api3Service))
   val httpApiv2Service = actorOf(new HttpService(apiv2Module.v2Service))
