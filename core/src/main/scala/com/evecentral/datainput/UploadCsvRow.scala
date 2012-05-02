@@ -50,10 +50,11 @@ case class UploadCsvRow(line: String) extends UploadRecord {
   } catch {
     case _ => "Unknown"
   }
-  val generatedAt = { val dt = new DateTime(); val fmt = ISODateTimeFormat.dateTime(); fmt.print(dt); }
+  val generatedAt = new DateTime();
+  lazy val generatedAtString = { val fmt = ISODateTimeFormat.dateTime(); fmt.print(generatedAt); }
 
   override def toString = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
     volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.sqlDateTime.print(issued), duration.toString, stationId.toString,
     regionId.toString, solarSystemId.toString,
-    jumps.toString, source.toString, generatedAt).mkString(",")
+    jumps.toString, source.toString, generatedAtString).mkString(",")
 }
