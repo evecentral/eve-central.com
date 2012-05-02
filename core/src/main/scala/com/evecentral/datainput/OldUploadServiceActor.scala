@@ -27,7 +27,7 @@ class OldUploadServiceActor extends ECActorPool {
         tx =>
           tx.executeBatch("INSERT INTO archive_market (regionid, systemid, stationid, typeid,bid,price, orderid, minvolume, volremain, " +
             "volenter, issued, duration, range, reportedby, source)" +
-            "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'evec_upload_cache')") {
+            "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST (? AS INTERVAL), ?, 0, 'evec_upload_cache')") {
             statement =>
               rows.foreach { row =>
                 statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if(row.bid) 1 else 0, row.price,
@@ -40,7 +40,7 @@ class OldUploadServiceActor extends ECActorPool {
 
           tx.executeBatch("INSERT INTO current_market (regionid, systemid, stationid, typeid,"+
             "bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby)" +
-          "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)") {
+          "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST (? AS INTERVAL), ?, ?)") {
             statement =>
               rows.foreach { row =>
                 statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if (row.bid) 1 else 0, row.price, row.orderId, row.minVolume, row.volRemain,
