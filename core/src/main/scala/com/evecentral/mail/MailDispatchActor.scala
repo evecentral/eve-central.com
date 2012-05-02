@@ -19,7 +19,7 @@ class MailDispatchActor extends Actor {
 
   override def preStart() {
     log.info("Starting the mail service schedule")
-    Scheduler.schedule(self, SendNow, 0, 5 * 60, TimeUnit.SECONDS)
+    Scheduler.schedule(self, SendNow, 30, 5 * 60, TimeUnit.SECONDS)
   }
 
   private val sendRows = new scala.collection.mutable.Queue[UploadCsvRow]()
