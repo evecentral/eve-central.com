@@ -28,7 +28,7 @@ case class UploadCsvRow(line: String) {
   val jumps = fields(13).toInt
   val generatedAt = { val dt = new DateTime(); val fmt = ISODateTimeFormat.dateTime(); fmt.print(dt); }
 
-  override def toString  = Seq("%0.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
+  override def toString  = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
     volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.dateTime.print(issued), duration.toString, stationId.toString,
     regionId.toString, solarSystemId.toString,
     jumps.toString, generatedAt).mkString(",")
