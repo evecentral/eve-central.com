@@ -211,8 +211,8 @@ class MarketStatActor extends ECActorPool with BaseOrderQuery {
     val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
 
     val alls = fetchCachedStats(allq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
-    val sels = fetchCachedStats(buyq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq)), buyq)
-    val buys = fetchCachedStats(selq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
+    val sels = fetchCachedStats(selq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
+    val buys = fetchCachedStats(buyq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq)), buyq)
 
     <type id={typeid.toString}>
       <buy>
