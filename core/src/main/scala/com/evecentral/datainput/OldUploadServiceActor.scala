@@ -31,7 +31,7 @@ class OldUploadServiceActor extends ECActorPool {
             statement =>
               rows.foreach { row =>
                 statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, row.bid, row.price,
-                  row.orderId, row.minVolume, row.volRemain,
+                  row.orderId, row.minVolume, row.volRemain, row.volEntered,
                   row.issued, row.duration, row.range)
               }
           }
