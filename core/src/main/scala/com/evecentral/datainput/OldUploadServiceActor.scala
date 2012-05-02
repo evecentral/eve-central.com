@@ -7,8 +7,11 @@ import cc.spray.typeconversion.DefaultMarshallers
 import cc.spray.Directives
 import com.evecentral.dataaccess.StaticProvider
 import com.evecentral.{Database, PoisonCache, OrderCacheActor, ECActorPool}
+import org.slf4j.LoggerFactory
 
 class OldUploadServiceActor extends ECActorPool {
+
+  private val log = LoggerFactory.getLogger(getClass)
 
   def mailActor = {
     val r = Actor.registry.actorsFor[MailDispatchActor]
@@ -66,6 +69,7 @@ class OldUploadServiceActor extends ECActorPool {
 
     def receive = {
       case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
+        log.info("Processing upload payload for " + typeid)
         val lines = data.split("\n").tail
         val rows = lines.map(UploadCsvRow(_))
         if (rows.nonEmpty)

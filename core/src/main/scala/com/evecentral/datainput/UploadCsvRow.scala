@@ -7,15 +7,15 @@ import org.joda.time.format.ISODateTimeFormat
 case class UploadCsvRow(line: String) {
   private[this] val fields = line.split(",")
   val price = fields(0).toDouble
-  val volRemain = fields(1).toLong
+  val volRemain = fields(1).toDouble.toLong
   val marketTypeId = fields(2).toInt
   val range = fields(3).toInt
   val orderId = fields(4).toLong
-  val volEntered = fields(5).toLong
-  val minVolume = fields(6).toLong
+  val volEntered = fields(5).toDouble.toLong
+  val minVolume = fields(6).toDouble.toLong
   val bid = fields(7).toBoolean
   val issued = new DateTime(fields(8))
-  val duration = fields(9).toInt
+  val duration = fields(9).toDouble.toLong
   val stationId = fields(10).toLong
   val regionId = fields(11).toLong
   val solarSystemId = fields(12).toLong
