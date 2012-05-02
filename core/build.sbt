@@ -34,7 +34,7 @@ libraryDependencies += "cc.spray" % "spray-server" % "0.9.0-RC3"
 
 libraryDependencies += "cc.spray" % "spray-client" % "0.9.0-RC3"
 
-//libraryDependencies += "net.liftweb" % "lift-json" % "2.0"
+libraryDependencies += "net.liftweb" %% "lift-json" % "2.4"
 
 libraryDependencies += "cc.spray" % "spray-can" % "0.9.3"
 
@@ -54,6 +54,9 @@ libraryDependencies += "org.scalaj" %% "scalaj-collection" % "1.2"
 
 libraryDependencies += "javax.mail" % "mail" % "1.4.4"
 
+libraryDependencies += "org.zeromq" %% "zeromq-scala-binding" % "0.0.5"
+
+libraryDependencies += "com.jcraft" % "jzlib" % "1.1.1"
 
 seq(com.zentrope.ScalatePlugin.scalateTemplateSettings : _*)
 
