@@ -42,7 +42,7 @@ object Boot extends App {
 
   val supervisor = Supervisor(
     SupervisorConfig(
-      OneForOneStrategy(List(Class[_ <: Throwable]), 100, 100),
+      OneForOneStrategy(List(classOf[Throwable], classOf[Exception]), 100, 100),
       List(
         Supervise(httpApiService, Permanent),
         Supervise(httpApiv2Service, Permanent),
