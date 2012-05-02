@@ -9,6 +9,7 @@ import cc.spray.directives.IntNumber
 import com.evecentral.dataaccess._
 import com.evecentral.routes.{DistanceBetween, RouteFinderActor}
 import cc.spray.typeconversion.SprayJsonSupport
+import cc.spray.encoding.{NoEncoding, Gzip}
 
 
 trait APIv3Service extends Directives with DefaultJsonProtocol with SprayJsonSupport {
@@ -57,9 +58,11 @@ trait APIv3Service extends Directives with DefaultJsonProtocol with SprayJsonSup
           }
         }~
           post {
-            formFields("data") { data =>
-              completeWith {
-                "1"
+            (decodeRequest(NoEncoding) | decodeRequest(Gzip)) {
+              formFields("data") { data =>
+                completeWith {
+                  "1"
+                }
               }
             }
           }
