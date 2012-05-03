@@ -37,32 +37,28 @@ trait BaseOrderQuery {
 
 }
 
-class QuickLookQuery extends ECActorPool with BaseOrderQuery {
+class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
   
   import com.evecentral.ParameterHelper._
 
+  def receive = {
+    case ctx: RequestContext =>
 
-  def instance = actorOf(new Actor with DefaultMarshallers  {
-    def receive = {
-      case ctx: RequestContext =>
+      val params = listFromContext(ctx)
 
-        val params = listFromContext(ctx)
-
-        val typeid = singleParam("typeid", params) match {
-          case Some(x) => x
-          case None => 34
-        }
-        val setHours = singleParam("sethours", params) match {
-          case Some(x) => x
-          case None => 24
-        }
-        val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
-        val usesystem = singleParam("usesystem", params)
-        val minq = singleParam("setminQ", params)
-        ctx.complete(queryQuicklook(typeid, setHours, regionLimit, usesystem, minq))
-    }
-  })
-
+      val typeid = singleParam("typeid", params) match {
+        case Some(x) => x
+        case None => 34
+      }
+      val setHours = singleParam("sethours", params) match {
+        case Some(x) => x
+        case None => 24
+      }
+      val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
+      val usesystem = singleParam("usesystem", params)
+      val minq = singleParam("setminQ", params)
+      ctx.complete(queryQuicklook(typeid, setHours, regionLimit, usesystem, minq))
+  }
 
   def regionName(regions: List[Long]): NodeSeq = {
     regions.foldLeft(Seq[Node]()) {
@@ -131,36 +127,36 @@ class QuickLookQuery extends ECActorPool with BaseOrderQuery {
 case class MarketstatQuery(ctx: RequestContext)
 case class EvemonQuery(ctx: RequestContext)
 
-class MarketStatActor extends ECActorPool with BaseOrderQuery {
+class MarketStatActor extends Actor with DefaultMarshallers with BaseOrderQuery {
 
   private val log = LoggerFactory.getLogger(getClass)
   
-  def instance = actorOf(new Actor with DefaultMarshallers  {
-    def receive = {
-      case EvemonQuery(ctx) =>
-        val types = List(34, 35, 36, 37, 38, 39, 40, 11399).map(StaticProvider.typesMap(_))
 
-        ctx.complete(<minerals>
-          {types.map(evemonMineral(_))}
-          </minerals>)
-      case MarketstatQuery(ctx) =>
+  def receive = {
+    case EvemonQuery(ctx) =>
+      val types = List(34, 35, 36, 37, 38, 39, 40, 11399).map(StaticProvider.typesMap(_))
 
-        val params = listFromContext(ctx)
+      ctx.complete(<minerals>
+        {types.map(evemonMineral(_))}
+      </minerals>)
+    case MarketstatQuery(ctx) =>
 
-        val typeid = paramsFromQuery("typeid", params).map(_.toLong).distinct
+      val params = listFromContext(ctx)
 
-        val setHours = singleParam("hours", params) match {
-          case Some(x) => x
-          case None => 24
-        }
-        val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
-        val usesystem = singleParam("usesystem", params)
-        val minq = singleParam("minQ", params)
+      val typeid = paramsFromQuery("typeid", params).map(_.toLong).distinct
+
+      val setHours = singleParam("hours", params) match {
+        case Some(x) => x
+        case None => 24
+      }
+      val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
+      val usesystem = singleParam("usesystem", params)
+      val minq = singleParam("minQ", params)
 
 
-        ctx.complete(marketStatQuery(typeid, setHours, regionLimit, usesystem, minq))
-    }
-  })
+      ctx.complete(marketStatQuery(typeid, setHours, regionLimit, usesystem, minq))
+  }
+
 
   def evemonMineral(mineral: MarketType) : NodeSeq = {
     val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)

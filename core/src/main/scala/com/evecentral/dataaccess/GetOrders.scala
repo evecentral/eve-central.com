@@ -22,7 +22,7 @@ object MarketOrder {
 case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24, minq: Long = 1)
 
 
-class GetOrdersActor extends ECActorPool {
+class GetOrdersActor extends Actor {
   /**
    * This query does a lot of internal SQL building and not a prepared statement. I'm sorry,
    * but at least everything is typesafe :-)
@@ -63,9 +63,7 @@ class GetOrdersActor extends ECActorPool {
     }
   }
 
-  def instance = actorOf(new Actor {
-    def receive = {
+  def receive = {
       case x: GetOrdersFor => self.channel ! orderList(x)
-    }
-  })
+  }
 }
