@@ -1,30 +1,29 @@
 package com.evecentral.api
 
 import cc.spray.http.MediaTypes._
-import akka.actor.{Actor}
-import Actor.actorOf
-
-import scala.xml._
-
-import com.evecentral.dataaccess._
+import cc.spray.directives.Remaining
 import cc.spray.{RequestContext, Directives}
 import cc.spray.typeconversion.DefaultMarshallers
 import cc.spray.typeconversion.LiftJsonSupport
 
-import com.evecentral.ParameterHelper._
-
-import com.evecentral.frontend.Formatter.priceString
-import com.evecentral._
-import datainput.{OldUploadPayload, OldUploadServiceActor}
-import frontend.DateFormats
 import org.slf4j.LoggerFactory
 import org.joda.time.DateTime
 
 import net.liftweb.json._
 import net.liftweb.json.Xml.{toJson, toXml}
-import cc.spray.directives.Remaining
-import cc.spray.http.HttpResponse
 
+import akka.actor.Actor
+import Actor.actorOf
+
+import scala.xml._
+
+import com.evecentral.dataaccess._
+import com.evecentral.ParameterHelper._
+import com.evecentral.frontend.Formatter.priceString
+import com.evecentral._
+import datainput.{OldUploadPayload, OldUploadServiceActor}
+import frontend.DateFormats
+import routes.{Jump, RouteBetween, RouteFinderActor}
 
 trait BaseOrderQuery {
 
@@ -39,16 +38,36 @@ trait BaseOrderQuery {
     r(0)
   }
 
+  def pathActor = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
+
 
 
 }
+
+case class QuickLookSimpleQuery(ctx: RequestContext)
+case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem)
 
 class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
   
   import com.evecentral.ParameterHelper._
 
   def receive = {
-    case ctx: RequestContext =>
+    case QuickLookPathQuery(ctx, froms, tos) =>
+
+      val params = listFromContext(ctx)
+
+      val typeid = singleParam("typeid", params) match {
+        case Some(x) => x
+        case None => 34
+      }
+      val setHours = singleParam("sethours", params) match {
+        case Some(x) => x
+        case None => 24
+      }
+      val minq = singleParam("setminQ", params)
+      ctx.complete(queryQuicklookPath(typeid, setHours, minq, froms, tos))
+
+    case QuickLookSimpleQuery(ctx) =>
 
       val params = listFromContext(ctx)
 
@@ -64,6 +83,7 @@ class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
       val usesystem = singleParam("usesystem", params)
       val minq = singleParam("setminQ", params)
       ctx.complete(queryQuicklook(typeid, setHours, regionLimit, usesystem, minq))
+
   }
 
   def regionName(regions: List[Long]): NodeSeq = {
@@ -95,6 +115,39 @@ class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
     }
   }
 
+  def queryQuicklookPath(typeid: Long, setHours: Long, qminq: Option[Long], froms: SolarSystem, tos: SolarSystem) : NodeSeq = {
+
+    val minq = qminq match {
+      case Some(x) => x
+      case None => QueryDefaults.minQ(typeid)
+    }
+
+    val path = (pathActor ? RouteBetween(froms, tos)).as[Seq[Jump]] match {
+      case Some(jumps) =>
+        jumps
+    }
+
+    val systems = path.foldLeft(Set[SolarSystem]()) { (set, j) => set + j.from + j.to }.toList.map(_.systemid)
+
+    val buyq = GetOrdersFor(Some(true), List(typeid), List(), systems, setHours)
+    val selq = GetOrdersFor(Some(false), List(typeid), List(), systems, setHours)
+
+    val buyr = ordersActor ? buyq
+    val selr = ordersActor ? selq
+
+    <evec_api version="2.0" method="quicklook">
+      <quicklook>
+        <item>{typeid}</item>
+        <itemname>{StaticProvider.typesMap(typeid).name}</itemname>
+        <regions></regions>
+        <hours>{setHours}</hours>
+        <minqty>{minq}</minqty>
+        <sell_orders>{showOrders(selr.as[Seq[MarketOrder]])}</sell_orders>
+        <buy_orders>{showOrders(buyr.as[Seq[MarketOrder]])}</buy_orders>
+      </quicklook>
+    </evec_api>
+  }
+
   def queryQuicklook(typeid: Long, setHours: Long, regionLimit: List[Long],
                      usesystem: Option[Long], qminq: Option[Long]): NodeSeq = {
 
@@ -118,7 +171,7 @@ class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
     <evec_api version="2.0" method="quicklook">
       <quicklook>
         <item>{typeid}</item>
-        <itemname>{StaticProvider.typesMap(typeid)}</itemname>
+        <itemname>{StaticProvider.typesMap(typeid).name}</itemname>
         <regions>{regionName(regionLimit)}</regions>
         <hours>{setHours}</hours>
         <minqty>{minq}</minqty>
@@ -258,11 +311,29 @@ trait APIv2Service extends Directives {
   val marketstatActor = actorOf(new MarketStatActor())
   val olduploadActor = actorOf(new OldUploadServiceActor())
 
+  def lookupSystem(text: String) : SolarSystem = {
+    try {
+      StaticProvider.systemsMap(text.toLong)
+    } catch {
+      case _ => StaticProvider.systemsByName(text)
+    }
+  }
+
   val v2Service = {
+    path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r) {
+      (fromr, tor) =>
+        val fromid = lookupSystem(fromr)
+        val toid = lookupSystem(tor)
+        (get | post) {
+          ctx =>
+            quicklookActor ! QuickLookPathQuery(ctx, fromid, toid)
+        }
+    } ~
     path("api/quicklook") {
+
       (get | post) {
         ctx =>
-              (quicklookActor ! ctx)
+              (quicklookActor ! QuickLookSimpleQuery(ctx))
 
         }
     } ~ path("api/marketstat" / Remaining) {
