@@ -36,6 +36,13 @@ object ParameterHelper {
     }
   }
 
+  def singleStringParam[T](name: String, params: ML): Option[String] = {
+    paramsFromQuery(name, params) match {
+      case Nil => None
+      case x: List[String] => Some(x(0))
+    }
+  }
+
   def listFromContext(ctx : RequestContext) : ML = {
     val formdata = ctx.request.content match {
       case Some(c) => Some(new String(c.buffer, Charset.forName("UTF-8")))

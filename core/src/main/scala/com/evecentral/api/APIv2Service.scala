@@ -9,6 +9,7 @@ import scala.xml._
 import com.evecentral.dataaccess._
 import cc.spray.{RequestContext, Directives}
 import cc.spray.typeconversion.DefaultMarshallers
+import cc.spray.typeconversion.LiftJsonSupport
 
 import com.evecentral.ParameterHelper._
 
@@ -18,6 +19,11 @@ import datainput.{OldUploadPayload, OldUploadServiceActor}
 import frontend.DateFormats
 import org.slf4j.LoggerFactory
 import org.joda.time.DateTime
+
+import net.liftweb.json._
+import net.liftweb.json.Xml.{toJson, toXml}
+import cc.spray.directives.Remaining
+import cc.spray.http.HttpResponse
 
 
 trait BaseOrderQuery {
@@ -124,13 +130,13 @@ class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
 
 }
 
-case class MarketstatQuery(ctx: RequestContext)
+case class MarketstatQuery(ctx: RequestContext, dtype: String = "xml")
 case class EvemonQuery(ctx: RequestContext)
 
-class MarketStatActor extends Actor with DefaultMarshallers with BaseOrderQuery {
+class MarketStatActor extends Actor with DefaultMarshallers with LiftJsonSupport with BaseOrderQuery {
 
   private val log = LoggerFactory.getLogger(getClass)
-  
+  val liftJsonFormats = DefaultFormats
 
   def receive = {
     case EvemonQuery(ctx) =>
@@ -139,7 +145,7 @@ class MarketStatActor extends Actor with DefaultMarshallers with BaseOrderQuery 
       ctx.complete(<minerals>
         {types.map(evemonMineral(_))}
       </minerals>)
-    case MarketstatQuery(ctx) =>
+    case MarketstatQuery(ctx, dtype) =>
 
       val params = listFromContext(ctx)
 
@@ -153,8 +159,12 @@ class MarketStatActor extends Actor with DefaultMarshallers with BaseOrderQuery 
       val usesystem = singleParam("usesystem", params)
       val minq = singleParam("minQ", params)
 
+      val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
 
-      ctx.complete(marketStatQuery(typeid, setHours, regionLimit, usesystem, minq))
+      if (dtype == "json")
+        ctx.complete(toJson(result))
+      else
+        ctx.complete(result)
   }
 
 
@@ -253,10 +263,14 @@ trait APIv2Service extends Directives {
               (quicklookActor ! ctx)
 
         }
-    } ~ path("api/marketstat") { // Todo: this feels too repetitive, fix it
-      (get | post) {
-        ctx =>
-          (marketstatActor ! MarketstatQuery(ctx))
+    } ~ path("api/marketstat" / Remaining) {
+      dtype =>
+        (get | post) {
+          ctx =>
+            if (dtype.size > 0)
+              (marketstatActor ! MarketstatQuery(ctx, dtype))
+            else
+              (marketstatActor ! MarketstatQuery(ctx))
       }
     } ~ path("api/evemon") {
       (get | post) {
