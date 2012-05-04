@@ -44,14 +44,18 @@ object ParameterHelper {
   }
 
   def listFromContext(ctx : RequestContext) : ML = {
-    val formdata = ctx.request.content match {
-      case Some(c) => Some(new String(c.buffer, Charset.forName("UTF-8")))
-      case None => None
-    }
+    try {
+      val formdata = ctx.request.content match {
+        case Some(c) => Some(new String(c.buffer, Charset.forName("UTF-8")))
+        case None => None
+      }
 
-    formdata match {
-      case None => extractListOfParams(ctx.request.uri)
-      case Some(fd) => extractListOfParams(ctx.request.uri + "?" + fd)
+      formdata match {
+        case None => extractListOfParams(ctx.request.uri)
+        case Some(fd) => extractListOfParams(ctx.request.uri + "?" + fd)
+      }
+    } catch {
+      List()
     }
   }
   
