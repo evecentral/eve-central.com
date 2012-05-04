@@ -4,11 +4,14 @@ import com.evecentral.Database
 
 object StationNameUtility {
   def shorten(name: String) : String = {
-
+    try {
     val split = "Moon ".r.replaceAllIn(name, "M").split(" - ")
     val head = split.reverse.tail.reverse.mkString(" - ") // I'm sorry
     val words = split.last.split(" ").fold("")((c,s) => c + s.charAt(0))
     head + " - " + words
+    } catch {
+      case e : StringIndexOutOfBoundsException => name
+    }
   }
 }
 
@@ -68,6 +71,10 @@ object StaticProvider {
         }
     }
     m
+  }
+
+  lazy val systemsByName = {
+    systemsMap.foldLeft(Map[String, SolarSystem]()) { (maap, solar) => maap ++ Map(solar._2.name -> solar._2) }
   }
 
   /**
