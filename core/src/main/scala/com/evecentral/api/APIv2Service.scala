@@ -146,25 +146,27 @@ class MarketStatActor extends Actor with DefaultMarshallers with LiftJsonSupport
         {types.map(evemonMineral(_))}
       </minerals>)
     case MarketstatQuery(ctx, dtype) =>
+      try {
+        val params = listFromContext(ctx)
+        val typeid = paramsFromQuery("typeid", params).map(_.toLong).distinct
 
-      val params = listFromContext(ctx)
+        val setHours = singleParam("hours", params) match {
+          case Some(x) => x
+          case None => 24
+        }
+        val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
+        val usesystem = singleParam("usesystem", params)
+        val minq = singleParam("minQ", params)
 
-      val typeid = paramsFromQuery("typeid", params).map(_.toLong).distinct
+        val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
 
-      val setHours = singleParam("hours", params) match {
-        case Some(x) => x
-        case None => 24
+        if (dtype == "json")
+          ctx.complete(toJson(result))
+        else
+          ctx.complete(result)
+      } catch {
+        case t : Throwable => ctx.fail(t)
       }
-      val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
-      val usesystem = singleParam("usesystem", params)
-      val minq = singleParam("minQ", params)
-
-      val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
-
-      if (dtype == "json")
-        ctx.complete(toJson(result))
-      else
-        ctx.complete(result)
   }
 
 
