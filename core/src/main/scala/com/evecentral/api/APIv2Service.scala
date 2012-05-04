@@ -1,7 +1,7 @@
 package com.evecentral.api
 
 import cc.spray.http.MediaTypes._
-import cc.spray.directives.Remaining
+import cc.spray.directives.{Remaining, IntNumber}
 import cc.spray.{RequestContext, Directives}
 import cc.spray.typeconversion.DefaultMarshallers
 import cc.spray.typeconversion.LiftJsonSupport
@@ -45,27 +45,23 @@ trait BaseOrderQuery {
 }
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
-case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem)
+case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem, types: Int)
 
 class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
   
   import com.evecentral.ParameterHelper._
 
   def receive = {
-    case QuickLookPathQuery(ctx, froms, tos) =>
+    case QuickLookPathQuery(ctx, froms, tos, types) =>
 
       val params = listFromContext(ctx)
 
-      val typeid = singleParam("typeid", params) match {
-        case Some(x) => x
-        case None => 34
-      }
       val setHours = singleParam("sethours", params) match {
         case Some(x) => x
         case None => 24
       }
       val minq = singleParam("setminQ", params)
-      ctx.complete(queryQuicklookPath(typeid, setHours, minq, froms, tos))
+      ctx.complete(queryQuicklookPath(types, setHours, minq, froms, tos))
 
     case QuickLookSimpleQuery(ctx) =>
 
@@ -320,13 +316,13 @@ trait APIv2Service extends Directives {
   }
 
   val v2Service = {
-    path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r) {
-      (fromr, tor) =>
+    path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
+      (fromr, tor, types) =>
         val fromid = lookupSystem(fromr)
         val toid = lookupSystem(tor)
         (get | post) {
           ctx =>
-            quicklookActor ! QuickLookPathQuery(ctx, fromid, toid)
+            quicklookActor ! QuickLookPathQuery(ctx, fromid, toid, types)
         }
     } ~
     path("api/quicklook") {
