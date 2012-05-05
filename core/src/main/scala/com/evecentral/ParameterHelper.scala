@@ -9,7 +9,19 @@ import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
 import cc.spray.RequestContext
 import java.nio.charset.Charset
+import cc.spray.typeconversion.{SimpleMarshaller, DefaultMarshallers}
+import xml.NodeSeq
+import cc.spray.http.MediaTypes._
 
+
+trait FixedSprayMarshallers extends DefaultMarshallers {
+  override implicit lazy val NodeSeqMarshaller = new SimpleMarshaller[NodeSeq] {
+    val canMarshalTo = ContentType(`text/xml`) ::
+      ContentType(`text/html`) ::
+      ContentType(`application/xhtml+xml`) :: Nil
+    def marshal(value: NodeSeq, contentType: ContentType) = StringMarshaller.marshal("<?xml version='1.0' encoding='utf-8'?>\n" + value.toString, contentType)
+  }
+}
 /**
  * A helper object for dealing with parameter lists, especially ones
  * containing repeated parameters which don't play nice with spray's

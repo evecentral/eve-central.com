@@ -47,7 +47,7 @@ trait BaseOrderQuery {
 case class QuickLookSimpleQuery(ctx: RequestContext)
 case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem, types: Int)
 
-class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
+class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuery {
   
   import com.evecentral.ParameterHelper._
 
@@ -182,7 +182,7 @@ class QuickLookQuery extends Actor with DefaultMarshallers with BaseOrderQuery {
 case class MarketstatQuery(ctx: RequestContext, dtype: String = "xml")
 case class EvemonQuery(ctx: RequestContext)
 
-class MarketStatActor extends Actor with DefaultMarshallers with LiftJsonSupport with BaseOrderQuery {
+class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupport with BaseOrderQuery {
 
   private val log = LoggerFactory.getLogger(getClass)
   val liftJsonFormats = DefaultFormats
