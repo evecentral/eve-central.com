@@ -316,13 +316,6 @@ trait APIv2Service extends Directives {
   }
 
   val v2Service = {
-    path("api") {
-      options { // Try to fix microsoft office
-        respondWithContentType(`text/xml`) {
-          completeWith(<ok/>)
-        }
-      }
-    } ~
     path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
       (fromr, tor, types) =>
         val fromid = lookupSystem(fromr)
