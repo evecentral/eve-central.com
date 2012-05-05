@@ -51,12 +51,28 @@ class GetOrdersActor extends Actor {
           regionLimit + ") AND ( " +
           systems + ") AND price > 0.15 ", StringFormattable(hours)) {
           row =>
-            MarketOrder(row.nextLong.get, row.nextLong.get, row.nextDouble.get, row.nextBoolean get,
-              StaticProvider.stationsMap(row.nextLong get),
-              StaticProvider.systemsMap(row.nextLong get),
-              StaticProvider.regionsMap(row.nextLong get), row.nextInt get,
-              row.nextLong get, row.nextLong get, row.nextLong get,
-              new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong),
+            val typeid = row.nextLong.get
+            val orderid = row.nextLong.get
+            val price = row.nextDouble.get
+            val bid = row.nextBoolean.get
+            val stationid = row.nextLong.get
+            val systemid = row.nextLong.get
+            val system = StaticProvider.systemsMap(systemid)
+            // Get a mock station if required
+            val station = StaticProvider.stationsMap.getOrElse(stationid, Station(stationid, "Unknown", "Unknown", system))
+            val region = StaticProvider.regionsMap(row.nextLong.get)
+            val range = row.nextInt.get
+            val volremain = row.nextLong.get
+            val volenter = row.nextLong.get
+            val minvol = row.nextLong.get
+            val duration = new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong)
+            MarketOrder(typeid, orderid, price, bid,
+              station,
+              system,
+              region,
+              range,
+              volremain, volenter, minvol,
+              duration,
               new DateTime(row.nextDate.get)
             );
         }
