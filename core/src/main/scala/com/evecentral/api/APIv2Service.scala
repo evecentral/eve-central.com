@@ -306,14 +306,7 @@ trait APIv2Service extends Directives {
   val quicklookActor = actorOf(new QuickLookQuery())
   val marketstatActor = actorOf(new MarketStatActor())
   val olduploadActor = actorOf(new OldUploadServiceActor())
-
-  def lookupSystem(text: String) : SolarSystem = {
-    try {
-      StaticProvider.systemsMap(text.toLong)
-    } catch {
-      case _ => StaticProvider.systemsByName(text)
-    }
-  }
+  import LookupHelper._
 
   val v2Service = {
     path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {

@@ -39,6 +39,24 @@ case class SolarSystem(systemid: Long, name: String, security: Double, region: R
 
 case class MarketType(typeid: Long,  name: String)
 
+object LookupHelper {
+  def lookupSystem(text: String) : SolarSystem = {
+    try {
+      StaticProvider.systemsMap(text.toLong)
+    } catch {
+      case _ => StaticProvider.systemsByName(text)
+    }
+  }
+
+  def lookupType(text: String) : MarketType = {
+    try {
+      StaticProvider.typesMap(text.toLong)
+    } catch {
+      case _ => StaticProvider.typesByName(text)
+    }
+  }
+}
+
 /**
  * A provider of static data which has all be loaded into memory.
  */
@@ -75,6 +93,10 @@ object StaticProvider {
 
   lazy val systemsByName = {
     systemsMap.foldLeft(Map[String, SolarSystem]()) { (maap, solar) => maap ++ Map(solar._2.name -> solar._2) }
+  }
+
+  lazy val typesByName = {
+    typesMap.foldLeft(Map[String, MarketType]()) { (maap, typ) => maap ++ Map(typ._2.name -> typ._2) }
   }
 
   /**

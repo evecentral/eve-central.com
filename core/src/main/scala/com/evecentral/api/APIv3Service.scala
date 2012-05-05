@@ -10,21 +10,14 @@ import cc.spray.encoding.{NoEncoding, Gzip}
 
 import net.liftweb.json._
 import com.evecentral.routes.{Jump, RouteBetween, DistanceBetween, RouteFinderActor}
-import cc.spray.typeconversion.DefaultMarshallers
+import com.evecentral.FixedSprayMarshallers
 
-
-trait APIv3Service extends Directives with DefaultMarshallers {
+trait APIv3Service extends Directives with FixedSprayMarshallers {
 
   def pathActor = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
   def ordersActor = { val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0) }
 
-  def lookupSystem(text: String) : Long = {
-    try {
-      text.toLong
-    } catch {
-      case _ => StaticProvider.systemsByName(text).systemid
-    }
-  }
+  import LookupHelper._
 
   val api3Service = {
     pathPrefix("api") {
@@ -34,12 +27,11 @@ trait APIv3Service extends Directives with DefaultMarshallers {
             respondWithMediaType(`application/json`) {
               ctx =>
 
-                val fromid  = lookupSystem(fromr)
-                val toid = lookupSystem(tor)
+                val from  = lookupSystem(fromr)
+                val to = lookupSystem(tor)
 
                 import net.liftweb.json.JsonDSL._
-                val from = StaticProvider.systemsMap(fromid)
-                val to = StaticProvider.systemsMap(toid)
+
                 ctx.complete((pathActor ? DistanceBetween(from, to)).as[Int] match {
                   case Some(x) => compact(render(("distance" -> x)))
                   case _ => throw new Exception("No value returned")
@@ -55,11 +47,9 @@ trait APIv3Service extends Directives with DefaultMarshallers {
               ctx =>
                 import net.liftweb.json.JsonDSL._
 
-                val fromid  = lookupSystem(fromr)
-                val toid = lookupSystem(tor)
+                val from  = lookupSystem(fromr)
+                val to = lookupSystem(tor)
 
-                val from = StaticProvider.systemsMap(fromid)
-                val to = StaticProvider.systemsMap(toid)
                 ctx.complete((pathActor ? RouteBetween(from, to)).as[Seq[Jump]] match {
                   case Some(x) => compact(render(x.map {jump =>
                     ("fromid" -> jump.from.systemid) ~ ("toid" -> jump.to.systemid) ~ (
