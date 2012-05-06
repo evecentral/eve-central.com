@@ -131,7 +131,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
     val buyr = ordersActor ? buyq
     val selr = ordersActor ? selq
 
-    <evec_api version="2.0" method="quicklook">
+    <evec_api version="2.0" method="quicklook_path">
       <quicklook>
         <item>{typeid}</item>
         <itemname>{StaticProvider.typesMap(typeid).name}</itemname>
@@ -140,6 +140,8 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
         <minqty>{minq}</minqty>
         <sell_orders>{showOrders(selr.as[Seq[MarketOrder]])}</sell_orders>
         <buy_orders>{showOrders(buyr.as[Seq[MarketOrder]])}</buy_orders>
+        <from>{froms.systemid}</from>
+        <to>{tos.systemid}</to>
       </quicklook>
     </evec_api>
   }
