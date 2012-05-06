@@ -9,6 +9,7 @@ import cc.spray.{SprayCanRootService, HttpService}
 import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
+import datainput.UploadStorageActor
 import mail.MailDispatchActor
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
@@ -42,6 +43,7 @@ object Boot extends App {
   val stationsMAp = StaticProvider.stationsMap
   val typesMap = StaticProvider.typesMap
 
+	/* Build a supervisor for all of the "top-level" actor objects */
   val supervisor = Supervisor(
     SupervisorConfig(
       OneForOneStrategy(List(classOf[Throwable], classOf[Exception]), 100, 100),
@@ -55,10 +57,12 @@ object Boot extends App {
         Supervise(apiv2Module.quicklookActor, Permanent),
         Supervise(apiv2Module.marketstatActor, Permanent),
         Supervise(apiv2Module.olduploadActor, Permanent),
+				Supervise(apiModule.unifiedParser, Permanent),
         Supervise(actorOf(new GetOrdersActor()), Permanent),
         Supervise(actorOf(new RouteFinderActor()), Permanent),
         Supervise(actorOf(new OrderCacheActor()), Permanent),
-        Supervise(actorOf(new MailDispatchActor()), Permanent)
+        Supervise(actorOf(new MailDispatchActor()), Permanent),
+				Supervise(actorOf(new UploadStorageActor()), Permanent)
 
       )
     )

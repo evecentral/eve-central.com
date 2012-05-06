@@ -2,6 +2,7 @@ package com.evecentral.api
 
 import cc.spray.http.MediaTypes._
 import akka.actor.{PoisonPill, Actor, Scheduler}
+import Actor.actorOf
 import cc.spray.Directives
 
 import com.evecentral.dataaccess._
@@ -13,13 +14,18 @@ import cc.spray.typeconversion.LiftJsonSupport
 import scala.Some
 import cc.spray.directives.{Remaining, IntNumber}
 import cc.spray.encoding.{Deflate, NoEncoding, Gzip}
+import com.evecentral.datainput.UnifiedUploadParsingActor
 
 trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSupport {
 
   val liftJsonFormats = DefaultFormats
 
+	/* Lookup some global actors */
   def pathActor = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
   def ordersActor = { val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0) }
+	/* A local actor parsing helper actor */
+	/* Note we can't register this as we are not the actor - one odd spray decision */
+	val unifiedParser = actorOf[UnifiedUploadParsingActor]
 
   import LookupHelper._
 
@@ -95,20 +101,20 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 						get {
 							parameter("data") { data =>
 								completeWith {
-									"1"
+									data
 								}
 							}
 						} ~
 							post {
 								formFields("data") { data =>
 									completeWith {
-										"1"
+										data
 									}
 								}
 							} ~ put {
 							ctx =>
 								val content = ctx.request.content.get
-								ctx.complete("1")
+								ctx.complete(content)
 						}
 					}
 			} ~

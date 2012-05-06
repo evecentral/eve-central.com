@@ -4,12 +4,48 @@ import com.evecentral.mail.MailDispatchActor
 import akka.actor.Actor
 import Actor._
 import cc.spray.typeconversion.DefaultMarshallers
-import cc.spray.Directives
 import com.evecentral.dataaccess.StaticProvider
 import com.evecentral.{Database, PoisonCache, OrderCacheActor, ECActorPool}
 import org.slf4j.LoggerFactory
+import cc.spray.{RequestContext, Directives}
 
-class OldUploadServiceActor extends Actor with Directives with DefaultMarshallers {
+
+case class OldUploadPayload(ctx: RequestContext, typename: Option[String], userid: Option[String],
+														data: String, typeid: Option[String], region: Option[String])
+
+
+class OldUploadParsingActor extends Actor with Directives with DefaultMarshallers {
+	private val log = LoggerFactory.getLogger(getClass)
+
+	def storageActor = { val r = Actor.registry.actorsFor[UploadStorageActor]; r(0) }
+
+	def receive = {
+		case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
+			log.info("Processing upload payload for " + typeid)
+			val lines = data.split("\n").tail
+			val rows = lines.map(UploadCsvRow(_))
+			if (rows.nonEmpty)
+				storageActor ! (new CsvUploadMessage(rows))
+			else
+				log.info("Skipping blank upload from old sources")
+			ctx.complete("Beginning your upload of " + typeid + "\nTypeID: 0 RegionID: 0\nComplete! Thank you for your contribution to EVE-Central.com!")
+		}
+	}
+}
+
+class UnifiedUploadParsingActor extends Actor with Directives with DefaultMarshallers {
+
+	def storageActor = { val r = Actor.registry.actorsFor[UploadStorageActor]; r(0) }
+
+	private val log = LoggerFactory.getLogger(getClass)
+
+	def receive = {
+		case _ => None
+	}
+
+}
+
+class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 
 	private val log = LoggerFactory.getLogger(getClass)
 
@@ -69,13 +105,7 @@ class OldUploadServiceActor extends Actor with Directives with DefaultMarshaller
 	}
 
 	def receive = {
-		case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
-			log.info("Processing upload payload for " + typeid)
-			val lines = data.split("\n").tail
-			val rows = lines.map(UploadCsvRow(_))
-			if (rows.nonEmpty)
-				procData(new CsvUploadMessage(rows))
-			ctx.complete("Beginning your upload of " + typeid + "\nTypeID: 0 RegionID: 0\nComplete! Thank you for your contribution to EVE-Central.com!")
-		}
+		case rows : CsvUploadMessage =>
+			procData(rows)
 	}
 }
