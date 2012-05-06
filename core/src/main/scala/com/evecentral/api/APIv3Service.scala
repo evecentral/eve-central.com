@@ -11,8 +11,12 @@ import cc.spray.encoding.{NoEncoding, Gzip}
 import net.liftweb.json._
 import com.evecentral.routes.{Jump, RouteBetween, DistanceBetween, RouteFinderActor}
 import com.evecentral.FixedSprayMarshallers
+import cc.spray.typeconversion.LiftJsonSupport
+import scala.Some
 
-trait APIv3Service extends Directives with FixedSprayMarshallers {
+trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSupport {
+
+  val liftJsonFormats = DefaultFormats
 
   def pathActor = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
   def ordersActor = { val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0) }
@@ -21,6 +25,17 @@ trait APIv3Service extends Directives with FixedSprayMarshallers {
 
   val api3Service = {
     pathPrefix("api") {
+      path("station/shorten" / IntNumber) {
+        stationid =>
+          import net.liftweb.json.JsonDSL._
+          get {
+            respondWithContentType(`application/json`) {
+            ctx =>
+              val station = StaticProvider.stationsMap(stationid)
+              ctx.complete(compact(render(("short_name" -> station.shortName) ~ ("long_name" -> station.name))))
+            }
+          }
+      } ~
       path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
         (fromr, tor) =>
           get {
