@@ -3,16 +3,16 @@ package com.evecentral.api
 import cc.spray.http.MediaTypes._
 import akka.actor.{PoisonPill, Actor, Scheduler}
 import cc.spray.Directives
-import cc.spray.directives.IntNumber
 
 import com.evecentral.dataaccess._
-import cc.spray.encoding.{NoEncoding, Gzip}
 
 import net.liftweb.json._
 import com.evecentral.routes.{Jump, RouteBetween, DistanceBetween, RouteFinderActor}
 import com.evecentral.FixedSprayMarshallers
 import cc.spray.typeconversion.LiftJsonSupport
 import scala.Some
+import cc.spray.directives.{Remaining, IntNumber}
+import cc.spray.encoding.{Deflate, NoEncoding, Gzip}
 
 trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSupport {
 
@@ -89,24 +89,29 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
             }
           }
       } ~ /* Upload support for unified formats */
-      path("upload") {
-        get {
-          parameter("data") { data =>
-            completeWith {
-              "1"
-            }
-          }
-        }~
-          post {
-            (decodeRequest(NoEncoding) | decodeRequest(Gzip)) {
-              formFields("data") { data =>
-                completeWith {
-                  "1"
-                }
-              }
-            }
-          }
-      } ~
+      path("upload" / Remaining) {
+				fluff => // Fluff is anything trailing in the URL, which we'll just ignore for sanity here
+					(decodeRequest(NoEncoding) | decodeRequest(Gzip) | decodeRequest(Deflate)) {
+						get {
+							parameter("data") { data =>
+								completeWith {
+									"1"
+								}
+							}
+						} ~
+							post {
+								formFields("data") { data =>
+									completeWith {
+										"1"
+									}
+								}
+							} ~ put {
+							ctx =>
+								val content = ctx.request.content.get
+								ctx.complete("1")
+						}
+					}
+			} ~
       path ("syndicate") {
         completeWith {
           "1"
