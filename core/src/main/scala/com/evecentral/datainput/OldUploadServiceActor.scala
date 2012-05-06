@@ -19,7 +19,7 @@ class OldUploadServiceActor extends Actor with Directives with DefaultMarshaller
   }
 
 
-  def insertData(marketType: Int, regionId: Long, rows: Seq[UploadCsvRow]) {
+  def insertData(marketType: Int, regionId: Long, rows: Seq[UploadRecord]) {
     import net.noerd.prequel.SQLFormatterImplicits._
 
     Database.coreDb.transaction {
@@ -55,11 +55,11 @@ class OldUploadServiceActor extends Actor with Directives with DefaultMarshaller
 
   }
 
-  def procData(rows: Seq[UploadCsvRow]) {
-    val regionType = rows.map(row => (row.marketTypeId, row.regionId)).distinct
-    if (regionType.length == 1) {
-      val regionId = regionType(0)._2
-      val typeId = regionType(0)._1
+  def procData(data: UploadMessage) {
+    val rows = data.orders
+    if (data.valid) {
+      val regionId = data.regionId
+      val typeId = data.typeId
       mailActor ! rows
       insertData(typeId, regionId, rows)
       poisonCache(typeId, regionId)
@@ -72,7 +72,7 @@ class OldUploadServiceActor extends Actor with Directives with DefaultMarshaller
       val lines = data.split("\n").tail
       val rows = lines.map(UploadCsvRow(_))
       if (rows.nonEmpty)
-        procData(rows)
+        procData(new CsvUploadMessage(rows))
       ctx.complete("Beginning your upload of " + typeid + "\nTypeID: 0 RegionID: 0\nComplete! Thank you for your contribution to EVE-Central.com!")
     }
   }

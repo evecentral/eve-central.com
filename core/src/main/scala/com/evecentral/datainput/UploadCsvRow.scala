@@ -21,7 +21,26 @@ trait UploadRecord {
   def jumps : Int
   def source : String
   def generatedAt : DateTime
+  lazy val generatedAtString = { val fmt = ISODateTimeFormat.dateTime(); fmt.print(generatedAt); }
+  override def toString = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
+    volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.sqlDateTime.print(issued), duration.toString, stationId.toString,
+    regionId.toString, solarSystemId.toString,
+    jumps.toString, source.toString, generatedAtString).mkString(",")
 }
+
+case class UnifiedRow(price: Double, volRemain: Long, marketTypeId: Int,
+                       range: Int, orderId: Long,
+                       volEntered: Long,
+                       minVolume: Long,
+                       bid: Boolean,
+                       issued: DateTime,
+                       duration: Long,
+                       stationId: Long,
+                       regionId : Long,
+                       solarSystemId: Long,
+                       jumps: Int,
+                       source: String,
+                       generatedAt: DateTime) extends UploadRecord
 
 case class UploadCsvRow(line: String) extends UploadRecord {
   private[this] val fields = line.split(",")
@@ -51,10 +70,6 @@ case class UploadCsvRow(line: String) extends UploadRecord {
     case _ => "Unknown"
   }
   val generatedAt = new DateTime();
-  lazy val generatedAtString = { val fmt = ISODateTimeFormat.dateTime(); fmt.print(generatedAt); }
 
-  override def toString = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
-    volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.sqlDateTime.print(issued), duration.toString, stationId.toString,
-    regionId.toString, solarSystemId.toString,
-    jumps.toString, source.toString, generatedAtString).mkString(",")
+
 }
