@@ -1,4 +1,4 @@
-
+import com.mojolly.scalate.ScalatePlugin._
 
 name := "eve-central-ng"
 
@@ -26,21 +26,21 @@ libraryDependencies += "se.scalablesolutions.akka" % "akka-slf4j" % "1.3.1"
 
 libraryDependencies += "net.noerd" %% "prequel" % "0.3.8" changing()
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "1.6.1" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "1.7.2" % "test"
 
 libraryDependencies += "postgresql" % "postgresql" % "9.1-901.jdbc4"
 
-libraryDependencies += "cc.spray" % "spray-server" % "0.9.0-RC3"
+libraryDependencies += "cc.spray" % "spray-server" % "0.9.0"
 
-libraryDependencies += "cc.spray" % "spray-client" % "0.9.0-RC3"
+libraryDependencies += "cc.spray" % "spray-client" % "0.9.0"
 
 libraryDependencies += "net.liftweb" %% "lift-json" % "2.4"
 
 libraryDependencies += "cc.spray" % "spray-can" % "0.9.3"
 
-libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.1"
+libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.4"
 
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "0.9.29"
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.3"
 
 libraryDependencies += "org.fusesource.scalate" % "scalate-core" % "1.5.3"
 
@@ -58,11 +58,14 @@ libraryDependencies += "org.zeromq" %% "zeromq-scala-binding" % "0.0.5"
 
 libraryDependencies += "com.jcraft" % "jzlib" % "1.1.1"
 
-seq(com.zentrope.ScalatePlugin.scalateTemplateSettings : _*)
+
+seq(scalateSettings:_*)
+
+scalateTemplateDirectory in Compile <<= (baseDirectory) { _ / "src/main/resources/com" }
+
 
 seq(assemblySettings: _*)
 
-seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
 
 
 
