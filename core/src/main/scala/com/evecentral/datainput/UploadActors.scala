@@ -40,7 +40,10 @@ class UnifiedUploadParsingActor extends Actor with Directives with DefaultMarsha
 	private val log = LoggerFactory.getLogger(getClass)
 
 	def receive = {
-		case _ => None
+		case msg : String =>
+			val unimsg = new UnifiedUploadMessage(msg)
+			log.info("Parsed uni msg: " + unimsg)
+			storageActor ! unimsg
 	}
 
 }
@@ -106,6 +109,10 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 
 	def receive = {
 		case rows : CsvUploadMessage =>
+			log.info("Storing classic message")
 			procData(rows)
+		case msg : UnifiedUploadMessage =>
+			log.info("Storing unified message")
+			msg.rowsets.foreach(s => procData(s))
 	}
 }

@@ -23,7 +23,7 @@ class UnifiedUploadMessageTest extends FunSuite with ShouldMatchers {
       "typeID" : 11134,
       "rows" : [
         [8999,1,32767,2363806077,1,1,false,"2011-12-03T08:10:59+00:00",90,60008692,30005038],
-        [11499.99,10,32767,2363915657,10,1,false,"2011-12-03T10:53:26+00:00",90,60006970,null],
+        [11499.99,10,32767,2363915657,10,1,false,"2011-12-03T10:53:26+00:00",90,60006970,30005038],
         [11500,48,32767,2363413004,50,1,false,"2011-12-02T22:44:01+00:00",90,60006967,30005039]
       ]
     },
@@ -33,7 +33,7 @@ class UnifiedUploadMessageTest extends FunSuite with ShouldMatchers {
       "typeID" : 11135,
       "rows" : [
         [8999,1,32767,2363806077,1,1,false,"2011-12-03T08:10:59+00:00",90,60008692,30005038],
-        [11499.99,10,32767,2363915657,10,1,false,"2011-12-03T10:53:26+00:00",90,60006970,null],
+        [11499.99,10,32767,2363915657,10,1,false,"2011-12-03T10:53:26+00:00",90,60006970,30005038],
         [11500,48,32767,2363413004,50,1,false,"2011-12-02T22:44:01+00:00",90,60006967,30005039]
       ]
     }
@@ -44,6 +44,9 @@ class UnifiedUploadMessageTest extends FunSuite with ShouldMatchers {
     val i = new UnifiedUploadMessage(message)
     i.resultType should equal ("orders")
     i.columns should equal (List("price","volRemaining","range","orderID","volEntered","minVolume","bid","issueDate","duration","stationID","solarSystemID"))
+		i.rowsets should have length (2)
+		i.rowsets(0).valid should equal (true)
+		i.rowsets(0).regionId should equal (10000065)
   }
 
 }

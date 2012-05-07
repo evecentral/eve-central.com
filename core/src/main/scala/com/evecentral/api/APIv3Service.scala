@@ -100,21 +100,21 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 					(decodeRequest(NoEncoding) | decodeRequest(Gzip) | decodeRequest(Deflate)) {
 						get {
 							parameter("data") { data =>
-								completeWith {
-									data
-								}
+								unifiedParser ! data
+								completeWith {"1"}
 							}
 						} ~
 							post {
 								formFields("data") { data =>
-									completeWith {
-										data
-									}
+									unifiedParser ! data
+									completeWith { "1" }
 								}
 							} ~ put {
 							ctx =>
 								val content = ctx.request.content.get
-								ctx.complete(content)
+								val sb = new String(content.buffer, "UTF-8")
+								unifiedParser ! sb
+								ctx.complete(sb)
 						}
 					}
 			} ~

@@ -13,6 +13,8 @@ trait UploadMessage {
 	def regionId: Long
 
 	def valid: Boolean
+
+	def generatedAt: DateTime
 }
 
 class CsvUploadMessage(rows: Seq[UploadCsvRow]) extends UploadMessage {
@@ -29,12 +31,18 @@ class CsvUploadMessage(rows: Seq[UploadCsvRow]) extends UploadMessage {
 		case _ => -1
 	}
 
+	val generatedAt = DateTime.now
+
 }
 
 case class InvalidRowsetException() extends Exception
 
-class UnifiedRowset(record: Map[String, _], columns: Seq[String]) {
+class UnifiedRowset(record: Map[String, _], columns: Seq[String], source: String) extends UploadMessage {
 	override def toString = record.toString
+
+	val generatedAt: DateTime = {
+		ISODateTimeFormat.dateTimeParser().parseDateTime(record("generatedAt").asInstanceOf[String])
+	}
 
 	private[this] val rowmaps = record("rows").asInstanceOf[List[List[Any]]].map(r => columns.zip(r).toMap)
 
@@ -44,14 +52,27 @@ class UnifiedRowset(record: Map[String, _], columns: Seq[String]) {
 	}
 
 	val typeId = record("typeID") match {
-		case n: BigInt => n.toLong
+		case n: BigInt => n.toInt
 		case null => throw InvalidRowsetException()
 	}
 
-	val generatedAt: DateTime = {
-		ISODateTimeFormat.dateTimeParser().parseDateTime(record("generatedAt").asInstanceOf[String])
-	}
+val orders = rowmaps.map { row =>
+	val price = row("price") match { case d : Double => d case f : Float => f.toDouble case dec : BigDecimal => dec.toDouble case bi : BigInt => bi.toDouble }
+	val volremain = row("volRemaining") match { case n : BigInt => n.toLong }
+	val volenter = row("volEntered") match { case n : BigInt => n.toLong }
+	val range = row("range") match { case n : BigInt => n.toInt case i : Int => i }
+	val orderID = row("orderID") match { case n : BigInt => n.toLong }
+	val minvol = row("minVolume") match { case n : BigInt => n.toLong }
+	val issue = ISODateTimeFormat.dateTimeParser().parseDateTime(row("issueDate").asInstanceOf[String])
+	val duration = row("duration") match { case n : BigInt => n.toLong }
+	val stationid = row("stationID") match { case n : BigInt => n.toLong }
+	val solarsystemid = row("solarSystemID") match { case n : BigInt => n.toLong }
+	val bid = row("bid").asInstanceOf[Boolean]
+	UnifiedRow(price, volremain, typeId, range, orderID, volenter, minvol, bid, issue, duration,
+		stationid, regionId, solarsystemid, 0, source, generatedAt)
+}
 
+	val valid = true
 }
 
 class UnifiedUploadMessage(data: String) {
@@ -62,10 +83,14 @@ class UnifiedUploadMessage(data: String) {
 
 	val resultType = (json \ "resultType" \\ classOf[JString])(0)
 	val columns = (json \ "columns" \\ classOf[JString])
+	val gen_name = (json \ "generator" \ "name") \\ classOf[JString]
+	val gen_ver = (json \ "generator" \ "version") \\ classOf[JString]
+
+	val source = gen_name + " " + gen_ver
+
 	val rowsets = (json \ "rowsets" \\ classOf[JArray])(0).map(rs => rs match {
-		case m: Map[String, _] => new UnifiedRowset(m, columns)
+		case m: Map[String, _] => new UnifiedRowset(m, columns, source)
 	})
 
-	println(rowsets)
 }
 
