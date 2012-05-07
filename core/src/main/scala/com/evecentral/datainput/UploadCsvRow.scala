@@ -44,7 +44,7 @@ trait UploadRecord {
 	override def toString = Seq("%.2f".format(price), volRemain.toString, marketTypeId.toString, range.toString, orderId.toString,
 		volEntered.toString, minVolume.toString, if (bid) "1" else "0", DateFormats.sqlDateTime.print(issued), duration.toString, stationId.toString,
 		regionId.toString, solarSystemId.toString,
-		jumps.toString, source.toString, generatedAtString).mkString(",")
+		jumps.toString, source.toString.replace("\n", "").replace("\r", ""), generatedAtString).mkString(",")
 }
 
 case class UnifiedRow(price: Double, volRemain: Long, marketTypeId: Int,
