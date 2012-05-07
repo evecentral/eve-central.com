@@ -8,6 +8,7 @@ import edu.uci.ics.jung.graph.util.EdgeType
 import org.slf4j.{Logger,  LoggerFactory}
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath
 import scalaj.collection.Imports._
+import edu.uci.ics.jung.algorithms.filters.KNeighborhoodFilter
 
 
 /**
@@ -38,6 +39,11 @@ case class RouteBetween(from: SolarSystem, to: SolarSystem)
 case class DistanceBetween(from: SolarSystem, to: SolarSystem)
 
 /**
+ * Get the surrounding solar systems
+ */
+case class NeighborsOf(origin: SolarSystem, radius: Int)
+
+/**
  * Actor which finds distances and paths between systems
  */
 class RouteFinderActor extends Actor {
@@ -58,9 +64,17 @@ class RouteFinderActor extends Actor {
     dsp.getPath(from, to) asScala
   }
 
+	private[routes] def kNeighbors(origin: SolarSystem, radius: Int) : Seq[SolarSystem] = {
+		val setOrigin = new java.util.HashSet[SolarSystem]()
+		setOrigin.add(origin)
+		val neighbors = new KNeighborhoodFilter[SolarSystem, Jump](setOrigin, radius, KNeighborhoodFilter.EdgeType.IN_OUT).transform(graph).getVertices
+		neighbors.toArray.toList.asInstanceOf[List[SolarSystem]]
+	}
+
   def receive = {
     case DistanceBetween(f,t) => self.reply(routeDistance(f,t))
     case RouteBetween(f,t) => self.reply(route(f,t))
+		case NeighborsOf(o,r) => self.reply(kNeighbors(o,r))
   }
   
   private var graph = new DirectedSparseGraph[SolarSystem, Jump]()

@@ -1,5 +1,7 @@
 package com.evecentral.api
 
+import net.liftweb.json.Xml.{toJson, toXml}
+
 import cc.spray.http.MediaTypes._
 import akka.actor.{PoisonPill, Actor, Scheduler}
 import Actor.actorOf
@@ -8,13 +10,12 @@ import cc.spray.Directives
 import com.evecentral.dataaccess._
 
 import net.liftweb.json._
-import com.evecentral.routes.{Jump, RouteBetween, DistanceBetween, RouteFinderActor}
 import com.evecentral.FixedSprayMarshallers
 import cc.spray.typeconversion.LiftJsonSupport
-import scala.Some
 import cc.spray.directives.{Remaining, IntNumber}
 import cc.spray.encoding.{Deflate, NoEncoding, Gzip}
 import com.evecentral.datainput.UnifiedUploadParsingActor
+import com.evecentral.routes._
 
 trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSupport {
 
@@ -80,6 +81,21 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
             }
           }
       } ~
+			path("neighbors/of" / "[^/]+".r / "radius" / IntNumber) {
+				(origin, radius) =>
+
+					import net.liftweb.json.JsonDSL._
+					get {
+						ctx =>
+							val or = lookupSystem(origin)
+							val json = (pathActor ? NeighborsOf(or, radius)).as[Seq[SolarSystem]] match {
+								case Some(x) => x.map { ss =>
+									("solarsystemid" -> ss.systemid) ~ ("name" -> ss.name) ~ ("security" -> ss.security)
+								}
+							}
+							ctx.complete(json)
+					}
+			} ~
       path("orders/type" / IntNumber) {
         typeid =>
           get {
