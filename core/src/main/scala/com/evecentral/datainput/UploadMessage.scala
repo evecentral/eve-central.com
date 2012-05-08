@@ -75,22 +75,34 @@ val orders = rowmaps.map { row =>
 	val valid = true
 }
 
-class UnifiedUploadMessage(data: String) {
+object UnifiedParser {
+	private[this] def buildOrderMessage(json: JValue) : UnifiedUploadMessage = {
+		val columns = (json \ "columns" \\ classOf[JString])
+		val gen_name = (json \ "generator" \ "name") \\ classOf[JString]
+		val gen_ver = (json \ "generator" \ "version") \\ classOf[JString]
 
-	import net.liftweb.json.JsonDSL._
+		val source = gen_name + " " + gen_ver
 
-	private[this] val json = parse(data)
+		val rowsets = (json \ "rowsets" \\ classOf[JArray])(0).map(rs => rs match {
+			case m: Map[String, _] => new UnifiedRowset(m, columns, source)
+		})
+		UnifiedUploadMessage(columns, source, rowsets)
+	}
 
-	val resultType = (json \ "resultType" \\ classOf[JString])(0)
-	val columns = (json \ "columns" \\ classOf[JString])
-	val gen_name = (json \ "generator" \ "name") \\ classOf[JString]
-	val gen_ver = (json \ "generator" \ "version") \\ classOf[JString]
+	def apply(data: String) : Option[UnifiedUploadMessage] = {
+		import net.liftweb.json.JsonDSL._
 
-	val source = gen_name + " " + gen_ver
+		val json = parse(data)
 
-	val rowsets = (json \ "rowsets" \\ classOf[JArray])(0).map(rs => rs match {
-		case m: Map[String, _] => new UnifiedRowset(m, columns, source)
-	})
-
+		val resultType = (json \ "resultType" \\ classOf[JString])(0)
+		resultType match {
+			case "orders" =>
+				Some(buildOrderMessage(json))
+			case _ => None
+		}
+	}
 }
+
+case class UnifiedUploadMessage(columns: Seq[String], source: String, rowsets: Seq[UnifiedRowset])
+
 

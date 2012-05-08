@@ -41,8 +41,7 @@ class UnifiedUploadMessageTest extends FunSuite with ShouldMatchers {
 }"""
 
   test("Simple parse") {
-    val i = new UnifiedUploadMessage(message)
-    i.resultType should equal ("orders")
+    val i = UnifiedParser(message).get
     i.columns should equal (List("price","volRemaining","range","orderID","volEntered","minVolume","bid","issueDate","duration","stationID","solarSystemID"))
 		i.rowsets should have length (2)
 		i.rowsets(0).valid should equal (true)
