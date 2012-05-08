@@ -5,6 +5,9 @@ import org.joda.time.DateTime
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
 
 
+/**
+ * Represents a single order upload message
+ */
 trait UploadMessage {
 	def orders: Seq[UploadRecord]
 
@@ -15,6 +18,13 @@ trait UploadMessage {
 	def valid: Boolean
 
 	def generatedAt: DateTime
+}
+
+/**
+ * A base type for any unified format container message
+ */
+trait UnifiedMessage {
+	def originalMessage : JValue
 }
 
 class CsvUploadMessage(rows: Seq[UploadCsvRow]) extends UploadMessage {
@@ -76,7 +86,7 @@ val orders = rowmaps.map { row =>
 }
 
 object UnifiedParser {
-	private[this] def buildOrderMessage(json: JValue) : UnifiedUploadMessage = {
+	private[this] def buildOrderMessage(json: JValue) : UnifiedMessage = {
 		val columns = (json \ "columns" \\ classOf[JString])
 		val gen_name = (json \ "generator" \ "name") \\ classOf[JString]
 		val gen_ver = (json \ "generator" \ "version") \\ classOf[JString]
@@ -86,10 +96,10 @@ object UnifiedParser {
 		val rowsets = (json \ "rowsets" \\ classOf[JArray])(0).map(rs => rs match {
 			case m: Map[String, _] => new UnifiedRowset(m, columns, source)
 		})
-		UnifiedUploadMessage(columns, source, rowsets)
+		UnifiedUploadMessage(json, columns, source, rowsets)
 	}
 
-	def apply(data: String) : Option[UnifiedUploadMessage] = {
+	def apply(data: String) : Option[UnifiedMessage] = {
 		import net.liftweb.json.JsonDSL._
 
 		val json = parse(data)
@@ -103,6 +113,10 @@ object UnifiedParser {
 	}
 }
 
-case class UnifiedUploadMessage(columns: Seq[String], source: String, rowsets: Seq[UnifiedRowset])
+case class UnifiedUploadMessage(originalMessage: JValue,
+																columns: Seq[String], source: String,
+																rowsets: Seq[UnifiedRowset]) extends UnifiedMessage
+
+case class UnifiedHistoryMessage(originalMessage: JValue) extends UnifiedMessage
 
 
