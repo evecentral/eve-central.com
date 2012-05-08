@@ -2,12 +2,13 @@ package com.evecentral.datainput
 
 import com.evecentral.mail.MailDispatchActor
 import akka.actor.Actor
-import Actor._
 import cc.spray.typeconversion.DefaultMarshallers
 import com.evecentral.dataaccess.StaticProvider
 import com.evecentral.{Database, PoisonCache, OrderCacheActor, ECActorPool}
 import org.slf4j.LoggerFactory
 import cc.spray.{RequestContext, Directives}
+
+import org.joda.time.DateTime
 
 
 case class OldUploadPayload(ctx: RequestContext, typename: Option[String], userid: Option[String],
@@ -81,13 +82,13 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 				tx.execute("DELETE FROM current_market WHERE regionid = ? AND typeid = ?", regionId, marketType.toLong)
 
 				tx.executeBatch("INSERT INTO current_market (regionid, systemid, stationid, typeid," +
-					"bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby)" +
+					"bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby, reportedtime)" +
 					"VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST (? AS INTERVAL), ?, ?)") {
 					statement =>
 						rows.foreach {
 							row =>
 								statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if (row.bid) 1 else 0, row.price, row.orderId, row.minVolume, row.volRemain,
-									row.volEntered, row.issued, row.duration.toString + " days", row.range, 0)
+									row.volEntered, row.issued, row.duration.toString + " days", row.range, 0, row.generatedAt)
 						}
 				}
 		}
@@ -99,14 +100,35 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 
 	}
 
+	def confirmGeneratedAt(generatedAt: DateTime, typeId: Int, regionId: Long) : Boolean = {
+	if (generatedAt.isAfterNow || generatedAt.plusHours(1).isBeforeNow)
+		false
+	else {
+		val dbtime = Database.coreDb.transaction {
+			tx =>
+				import net.noerd.prequel.SQLFormatterImplicits._
+				tx.selectDateTime("SELECT reportedtime FROM current_market WHERE typeid = ? AND regionid = ?", typeId, regionId)
+		}
+		dbtime.isBefore(generatedAt)
+	}
+
+	}
+
 	def procData(data: UploadMessage) {
 		val rows = data.orders
 		if (data.valid) {
 			val regionId = data.regionId
 			val typeId = data.typeId
+			val generatedAt = data.generatedAt
 			mailActor ! rows
-			insertData(typeId, regionId, rows)
-			poisonCache(typeId, regionId)
+			confirmGeneratedAt(generatedAt, typeId, regionId) match {
+				case true =>
+					insertData(typeId, regionId, rows)
+					poisonCache(typeId, regionId)
+				case false =>
+					log.info("GeneratedAt time was out of bounds to be considered fresh")
+			}
+
 		}
 	}
 
