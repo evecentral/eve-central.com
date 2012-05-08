@@ -108,12 +108,16 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 	if (generatedAt.isAfterNow || generatedAt.plusHours(1).isBeforeNow)
 		false
 	else {
-		val dbtime = Database.coreDb.transaction {
-			tx =>
-				import net.noerd.prequel.SQLFormatterImplicits._
-				tx.selectDateTime("SELECT reportedtime FROM current_market WHERE typeid = ? AND regionid = ? LIMIT 1", typeId, regionId)
+		try {
+			val dbtime = Database.coreDb.transaction {
+				tx =>
+					import net.noerd.prequel.SQLFormatterImplicits._
+					tx.selectDateTime("SELECT reportedtime FROM current_market WHERE typeid = ? AND regionid = ? LIMIT 1", typeId, regionId)
+			}
+			dbtime.isBefore(generatedAt)
+		} catch {
+			case _ => { log.debug("GeneratedAt success since there isn't anything in the database"); true }
 		}
-		dbtime.isBefore(generatedAt)
 	}
 
 	}
@@ -129,8 +133,9 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 				case true =>
 					insertData(typeId, regionId, rows)
 					poisonCache(typeId, regionId)
+					log.debug("Processing upload complete")
 				case false =>
-					log.info("GeneratedAt time was out of bounds to be considered fresh")
+					log.debug("GeneratedAt time was out of bounds to be considered fresh")
 			}
 
 		}
