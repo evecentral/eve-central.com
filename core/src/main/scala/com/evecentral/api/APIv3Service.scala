@@ -124,6 +124,10 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 								formFields("data") { data =>
 									unifiedParser ! data
 									completeWith { "1" }
+								} ~ content(as[String]) {
+									data =>
+										unifiedParser ! data
+										completeWith { "1" }
 								}
 							} ~ put {
 							ctx =>
