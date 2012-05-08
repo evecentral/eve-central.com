@@ -107,7 +107,7 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 		val dbtime = Database.coreDb.transaction {
 			tx =>
 				import net.noerd.prequel.SQLFormatterImplicits._
-				tx.selectDateTime("SELECT reportedtime FROM current_market WHERE typeid = ? AND regionid = ?", typeId, regionId)
+				tx.selectDateTime("SELECT reportedtime FROM current_market WHERE typeid = ? AND regionid = ? LIMIT 1", typeId, regionId)
 		}
 		dbtime.isBefore(generatedAt)
 	}
