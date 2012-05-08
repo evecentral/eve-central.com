@@ -87,7 +87,7 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 
 				tx.executeBatch("INSERT INTO current_market (regionid, systemid, stationid, typeid," +
 					"bid,price, orderid, minvolume, volremain, volenter, issued, duration, range, reportedby, reportedtime)" +
-					"VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST (? AS INTERVAL), ?, ?)") {
+					"VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST (? AS INTERVAL), ?, ?, ?)") {
 					statement =>
 						rows.foreach {
 							row =>
