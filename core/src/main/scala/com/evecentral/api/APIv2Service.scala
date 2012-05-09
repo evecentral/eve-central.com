@@ -58,7 +58,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 
       val setHours = singleParam("sethours", params) match {
         case Some(x) => x
-        case None => 24
+        case None => 360
       }
       val minq = singleParam("setminQ", params)
       ctx.complete(queryQuicklookPath(types, setHours, minq, froms, tos))
@@ -73,7 +73,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
       }
       val setHours = singleParam("sethours", params) match {
         case Some(x) => x
-        case None => 24
+        case None => 360
       }
       val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
       val usesystem = singleParam("usesystem", params)
