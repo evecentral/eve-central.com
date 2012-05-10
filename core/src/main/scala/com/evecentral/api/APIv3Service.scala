@@ -119,17 +119,16 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 									unifiedParser ! data
 									completeWith {"1"}
 								}
-							} ~
-								post {
-									formFields("data") { data =>
+							} ~ post {
+								formFields("data") { data =>
+									unifiedParser ! data
+									completeWith { "1" }
+								} ~ content(as[String]) {
+									data =>
 										unifiedParser ! data
 										completeWith { "1" }
-									} ~ content(as[String]) {
-										data =>
-											unifiedParser ! data
-											completeWith { "1" }
-									}
-								} ~ put {
+								}
+							} ~ put {
 								ctx =>
 									val content = ctx.request.content.get
 									val sb = new String(content.buffer, "UTF-8")
