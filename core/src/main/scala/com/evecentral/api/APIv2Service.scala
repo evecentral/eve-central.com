@@ -3,7 +3,6 @@ package com.evecentral.api
 import cc.spray.http.MediaTypes._
 import cc.spray.directives.{Remaining, IntNumber}
 import cc.spray.{RequestContext, Directives}
-import cc.spray.typeconversion.DefaultMarshallers
 import cc.spray.typeconversion.LiftJsonSupport
 
 import org.slf4j.LoggerFactory
@@ -21,28 +20,12 @@ import com.evecentral.dataaccess._
 import com.evecentral.ParameterHelper._
 import com.evecentral.frontend.Formatter.priceString
 import com.evecentral._
-import datainput.{OldUploadParsingActor, OldUploadPayload, UploadStorageActor}
+import datainput.{OldUploadParsingActor, OldUploadPayload}
 import frontend.DateFormats
-import routes.{Jump, RouteBetween, RouteFinderActor}
+import routes.{Jump, RouteBetween}
+import util.BaseOrderQuery
+import dataaccess.OrderList
 
-trait BaseOrderQuery {
-
-
-  def ordersActor = {
-    val r = Actor.registry.actorsFor[GetOrdersActor]
-    r(0)
-  }
-
-  def statCache = {
-    val r = (Actor.registry.actorsFor[OrderCacheActor]);
-    r(0)
-  }
-
-  def pathActor = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
-
-
-
-}
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
 case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem, types: Int)
@@ -89,11 +72,11 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
     }
   }
 
-  def showOrders(orders: Option[Seq[MarketOrder]]): NodeSeq = {
+  def showOrders(orders: Option[OrderList]): NodeSeq = {
     
     orders match {
       case None => Seq[Node]()
-      case Some(o) => o.foldLeft(Seq[Node]()) {
+      case Some(o) => o.result.foldLeft(Seq[Node]()) {
         (i, order) =>
           i ++ <order id={order.orderId.toString}>
             <region>{order.region.regionid}</region>
@@ -138,8 +121,8 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
         <regions></regions>
         <hours>{setHours}</hours>
         <minqty>{minq}</minqty>
-        <sell_orders>{showOrders(selr.as[Seq[MarketOrder]])}</sell_orders>
-        <buy_orders>{showOrders(buyr.as[Seq[MarketOrder]])}</buy_orders>
+        <sell_orders>{showOrders(selr.as[OrderList])}</sell_orders>
+        <buy_orders>{showOrders(buyr.as[OrderList])}</buy_orders>
         <from>{froms.systemid}</from>
         <to>{tos.systemid}</to>
       </quicklook>
@@ -173,8 +156,8 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
         <regions>{regionName(regionLimit)}</regions>
         <hours>{setHours}</hours>
         <minqty>{minq}</minqty>
-        <sell_orders>{showOrders(selr.as[Seq[MarketOrder]])}</sell_orders>
-        <buy_orders>{showOrders(buyr.as[Seq[MarketOrder]])}</buy_orders>
+        <sell_orders>{showOrders(selr.as[OrderList])}</sell_orders>
+        <buy_orders>{showOrders(buyr.as[OrderList])}</buy_orders>
       </quicklook>
     </evec_api>
   }
@@ -223,7 +206,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
   def evemonMineral(mineral: MarketType) : NodeSeq = {
     val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
-    val s = fetchCachedStats(buyq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq)), buyq)
+    val s = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
 
     <mineral>
       <name>{mineral.name}</name>
@@ -243,11 +226,11 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
   def fetchOrdersFor(buyq: GetOrdersFor) : Seq[MarketOrder] = {
     val buyf = (ordersActor ? buyq)
-    buyf.as[Seq[MarketOrder]] getOrElse List[MarketOrder]()
+    (buyf.as[OrderList] getOrElse OrderList(null, List[MarketOrder]())).result
   }
 
-  def fetchCachedStats(query: GetOrdersFor) : Option[OrderStatistics] = {
-    val r = (statCache ? GetCacheFor(query))
+  def fetchCachedStats(query: GetOrdersFor, highToLow: Boolean) : Option[OrderStatistics] = {
+    val r = (statCache ? GetCacheFor(query, highToLow))
     r.as[Option[OrderStatistics]] getOrElse  None
   }
 
@@ -269,9 +252,9 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
     val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
     val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
 
-    val alls = fetchCachedStats(allq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
-    val sels = fetchCachedStats(selq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
-    val buys = fetchCachedStats(buyq) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq)), buyq)
+    val alls = fetchCachedStats(allq, false) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
+    val sels = fetchCachedStats(selq, false) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
+    val buys = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
 
     <type id={typeid.toString}>
       <buy>

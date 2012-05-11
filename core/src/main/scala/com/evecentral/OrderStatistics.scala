@@ -18,6 +18,7 @@ trait OrderStatistics {
 
   def max : Double
   def min : Double
+	def highToLow : Boolean
 }
 
 class CachedOrderStatistics(val forQuery: GetOrdersFor, private[this] var from: OrderStatistics) extends OrderStatistics {
@@ -30,6 +31,7 @@ class CachedOrderStatistics(val forQuery: GetOrdersFor, private[this] var from: 
   private val _fivePercent = from.fivePercent
   private val _max = from.max
   private val _min = from.min
+	private val _highToLow = from.highToLow
 
   override def volume = _volume
   override def wavg = _wavg
@@ -40,11 +42,11 @@ class CachedOrderStatistics(val forQuery: GetOrdersFor, private[this] var from: 
   override def fivePercent = _fivePercent
   override def max = _max
   override def min = _min
-
+	override def highToLow = _highToLow
 
 }
 
-private class LazyOrderStatistics(over: Seq[MarketOrder], highToLow: Boolean = false) extends OrderStatistics {
+private class LazyOrderStatistics(over: Seq[MarketOrder], val highToLow: Boolean = false) extends OrderStatistics {
   override lazy val volume = OrderStatistics.volume(over)
   override lazy val wavg = OrderStatistics.wavg(over, volume)
   override lazy val avg = OrderStatistics.avg(over)
@@ -178,7 +180,7 @@ object OrderStatistics {
 
 case class RegisterCacheFor(cache: CachedOrderStatistics)
 
-case class GetCacheFor(query: GetOrdersFor)
+case class GetCacheFor(query: GetOrdersFor, highToLow: Boolean)
 
 case class PoisonCache(region: Region, marketType: MarketType)
 
@@ -186,7 +188,7 @@ case class PoisonAllCache()
 
 class OrderCacheActor extends Actor {
   
-  private val cacheHash = scala.collection.mutable.HashMap[GetOrdersFor, OrderStatistics]()
+  private val cacheHash = scala.collection.mutable.HashMap[GetCacheFor, OrderStatistics]()
   private val log = LoggerFactory.getLogger(getClass)
 
   override def preStart() {
@@ -197,17 +199,17 @@ class OrderCacheActor extends Actor {
   
   
   def receive = {
-    case GetCacheFor(query) => 
-      self.channel ! cacheHash.get(query)
+    case gcf : GetCacheFor =>
+      self.channel ! cacheHash.get(gcf)
     case RegisterCacheFor(cached) =>
-      cacheHash.put(cached.forQuery, cached)
+      cacheHash.put(GetCacheFor(cached.forQuery, cached.highToLow), cached)
     case PoisonAllCache =>
       log.info("Poisoning all cache entries")
       cacheHash.clear()
     case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
       // @TODO: Make this non-linear-time
-      cacheHash.keySet.foreach(of => if ((of.regions.contains(region.regionid) || of.regions.isEmpty) &&
-        of.types.contains(mtype.typeid)) { cacheHash.remove(of); log.info("Removing from cache " + of) } )
+      cacheHash.keySet.foreach(of => if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
+        of.query.types.contains(mtype.typeid)) { cacheHash.remove(of); log.info("Removing from cache " + of) } )
       self.channel ! true
   }
 }

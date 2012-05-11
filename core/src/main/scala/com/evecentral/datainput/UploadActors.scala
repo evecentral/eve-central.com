@@ -2,6 +2,7 @@ package com.evecentral.datainput
 
 import com.evecentral.mail.MailDispatchActor
 import akka.actor.Actor
+import Actor.actorOf
 import cc.spray.typeconversion.DefaultMarshallers
 import com.evecentral.dataaccess.StaticProvider
 import com.evecentral.{Database, PoisonCache, OrderCacheActor, ECActorPool}
@@ -9,7 +10,9 @@ import org.slf4j.LoggerFactory
 import cc.spray.{RequestContext, Directives}
 
 import org.joda.time.DateTime
+import akka.config.Supervision.OneForOneStrategy
 
+case class UploadTriggerEvent(typeId: Int, regionId: Long)
 
 case class OldUploadPayload(ctx: RequestContext, typename: Option[String], userid: Option[String],
 														data: String, typeid: Option[String], region: Option[String])
@@ -56,7 +59,7 @@ class UnifiedUploadParsingActor extends Actor with Directives with DefaultMarsha
 
 }
 
-class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
+class UploadStorageActor extends Actor {
 
 	private val log = LoggerFactory.getLogger(getClass)
 
@@ -65,6 +68,13 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 		r(0)
 	}
 
+	val statCaptureActor = actorOf[StatisticsCaptureActor].start()
+
+	self.faultHandler = OneForOneStrategy(List(classOf[Throwable]), 100, 1000)
+
+	override def preStart() {
+		self.link(statCaptureActor)
+	}
 
 	def insertData(marketType: Int, regionId: Long, rows: Seq[UploadRecord]) {
 		import net.noerd.prequel.SQLFormatterImplicits._
@@ -91,7 +101,8 @@ class UploadStorageActor extends Actor with Directives with DefaultMarshallers {
 					statement =>
 						rows.foreach {
 							row =>
-								statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if (row.bid) 1 else 0, row.price, row.orderId, row.minVolume, row.volRemain,
+								statement.executeWith(row.regionId, row.solarSystemId, row.stationId, row.marketTypeId, if (row.bid) 1 else 0,
+									row.price, row.orderId, row.minVolume, row.volRemain,
 									row.volEntered, row.issued, row.duration.toString + " days", row.range, 0, row.generatedAt)
 						}
 				}

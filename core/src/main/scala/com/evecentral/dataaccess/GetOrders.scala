@@ -21,6 +21,7 @@ object MarketOrder {
 
 case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24, minq: Long = 1)
 
+case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
 class GetOrdersActor extends Actor {
   /**
@@ -80,6 +81,6 @@ class GetOrdersActor extends Actor {
   }
 
   def receive = {
-      case x: GetOrdersFor => self.channel ! orderList(x)
+      case x: GetOrdersFor => self.channel ! OrderList(x, orderList(x))
   }
 }

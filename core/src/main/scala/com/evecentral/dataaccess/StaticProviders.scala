@@ -99,6 +99,10 @@ object StaticProvider {
     typesMap.foldLeft(Map[String, MarketType]()) { (maap, typ) => maap ++ Map(typ._2.name -> typ._2) }
   }
 
+	lazy val regionsByName = {
+		regionsMap.foldLeft(Map[String, Region]()) { (maap, reg) => maap ++ Map(reg._2.name -> reg._2) }
+	}
+
   /**
    * Maps a station ID to a station
    */
