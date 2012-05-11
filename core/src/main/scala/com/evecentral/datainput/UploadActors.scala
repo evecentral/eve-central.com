@@ -68,12 +68,12 @@ class UploadStorageActor extends Actor {
 		r(0)
 	}
 
-	val statCaptureActor = actorOf[StatisticsCaptureActor].start()
+	//val statCaptureActor = actorOf[StatisticsCaptureActor].start()
 
 	self.faultHandler = OneForOneStrategy(List(classOf[Throwable]), 100, 1000)
 
 	override def preStart() {
-		self.link(statCaptureActor)
+		//self.link(statCaptureActor)
 	}
 
 	def insertData(marketType: Int, regionId: Long, rows: Seq[UploadRecord]) {
