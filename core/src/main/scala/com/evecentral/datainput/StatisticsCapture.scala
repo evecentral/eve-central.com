@@ -40,7 +40,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 		Database.coreDb.transaction {
 			tx =>
 				import net.noerd.prequel.SQLFormatterImplicits._
-				tx.execute("INSERT INTO trends_type_region (typeid, region, averge, median, volume, stddev, buyup, systemid, bid, minimum, maximum) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+				tx.execute("INSERT INTO trends_type_region (typeid, region, average, median, volume, stddev, buyup, systemid, bid, minimum, maximum) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
 					item,
 					region, result.avg, result.median, result.volume, result.stdDev, result.fivePercent, system,
 					query.bid.get match { case true => 1 case false => 0 }, result.min, result.max)
