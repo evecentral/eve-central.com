@@ -6,6 +6,7 @@ import com.evecentral.util.BaseOrderQuery
 import akka.dispatch.Future
 import com.evecentral.dataaccess.{MarketOrder, OrderList, StaticProvider, GetOrdersFor}
 import com.evecentral.{OrderStatistics, Database}
+import net.noerd.prequel.{Formattable, IntFormattable}
 
 class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
@@ -29,14 +30,21 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
 	def storeStatistics(query: GetOrdersFor, result: OrderStatistics) {
 		val region = if (query.regions.size > 1) -1 else if (query.regions.size == 1) query.regions.head else 0
-		val system = query.systems.headOption getOrElse 0
+		val system = query.systems.headOption match {
+			case Some(y) => y.toLong
+			case None => 0
+		}
+		val item = query.types(0).toInt
 
-		//Database.coreDb.transaction {
-		//	tx =>
-		//		import net.noerd.prequel.SQLFormatterImplicits._
-				//tx.execute("INSERT INTO trends_type_region (typeid, region, averge, median, volume, stddev, buyup, systemid, bid, minimum, maximum) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-				//query.types(0), region, )
-		//}
+
+		Database.coreDb.transaction {
+			tx =>
+				import net.noerd.prequel.SQLFormatterImplicits._
+				tx.execute("INSERT INTO trends_type_region (typeid, region, averge, median, volume, stddev, buyup, systemid, bid, minimum, maximum) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+					item,
+					region, result.avg, result.median, result.volume, result.stdDev, result.fivePercent, system,
+					query.bid.get match { case true => 1 case false => 0 }, result.min, result.max)
+		}
 	}
 
 

@@ -104,6 +104,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
     val path = (pathActor ? RouteBetween(froms, tos)).as[Seq[Jump]] match {
       case Some(jumps) =>
         jumps
+      case None => List[Jump]()
     }
 
     val systems = path.foldLeft(Set[SolarSystem]()) { (set, j) => set + j.from + j.to }.toList.map(_.systemid)

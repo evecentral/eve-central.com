@@ -77,6 +77,8 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 											("fromid" -> jump.from.systemid) ~ ("toid" -> jump.to.systemid) ~ (
 												"from" -> jump.from.name) ~ ("to" -> jump.to.name) ~ ("secchange" -> jump.secChange) }
 										))
+											case None =>
+												compact(render(("error" -> "No such path")))
 									})
 							}
 						}
@@ -92,6 +94,9 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 									case Some(x) => x.map { ss =>
 										("solarsystemid" -> ss.systemid) ~ ("name" -> ss.name) ~ ("security" -> ss.security)
 									}
+									case None =>
+										("error" -> "Lonely")
+
 								}
 								ctx.complete(json)
 						}
