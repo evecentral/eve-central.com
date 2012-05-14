@@ -1,0 +1,32 @@
+${render("top.ssp")}
+
+<div class="container">
+
+
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="span12">
+
+    <div id="chartdiv" style="top:100px;"></div>
+    <script type="text/javascript">
+    $('#chartdiv').ready(function() {
+        $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
+    });
+    </script>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+        </div>
+    </div>
+    <hr>
+
+
+</div>
+
+${render("footer.ssp")}
+
+
