@@ -31,7 +31,7 @@ ${render("top.ssp")}
                         <input name="typename" type="text" placeholder="Search the market by name">
                     </fieldset>
                 </form>
-                <p><a href="#" class="mute">Customize Search</a></p>
+                <!-- <p><a href="#" class="mute">Customize Search</a></p> -->
             </div>
             <div class="span5">
                 <h6>Contribute Data</h6>

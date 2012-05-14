@@ -1,9 +1,12 @@
 ${render("top.ssp")}
 
+
+
 <div class="container">
 
     <div class="page-header">
-        <h1>Market Orders</h1>
+        <script type="text/x-handlebars"><h1>Market Orders - {{markettype.typename}}</h1></script>
+
     </div>
 
 

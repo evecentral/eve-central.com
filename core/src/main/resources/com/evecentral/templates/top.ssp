@@ -22,6 +22,11 @@
     <script language="javascript" type="text/javascript" src="/static/jqplot/plugins/jqplot.json2.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/jqplot/jquery.jqplot.css" />
 
+    <script language="javascript" type="text/javascript" src="/static/js/jquery.history.js"></script>
+    <script language="javascript" type="text/javascript" src="/static/js/embers-0.9.7.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="/static/js/evec.js"></script>
+
+
 </head>
 
 <body>
