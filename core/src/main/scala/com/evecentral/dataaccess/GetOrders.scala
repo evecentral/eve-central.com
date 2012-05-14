@@ -83,7 +83,7 @@ class GetOrdersActor extends Actor {
   def receive = {
       case x: GetOrdersFor => {
 	      val channel = self.channel
-	      Future { OrderList(x, orderList(x)) } onResult { case y : Seq[MarketOrder] => channel ! y }
+	      channel ! OrderList(x, orderList(x))
       }
   }
 }
