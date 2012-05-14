@@ -5,10 +5,10 @@ import akka.routing._
 import akka.actor.Actor
 import akka.event.EventHandler
 import Actor._
-import com.evecentral.{ECActorPool, ActorUtil, Database}
+import com.evecentral.{ECActorPool, Database}
 import org.joda.time.{DateTime, Period}
 import org.postgresql.util.PGInterval
-import net.noerd.prequel.{StringFormattable, IntFormattable}
+import net.noerd.prequel.{StringFormattable}
 import org.slf4j.LoggerFactory
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
