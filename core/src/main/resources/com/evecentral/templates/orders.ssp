@@ -1,50 +1,6 @@
 ${render("top.ssp")}
 
 
-<div class="jumbotron subhead" id="overview">
-    <div class="inner">
-        <div class="container">
-            <h1>EVE-Central: The Market Aggregator and Toolkit</h1>
-
-            <p class="lead">Your New Eden logistical companion</p>
-        </div>
-    </div>
-</div>
-
-<div class="quickstart">
-    <div class="container">
-        <div class="row">
-            <div class="span5">
-                <h6>Price Snapshots</h6>
-
-                <p>Tritanium: 3 ISK</p>
-
-                <p>Tritanium: 3 ISK</p>
-
-                <p>Tritanium: 3 ISK</p>
-            </div>
-            <div class="span5">
-                <h6>Search the Market</h6>
-
-                <form>
-                    <fieldset>
-                        <input name="typename" type="text" placeholder="Search the market by name">
-                    </fieldset>
-                </form>
-                <p><a href="#" class="mute">Customize Search</a></p>
-            </div>
-            <div class="span5">
-                <h6>Contribute Data</h6>
-
-                <p>Don't worry, its pain free!</p>
-
-                <p><a href="/contribute" class="btn">Download Market Scanner</a></p>
-            </div>
-        </div>
-
-    </div>
-</div>
-
 <div class="container">
     <div class="row">&nbsp;</div>
 </div>
@@ -52,9 +8,7 @@ ${render("top.ssp")}
 <div class="container">
 
     <div class="page-header">
-        <h1>How it works
-            <small>And how to help</small>
-        </h1>
+        <h1>Market Orders</h1>
     </div>
 
 
@@ -110,22 +64,6 @@ ${render("top.ssp")}
 
 </div>
 
-<script type="text/javascript">
-    var uservoiceJsHost = ("https:" == document.location.protocol) ? "https://uservoice.com" : "http://cdn.uservoice.com";
-    document.write(unescape("%3Cscript src='" + uservoiceJsHost + "/javascripts/widgets/tab.js' type='text/javascript'%3E%3C/script%3E"))
-</script>
-<script type="text/javascript">
-    UserVoice.Tab.show({
-    key: 'evecentral',
-    host: 'evecentral.uservoice.com',
-    forum: 'general',
-    alignment: 'right', /* 'left', 'right' */
-    background_color:'#f00',
-    text_color: 'white', /* 'white', 'black' */
-    hover_color: '#06C',
-    lang: 'en' /* 'en', 'de', 'nl', 'es', 'fr' */
-    })
-</script>
 ${render("footer.ssp")}
 
 
