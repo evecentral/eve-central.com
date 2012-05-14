@@ -1,0 +1,131 @@
+${render("top.ssp")}
+
+
+<div class="jumbotron subhead" id="overview">
+    <div class="inner">
+        <div class="container">
+            <h1>EVE-Central: The Market Aggregator and Toolkit</h1>
+
+            <p class="lead">Your New Eden logistical companion</p>
+        </div>
+    </div>
+</div>
+
+<div class="quickstart">
+    <div class="container">
+        <div class="row">
+            <div class="span5">
+                <h6>Price Snapshots</h6>
+
+                <p>Tritanium: 3 ISK</p>
+
+                <p>Tritanium: 3 ISK</p>
+
+                <p>Tritanium: 3 ISK</p>
+            </div>
+            <div class="span5">
+                <h6>Search the Market</h6>
+
+                <form>
+                    <fieldset>
+                        <input name="typename" type="text" placeholder="Search the market by name">
+                    </fieldset>
+                </form>
+                <p><a href="#" class="mute">Customize Search</a></p>
+            </div>
+            <div class="span5">
+                <h6>Contribute Data</h6>
+
+                <p>Don't worry, its pain free!</p>
+
+                <p><a href="/contribute" class="btn">Download Market Scanner</a></p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">&nbsp;</div>
+</div>
+
+<div class="container">
+
+    <div class="page-header">
+        <h1>How it works
+            <small>And how to help</small>
+        </h1>
+    </div>
+
+
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="span6">
+
+            <p>The EVE-Online Market is missing some key functionality, including not being able to browse the
+                markets in a region you are not in. By collecting views of the market from players such as yourself
+                via <a href="/contribute">our software</a>, EVE-Central provides a more complete picture of the market. Participating in the
+                community is easy - simply download our market client, and everything is <strong>automatic!</strong>
+
+            <p><a class="btn primary" href="/contribute">Download our Market Scanner &raquo;</a></p>
+        </div>
+
+        <div class="span4 offset1">
+            <h3>Site Updates</h3>
+            <p>News and updates to EVE-Central are posted to our <a href="http://yannramin.com/category/eve-central">blog</a>.</p>
+            <p><a class="btn" href="http://yannramin.com/category/eve-central">Site News &raquo;</a></p>
+
+        </div>
+    </div>
+    <hr>
+
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="span4">
+            <h2>Simple Trade Routes</h2>
+
+            <p>Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere
+                velit aliquet. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Duis
+                mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
+
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span4">
+            <h2>Heading</h2>
+
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor
+                mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna
+                mollis euismod. Donec sed odio dui. </p>
+
+            <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span4">
+            <h2>Developers</h2>
+
+            <p>EVE-Central has a comprehensive API to allow integration with third party software and web sites.</p>
+            <p><a class="btn success" href="http://dev.eve-central.com/">Developer API Reference &raquo;</a></p>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+    var uservoiceJsHost = ("https:" == document.location.protocol) ? "https://uservoice.com" : "http://cdn.uservoice.com";
+    document.write(unescape("%3Cscript src='" + uservoiceJsHost + "/javascripts/widgets/tab.js' type='text/javascript'%3E%3C/script%3E"))
+</script>
+<script type="text/javascript">
+    UserVoice.Tab.show({
+    key: 'evecentral',
+    host: 'evecentral.uservoice.com',
+    forum: 'general',
+    alignment: 'right', /* 'left', 'right' */
+    background_color:'#f00',
+    text_color: 'white', /* 'white', 'black' */
+    hover_color: '#06C',
+    lang: 'en' /* 'en', 'de', 'nl', 'es', 'fr' */
+    })
+</script>
+${render("footer.ssp")}
+
+
