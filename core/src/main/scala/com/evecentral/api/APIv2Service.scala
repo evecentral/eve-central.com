@@ -25,6 +25,7 @@ import frontend.DateFormats
 import routes.{Jump, RouteBetween}
 import util.BaseOrderQuery
 import dataaccess.OrderList
+import akka.dispatch.Future
 
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
@@ -193,12 +194,14 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
         val usesystem = singleParam("usesystem", params)
         val minq = singleParam("minQ", params)
 
-        val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
+        val f = Future {
+	        val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
+	        if (dtype == "json")
+		        ctx.complete(toJson(result))
+	        else
+		        ctx.complete(result)
+        }
 
-        if (dtype == "json")
-          ctx.complete(toJson(result))
-        else
-          ctx.complete(result)
       } catch {
         case t : Throwable => ctx.fail(t)
       }
