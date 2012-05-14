@@ -11,6 +11,7 @@ object Database {
 	private[this] def dummyTx {
 		dbconfig.transaction { tx =>
 			tx.select("SELECT 1 = 1")
+			{ row => row.nextBoolean }
 		}
 		hasInited = true
 	}
