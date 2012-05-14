@@ -200,6 +200,8 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 		        ctx.complete(toJson(result))
 	        else
 		        ctx.complete(result)
+        } onException {
+	        case e : Throwable => ctx.fail(e)
         }
 
       } catch {
