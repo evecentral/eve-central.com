@@ -1,10 +1,5 @@
 ${render("top.ssp")}
 
-
-<div class="container">
-    <div class="row">&nbsp;</div>
-</div>
-
 <div class="container">
 
     <div class="page-header">

@@ -1,13 +1,12 @@
 .jumbotron {
   min-width: 940px;
-  padding-top: 46px;
+//  padding-top: 16px;
+	margin-top: -20px;
+
 }
 .jumbotron .inner {
 /*  background: transparent url(../img/grid-18px.png) top center; */
   padding: 0px 0;
-//  -webkit-box-shadow: inset 0 10px 30px rgba(0,0,0,.3);
-//     -moz-box-shadow: inset 0 10px 30px rgba(0,0,0,.3);
-//          box-shadow: inset 0 10px 30px rgba(0,0,0,.3);
 }
 .jumbotron h1,
 .jumbotron p {

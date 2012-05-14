@@ -152,6 +152,7 @@ textarea {
 }
 
 body {
+  padding-top: 80px;
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 13px;
@@ -3557,7 +3558,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .navbar-inner {
-  min-height: 40px;
+  min-height: 60px;
   padding-right: 20px;
   padding-left: 20px;
   background-color: #2c2c2c;
@@ -3606,7 +3607,7 @@ input[type="submit"].btn.btn-mini {
 
 .navbar .navbar-text {
   margin-bottom: 0;
-  line-height: 40px;
+  line-height: 60px;
 }
 
 .navbar .navbar-link {
@@ -3619,7 +3620,7 @@ input[type="submit"].btn.btn-mini {
 
 .navbar .btn,
 .navbar .btn-group {
-  margin-top: 5px;
+  margin-top: 15px;
 }
 
 .navbar .btn-group .btn {
@@ -3627,7 +3628,6 @@ input[type="submit"].btn.btn-mini {
 }
 
 .navbar-form {
-  margin-top: 11px;
   margin-bottom: 0;
   *zoom: 1;
 }
@@ -3646,7 +3646,7 @@ input[type="submit"].btn.btn-mini {
 .navbar-form select,
 .navbar-form .radio,
 .navbar-form .checkbox {
-  margin-top: 5px;
+  margin-top: 15px;
 }
 
 .navbar-form input,
@@ -3675,7 +3675,7 @@ input[type="submit"].btn.btn-mini {
 .navbar-search {
   position: relative;
   float: left;
-  margin-top: 6px;
+  margin-top: 16px;
   margin-bottom: 0;
 }
 
@@ -3769,7 +3769,7 @@ input[type="submit"].btn.btn-mini {
 
 .navbar .nav > li > a {
   float: none;
-  padding: 9px 10px 11px;
+  padding: 19px 10px 21px;
   line-height: 19px;
   color: #999999;
   text-decoration: none;
@@ -3779,12 +3779,12 @@ input[type="submit"].btn.btn-mini {
 .navbar .btn {
   display: inline-block;
   padding: 4px 10px 4px;
-  margin: 5px 5px 6px;
+  margin: 15px 5px 16px;
   line-height: 18px;
 }
 
 .navbar .btn-group {
-  padding: 5px 5px 6px;
+  padding: 15px 5px 16px;
   margin: 0;
 }
 
@@ -3803,7 +3803,7 @@ input[type="submit"].btn.btn-mini {
 
 .navbar .divider-vertical {
   width: 1px;
-  height: 40px;
+  height: 60px;
   margin: 0 9px;
   overflow: hidden;
   background-color: #222222;
