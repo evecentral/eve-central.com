@@ -13,7 +13,12 @@ trait FrontEndService extends Directives with ScalateSupport {
         get {
           render("com/evecentral/templates/index.ssp", Map())
         }
-      }
+      } ~
+	  path("plot") {
+		  get {
+			  render("com/evecentral/templates/plottest.ssp", Map())
+		  }
+	  }
   }
 
 }

@@ -101,8 +101,29 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 								ctx.complete(json)
 						}
 				} ~
+				path("types" / ".*".r) {
+					rest =>
+					get {
+						respondWithMediaType(`application/json`) {
+							import  net.liftweb.json.JsonDSL._
+							completeWith {
+								compact(render(StaticProvider.typesMap.filter(_._2.name.contains(rest)).map(types => ("typename" -> types._2.name) ~ ("typeid" -> types._2.typeid))))
+							}
+						}
+					}
+				} ~
+				path("regions") {
+					get {
+						respondWithMediaType(`application/json`) {
+							import net.liftweb.json.JsonDSL._
+							completeWith {
+								compact(render(StaticProvider.regionsMap.map(region => ("regionname" -> region._2.name) ~ ("regionid" -> region._2.regionid))))
+							}
+						}
+					}
+				} ~
 				path("orders/type" / IntNumber) {
-					typeid =>
+				typeid =>
 						get {
 							respondWithMediaType(`text/plain`) {
 								completeWith {

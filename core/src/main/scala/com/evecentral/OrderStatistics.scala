@@ -67,7 +67,15 @@ object OrderStatistics {
 
 
   def apply(over: Seq[MarketOrder], highToLow: Boolean = false) : OrderStatistics = {
-    new LazyOrderStatistics(over, highToLow)
+	  if (over.length < 10)
+		  new LazyOrderStatistics(over, highToLow)
+	  else {
+		  val l = new LazyOrderStatistics(over, highToLow)
+		  val neworders = over.filter(order => if (highToLow) true else order.price < (l.wavg*3))
+		  new LazyOrderStatistics(neworders, highToLow)
+	  }
+
+
   }
 
   def cached(query: GetOrdersFor, data: OrderStatistics) : CachedOrderStatistics = {

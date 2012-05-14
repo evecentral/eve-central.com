@@ -15,6 +15,13 @@
     <style type="text/css">
 
     </style>
+
+    <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="/static/jqplot/excanvas.js"></script><![endif]-->
+    <script language="javascript" type="text/javascript" src="/static/jqplot/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="/static/jqplot/jquery.jqplot.min.js"></script>
+    <script language="javascript" type="text/javascript" src="/static/jqplot/plugins/jqplot.json2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/jqplot/jquery.jqplot.css" />
+
 </head>
 
 <body>
