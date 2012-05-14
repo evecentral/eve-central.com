@@ -143,6 +143,7 @@ class UploadStorageActor extends Actor {
 				case true =>
 					insertData(typeId, regionId, rows)
 					poisonCache(typeId, regionId)
+					statCaptureActor ! UploadTriggerEvent(typeId, regionId)
 					log.debug("Processing upload complete")
 				case false =>
 					log.debug("GeneratedAt time was out of bounds to be considered fresh")
