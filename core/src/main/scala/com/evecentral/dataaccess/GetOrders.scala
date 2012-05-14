@@ -81,6 +81,9 @@ class GetOrdersActor extends Actor {
   }
 
   def receive = {
-      case x: GetOrdersFor => Future { self.channel ! OrderList(x, orderList(x)) }
+      case x: GetOrdersFor => {
+	      val channel = self.channel
+	      Future { channel ! OrderList(x, orderList(x)) }
+      }
   }
 }
