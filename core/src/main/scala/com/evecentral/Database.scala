@@ -6,8 +6,24 @@ import org.postgresql.Driver
 
 object Database {
 
+	private[this] var hasInited = false
 
-  lazy val coreDb = DatabaseConfig(
+	private[this] def dummyTx {
+		dbconfig.transaction { tx =>
+			tx.execute("SELECT 1 = 1")
+		}
+		hasInited = true
+	}
+
+	def coreDb : DatabaseConfig = {
+		dbconfig.synchronized {
+			if (!hasInited)
+				dummyTx
+			dbconfig
+		}
+	}
+
+	private[this] val dbconfig = DatabaseConfig(
     driver = "org.postgresql.Driver",
     jdbcURL = "jdbc:postgresql://localhost/evec",
     username = "evec",
