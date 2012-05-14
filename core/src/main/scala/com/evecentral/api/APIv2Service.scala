@@ -194,15 +194,13 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
         val usesystem = singleParam("usesystem", params)
         val minq = singleParam("minQ", params)
 
-        val f = Future {
-	        val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
-	        if (dtype == "json")
-		        ctx.complete(toJson(result))
-	        else
-		        ctx.complete(result)
-        } onException {
-	        case e : Throwable => ctx.fail(e)
-        }
+
+        val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
+        if (dtype == "json")
+	        ctx.complete(toJson(result))
+        else
+	        ctx.complete(result)
+
 
       } catch {
         case t : Throwable => ctx.fail(t)
