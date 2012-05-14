@@ -9,6 +9,7 @@ import com.evecentral.{ECActorPool, ActorUtil, Database}
 import org.joda.time.{DateTime, Period}
 import org.postgresql.util.PGInterval
 import net.noerd.prequel.{StringFormattable, IntFormattable}
+import org.slf4j.LoggerFactory
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
                        volremain: Long,  volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {
@@ -23,8 +24,11 @@ case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Lon
 
 case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
-class GetOrdersActor extends Actor {
-  /**
+class GetOrdersActor extends ECActorPool {
+
+	private val log = LoggerFactory.getLogger(getClass)
+
+	/**
    * This query does a lot of internal SQL building and not a prepared statement. I'm sorry,
    * but at least everything is typesafe :-)
    */
@@ -80,10 +84,12 @@ class GetOrdersActor extends Actor {
     }
   }
 
-  def receive = {
+  def instance = actorOf(new Actor { def receive = {
       case x: GetOrdersFor => {
 	      val channel = self.channel
 	      channel ! OrderList(x, orderList(x))
       }
   }
+  }
+  )
 }

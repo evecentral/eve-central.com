@@ -5,15 +5,9 @@ import akka.dispatch.Future
 import akka.routing._
 import akka.actor.{Actor, Channel}
 
-
-trait ActorUtil {
-  def pipeTo(c: Channel[Any]): Future[Any] => Unit =
-    (f: Future[Any]) => f.value.get.fold(c.sendException(_),c.tell(_))
-}
-
 trait ECActorPool extends Actor with DefaultActorPool
 with FixedCapacityStrategy
-with SmallestMailboxSelector
+with RoundRobinSelector
 with BasicNoBackoffFilter {
 
   def receive = _route
