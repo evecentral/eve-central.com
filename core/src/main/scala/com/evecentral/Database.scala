@@ -10,7 +10,7 @@ object Database {
 
 	private[this] def dummyTx {
 		dbconfig.transaction { tx =>
-			tx.execute("SELECT 1 = 1")
+			tx.select("SELECT 1 = 1")
 		}
 		hasInited = true
 	}
