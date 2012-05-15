@@ -11,7 +11,7 @@ object Database {
 
 	private[this] val dbconfig = DatabaseConfig(
     driver = "org.postgresql.Driver",
-    jdbcURL = "jdbc:postgresql://localhost:9999/evec",
+    jdbcURL = "jdbc:postgresql://localhost/evec",
     username = "evec",
     password =  "evec"
   )
