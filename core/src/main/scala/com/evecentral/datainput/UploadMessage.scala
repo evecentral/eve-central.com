@@ -58,11 +58,13 @@ class UnifiedRowset(record: Map[String, _], columns: Seq[String], source: String
 
 	val regionId = record("regionID") match {
 		case n: BigInt => n.toLong
+		case s: String => s.toLong
 		case null => throw InvalidRowsetException()
 	}
 
 	val typeId = record("typeID") match {
 		case n: BigInt => n.toInt
+		case s: String => s.toInt
 		case null => throw InvalidRowsetException()
 	}
 
