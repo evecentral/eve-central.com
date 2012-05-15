@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory
 import com.evecentral.util.BaseOrderQuery
 import akka.dispatch.Future
 import com.evecentral.dataaccess.{MarketOrder, OrderList, StaticProvider, GetOrdersFor}
-import com.evecentral.{OrderStatistics, Database}
 import net.noerd.prequel.{Formattable, IntFormattable}
+import com.evecentral.{RegisterCacheFor, OrderStatistics, Database}
 
 class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
@@ -45,6 +45,9 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 					region, result.avg, result.median, result.volume, result.stdDev, result.fivePercent, system,
 					query.bid.get match { case true => 1 case false => 0 }, result.min, result.max)
 		}
+
+		val cached = OrderStatistics.cached(query, result)
+		statCache ! RegisterCacheFor(cached)
 	}
 
 
