@@ -108,5 +108,5 @@ pickle.dump(dumps_data, f)
 f.close()
 
 cur = db.cursor()
-cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '1 month'")
+cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '1 week'")
 db.commit()
