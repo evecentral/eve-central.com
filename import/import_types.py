@@ -24,7 +24,7 @@ lines = stat.readlines()
 csvread = csv.reader(lines)
 for fields in csvread:
 
-
+    print fields
     id = long(fields[0])
 
     name = fields[2].strip()
@@ -36,13 +36,17 @@ for fields in csvread:
     if volume == 0:
         volume = 0.001
 
+
+    published = "1"
     try:
         published = int(fields[12])
     except:
         pass
+
     marketgroup = fields[13]
     # Skip non-market items
-    if marketgroup == "null" or marketgroup == "" or marketgroup == "0.0":
+    if marketgroup == "null" or marketgroup == "" or marketgroup == "0.0" or marketgroup == "0":
+        print "SKIP: ",name,volume,published,marketgroup,id
         continue
     marketgroup = int(marketgroup)
 
@@ -61,7 +65,7 @@ for fields in csvread:
         cur.execute("INSERT INTO types (typeid, typename, size, published, groupid, marketgroup) VALUES (%s,%s,%s, %s, %s, %s)", [id, name, volume, published, group, marketgroup])
         print "Added new type ",id,name
         db.commit()
-    except:
+    except Exception,e:
         db.rollback()
 
 
