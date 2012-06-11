@@ -379,8 +379,12 @@ class Home:
                     else:
                         rec['range'] = -2
                     rec['regionname'] = r[7]
-
-                    rec['reportedtime'] = str(r[8])[5:-7]
+                    rt = str(r[8])
+                    if '.' in rt:
+                        rec['reportedtime'] = rt[5:-7]
+                    else:
+                        rec['reportedtime'] = rt[5:]
+        
                     rec['stationname'] = r[9]
                     rec['security'] = str(r[10])[0:3]
                     # Try to grab regionid from the end of the query
@@ -944,7 +948,7 @@ class Home:
             t.suggest = sug
 
         t.igb = igb
-
+        t.headers = cherrypy.request.headers
         db.close()
         return t.respond()
         
