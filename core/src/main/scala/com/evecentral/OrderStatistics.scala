@@ -218,6 +218,5 @@ class OrderCacheActor extends Actor {
       // @TODO: Make this non-linear-time
       cacheHash.keySet.foreach(of => if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
         of.query.types.contains(mtype.typeid)) { cacheHash.remove(of); log.info("Removing from cache " + of) } )
-      self.channel ! true
   }
 }

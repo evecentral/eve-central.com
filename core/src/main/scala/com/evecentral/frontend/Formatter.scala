@@ -6,8 +6,8 @@ object DateFormats {
 
   val dateOnly = DateTimeFormat.forPattern("yyyy-MM-dd")
 
-  val dateTime = DateTimeFormat.forPattern("MM-dd hh:mm:ss")
-  val sqlDateTime = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss")
+  val dateTime = DateTimeFormat.forPattern("MM-dd HH:mm:ss")
+  val sqlDateTime = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
 }
 
 private object Thousands {
