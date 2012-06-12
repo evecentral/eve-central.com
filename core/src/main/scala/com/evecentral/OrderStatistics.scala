@@ -210,7 +210,13 @@ class OrderCacheActor extends Actor {
   
   def receive = {
     case gcf : GetCacheFor =>
-      self.channel ! cacheLruHash.get(gcf)
+	    val res = cacheLruHash.get(gcf)
+	    res match {
+		    case os : OrderStatistics =>
+			    self.channel ! Some(os)
+		    case _ =>
+			    self.channel ! None
+	    }
     case RegisterCacheFor(cached) =>
       cacheLruHash.put(GetCacheFor(cached.forQuery, cached.highToLow), cached)
     case PoisonAllCache =>
