@@ -46,8 +46,8 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 					query.bid.get match { case true => 1 case false => 0 }, result.min, result.max)
 		}
 
-		val cached = OrderStatistics.cached(query, result)
-		statCache ! RegisterCacheFor(cached)
+		//val cached = OrderStatistics.cached(query, result)
+		//statCache ! RegisterCacheFor(cached)
 	}
 
 
