@@ -5,6 +5,7 @@ import scala.math._
 import akka.actor.{Scheduler, Actor}
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
+import java.util.Deque
 
 trait OrderStatistics {
   def volume : Long
@@ -196,11 +197,12 @@ case class PoisonAllCache()
 
 class OrderCacheActor extends Actor {
   
-  private val cacheHash = scala.collection.mutable.HashMap[GetCacheFor, OrderStatistics]()
+  //private val cacheHash = scala.collection.mutable.HashMap[GetCacheFor, OrderStatistics]()
+	private val cacheLruHash = new org.apache.commons.collections.map.LRUMap(10000)
   private val log = LoggerFactory.getLogger(getClass)
 
   override def preStart() {
-    cacheHash.clear()
+    cacheLruHash.clear()
     Scheduler.schedule(self, PoisonAllCache, 5, 60, TimeUnit.MINUTES)
 
   } 
@@ -208,15 +210,24 @@ class OrderCacheActor extends Actor {
   
   def receive = {
     case gcf : GetCacheFor =>
-      self.channel ! cacheHash.get(gcf)
+      self.channel ! cacheLruHash.get(gcf)
     case RegisterCacheFor(cached) =>
-      cacheHash.put(GetCacheFor(cached.forQuery, cached.highToLow), cached)
+      cacheLruHash.put(GetCacheFor(cached.forQuery, cached.highToLow), cached)
     case PoisonAllCache =>
       log.info("Poisoning all cache entries")
-      cacheHash.clear()
+      cacheLruHash.clear()
     case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
       // @TODO: Make this non-linear-time
-      cacheHash.keySet.foreach(of => if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
-        of.query.types.contains(mtype.typeid)) { cacheHash.remove(of); log.info("Removing from cache " + of) } )
-  }
+	    import scalaj.collection.Implicits._
+	    val ks = cacheLruHash.keySet
+	    ks.foreach({
+		    of =>
+			    of match {
+				    case of : GetCacheFor =>
+					    if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
+						    of.query.types.contains(mtype.typeid))
+					    { cacheLruHash.remove(of); log.info("Removing from cache " + of) }
+			    }
+	    })
+}
 }

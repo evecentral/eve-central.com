@@ -58,6 +58,8 @@ libraryDependencies += "org.zeromq" %% "zeromq-scala-binding" % "0.0.5"
 
 libraryDependencies += "com.jcraft" % "jzlib" % "1.1.1"
 
+libraryDependencies += "commons-collections" % "commons-collections" % "3.2.1"
+
 
 seq(scalateSettings:_*)
 
