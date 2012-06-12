@@ -226,14 +226,18 @@ class OrderCacheActor extends Actor {
       // @TODO: Make this non-linear-time
 	    import scalaj.collection.Implicits._
 	    val ks = cacheLruHash.keySet
-	    ks.foreach({
-		    of =>
-			    of match {
-				    case of : GetCacheFor =>
-					    if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
-						    of.query.types.contains(mtype.typeid))
-					    { cacheLruHash.remove(of); log.info("Removing from cache " + of) }
-			    }
-	    })
+	    val ls = ks.toArray
+	    ls.filter({ of =>
+		    of match {
+			    case of : GetCacheFor =>
+				    if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
+					    of.query.types.contains(mtype.typeid))
+				    { log.info("Removing from cache " + of); true }
+					    else
+					    false
+			    case _ =>
+				    false
+		    }}
+	     ).foreach(cacheLruHash.remove(_))
 }
 }
