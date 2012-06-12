@@ -45,10 +45,10 @@ class UnifiedUploadParsingActor extends Actor with Directives with DefaultMarsha
 
 	def receive = {
 		case msg : String =>
-			log.info("Trying to parse unified message: " + msg)
+			log.debug("Trying to parse unified message")
 			UnifiedParser(msg) match {
 				case Some(unimsg) =>
-					log.info("Parsed uni msg: " + unimsg)
+					log.debug("Parsed uni msg")
 					storageActor ! unimsg
 				case None =>
 					log.error("Unable to parse unified message due to wrong type")
