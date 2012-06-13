@@ -198,7 +198,7 @@ case class PoisonAllCache()
 class OrderCacheActor extends Actor {
   
   //private val cacheHash = scala.collection.mutable.HashMap[GetCacheFor, OrderStatistics]()
-	private val cacheLruHash = new org.apache.commons.collections.map.LRUMap(10000)
+	private val cacheLruHash = new org.apache.commons.collections.map.LRUMap(100000)
   private val log = LoggerFactory.getLogger(getClass)
 
   override def preStart() {
