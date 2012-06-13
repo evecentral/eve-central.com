@@ -27,16 +27,16 @@ class MailDispatchActor extends Actor {
   private def sendEmailNow {
     log.info("Starting mail dispatch")
     try {
-      val props = new Properties();
-      props.put("mail.smtp.host", "localhost");
-      props.put("mail.debug", "false");
-      val session = Session.getInstance(props);
+      val props = new Properties()
+      props.put("mail.smtp.host", "localhost")
+      props.put("mail.debug", "false")
+      val session = Session.getInstance(props)
       val msg = new MimeMessage(session)
       msg.setFrom(new InternetAddress("uploader@stackworks.net"))
-      val address = Array[javax.mail.Address](new InternetAddress("evec-upload@lists.stackworks.net"));
-      msg.setRecipients(Message.RecipientType.TO, address);
-      msg.setSubject("Upload");
-      msg.setSentDate(new Date());
+      val address = Array[javax.mail.Address](new InternetAddress("evec-upload@lists.stackworks.net"))
+      msg.setRecipients(Message.RecipientType.TO, address)
+      msg.setSubject("Upload")
+      msg.setSentDate(new Date())
 
       val text = "price,volRemaining,typeID,range,orderID,volEntered,minVolume,bid,issued,duration,stationID,regionID,solarSystemID,jumps,source,generatedAt\n" + sendRows.mkString("\n")
       msg.setText(text)
@@ -46,6 +46,8 @@ class MailDispatchActor extends Actor {
     } catch {
       case mex: MessagingException =>
         log.error("Can't send message: ", mex)
+        sendRows.clear()
+        log.error("Throwing away messages")
     }
   }
 
