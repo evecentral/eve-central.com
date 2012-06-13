@@ -224,16 +224,15 @@ class OrderCacheActor extends Actor {
       cacheLruHash.clear()
     case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
       // @TODO: Make this non-linear-time
-	    import scalaj.collection.Implicits._
 	    val ks = cacheLruHash.keySet
-	    val ls = ks.toArray
+	    val ls = ks.toArray.toList
 	    ls.filter({ of =>
 		    of match {
 			    case of : GetCacheFor =>
 				    if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
 					    of.query.types.contains(mtype.typeid))
 				    { log.info("Removing from cache " + of); true }
-					    else
+				    else
 					    false
 			    case _ =>
 				    false
