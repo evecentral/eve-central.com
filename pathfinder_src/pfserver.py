@@ -46,10 +46,10 @@ class MapServer(Pyro.core.ObjBase):
                 self.routecache[rckey] = return_map[tot]
 
         print "Done",time.time() - stime
-	if time.time() - self.flush_time > 60*60*48:
-	   self.routecache = {}
-	   print "Flushed all routes"
-	   self.flush_time = time.time()
+	#if time.time() - self.flush_time > 60*60*48:
+	#   self.routecache = {}
+	#   print "Flushed all routes"
+	#   self.flush_time = time.time()
         return return_map
 
 
