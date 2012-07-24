@@ -69,7 +69,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 			val results = toCaptureSet.toList.map(ordersActor ? _)
 			// Attach an oncomplete to all the actors
 			results.foreach(_.onComplete({ res =>
-				res match {
+				res.get match {
 					case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
 				}
 			}
