@@ -5,10 +5,11 @@ import org.slf4j.LoggerFactory
 import com.evecentral.util.BaseOrderQuery
 import java.util.concurrent.TimeUnit
 
-import com.evecentral.dataaccess.{MarketOrder, OrderList, StaticProvider, GetOrdersFor}
+import com.evecentral.dataaccess.{OrderList, StaticProvider, GetOrdersFor}
 import com.evecentral.{RegisterCacheFor, OrderStatistics, Database}
 
 private[this] case class CaptureStatistics()
+private[this] case class StoreStatistics(query: GetOrdersFor, result: OrderStatistics)
 
 class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
@@ -18,7 +19,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
 	override def preStart() {
 		log.info("Pre-starting statistics capture actor")
-		Scheduler.schedule(self, CaptureStatistics, 30, 60, TimeUnit.MINUTES)
+		Scheduler.schedule(self, CaptureStatistics, 2, 60, TimeUnit.MINUTES)
 	}
 
 	def buildQueries(bid: Boolean, typeid: Int, regionid: Long) : List[GetOrdersFor] = {
@@ -60,12 +61,22 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 		case UploadTriggerEvent(typeid, regionid) =>
 			/* Build queries for orders */
 			log.debug("Generating list of queries to get results for")
-			(buildQueries(true, typeid, regionid) ++ buildQueries(false, typeid, regionid)).foreach(toCaptureSet.add(_))//.map(ordersActor ? _)
+			toCaptureSet ++= (buildQueries(true, typeid, regionid) ++ buildQueries(false, typeid, regionid))
+		case StoreStatistics(query, result) =>
+			storeStatistics(query, result)
 		case CaptureStatistics =>
 			log.info("Capturing statistics in a large batch")
-			val results = toCaptureSet.map(ordersActor ? _)
+			val results = toCaptureSet.toList.map(ordersActor ? _)
+			// Attach an oncomplete to all the actors
+			results.foreach(_.onComplete({ res =>
+				res match {
+					case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
+				}
+			}
+			))
+
+			log.info(results.size + " results to capture")
 			toCaptureSet.clear()
-		  results.foreach(v => v.get match { case OrderList(query, result) => storeStatistics(query, OrderStatistics(result, query.bid.getOrElse(false))) } )
 
 	}
 
