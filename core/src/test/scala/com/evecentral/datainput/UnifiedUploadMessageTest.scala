@@ -5,6 +5,32 @@ import org.scalatest.matchers.ShouldMatchers
 
 class UnifiedUploadMessageTest extends FunSuite with ShouldMatchers {
 
+
+	val historyMessage =
+		"""
+		  {
+ "resultType" : "history",
+ "version" : "0.1",
+ "uploadKeys" : [
+   { "name" : "emk", "key" : "abc" },
+   { "name" : "ec" , "key" : "def" }
+ ],
+ "generator" : { "name" : "Yapeal", "version" : "11.335.1737" },
+ "currentTime" : "2011-10-22T15:46:00+00:00",
+ "columns" : ["date","orders","quantity","low","high","average"],
+ "rowsets" : [
+   {
+     "generatedAt" : "2011-10-22T15:42:00+00:00",
+     "regionID" : 10000065,
+     "typeID" : 11134,
+     "rows" : [
+       ["2011-12-03T00:00:00+00:00",40,40,1999,499999.99,35223.50],
+       ["2011-12-02T00:00:00+00:00",83,252,9999,11550,11550]
+     ]
+   }
+ ]
+}
+	""".stripMargin
   val message = """
   {
   "resultType" : "orders",
@@ -48,5 +74,11 @@ class UnifiedUploadMessageTest extends FunSuite with ShouldMatchers {
 		i.rowsets(0).valid should equal (true)
 		i.rowsets(0).regionId should equal (10000065)
   }
+
+	test("History parse") {
+		val i = UnifiedParser(historyMessage).get.asInstanceOf[UnifiedHistoryMessage]
+		i.rowsets should have length(1)
+		i.rowsets(0).regionId should equal (10000065)
+	}
 
 }

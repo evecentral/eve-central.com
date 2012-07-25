@@ -3,6 +3,7 @@ package com.evecentral.datainput
 import net.liftweb.json._
 import org.joda.time.DateTime
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
+import tools.nsc.io.ManifestOps
 
 
 /**
@@ -27,6 +28,8 @@ trait UnifiedMessage {
 	def originalMessage : JValue
 }
 
+
+
 class CsvUploadMessage(rows: Seq[UploadCsvRow]) extends UploadMessage {
 	def orders = rows
 
@@ -47,14 +50,15 @@ class CsvUploadMessage(rows: Seq[UploadCsvRow]) extends UploadMessage {
 
 case class InvalidRowsetException() extends Exception
 
-class UnifiedRowset(record: Map[String, _], columns: Seq[String], source: String) extends UploadMessage {
-	//override def toString = record.toString
+trait UnifiedBaseRowset {
+
+	protected val record : Map[String, _]
+
+	protected val columns : Seq[String]
 
 	val generatedAt: DateTime = {
 		ISODateTimeFormat.dateTimeParser().parseDateTime(record("generatedAt").asInstanceOf[String])
 	}
-
-	private[this] val rowmaps = record("rows").asInstanceOf[List[List[Any]]].map(r => columns.zip(r).toMap)
 
 	val regionId = record("regionID") match {
 		case n: BigInt => n.toLong
@@ -67,6 +71,28 @@ class UnifiedRowset(record: Map[String, _], columns: Seq[String], source: String
 		case s: String => s.toInt
 		case null => throw InvalidRowsetException()
 	}
+
+	protected[this] val rowmaps = record("rows").asInstanceOf[List[List[Any]]].map(r => columns.zip(r).toMap)
+
+}
+
+class HistoryRowset(protected val record: Map[String, _], protected val columns: Seq[String]) extends UnifiedBaseRowset {
+
+	val history = rowmaps.map { row =>
+		val date = ISODateTimeFormat.dateTimeParser().parseDateTime(row("date").asInstanceOf[String])
+		val qty = row("quantity") match { case n : BigInt => n.toLong }
+		val low = row("low") match { case bi: BigInt => bi.toDouble case n : Double => n case f : Float => f.toDouble case dec : BigDecimal => dec.toDouble }
+		val high = row("high") match { case bi: BigInt => bi.toDouble case n : Double => n case f : Float => f.toDouble case dec : BigDecimal => dec.toDouble }
+		val avg = row("average") match { case bi: BigInt => bi.toDouble case n : Double => n case f : Float => f.toDouble case dec : BigDecimal => dec.toDouble }
+		HistoryRow(regionId, typeId, date, qty, low, high, avg)
+	}
+
+}
+
+class UnifiedRowset(protected val record: Map[String, _], protected val columns: Seq[String], source: String) extends UploadMessage with UnifiedBaseRowset {
+	//override def toString = record.toString
+
+
 
 	val orders = rowmaps.map { row =>
 		val price = row("price") match { case d : Double => d case f : Float => f.toDouble case dec : BigDecimal => dec.toDouble case bi : BigInt => bi.toDouble }
@@ -101,6 +127,16 @@ object UnifiedParser {
 		UnifiedUploadMessage(json, columns, source, rowsets)
 	}
 
+	private def buildHistoryMessage(json: JValue) : UnifiedMessage = {
+		val columns = (json \ "columns" \\ classOf[JString])
+		val gen_name = (json \ "generator" \ "name") \\ classOf[JString]
+		val gen_ver = (json \ "generator" \ "version") \\ classOf[JString]
+		val rowsets = (json \ "rowsets" \\ classOf[JArray])(0).map(rs => rs match {
+			case m: Map[String, _] => new HistoryRowset(m, columns)
+		})
+		UnifiedHistoryMessage(json, rowsets)
+	}
+
 	def apply(data: String) : Option[UnifiedMessage] = {
 		import net.liftweb.json.JsonDSL._
 
@@ -110,6 +146,8 @@ object UnifiedParser {
 		resultType match {
 			case "orders" =>
 				Some(buildOrderMessage(json))
+			case "history" =>
+				Some(buildHistoryMessage(json))
 			case _ => None
 		}
 	}
@@ -119,6 +157,6 @@ case class UnifiedUploadMessage(originalMessage: JValue,
 																columns: Seq[String], source: String,
 																rowsets: Seq[UnifiedRowset]) extends UnifiedMessage
 
-case class UnifiedHistoryMessage(originalMessage: JValue) extends UnifiedMessage
+case class UnifiedHistoryMessage(originalMessage: JValue, rowsets: Seq[HistoryRowset]) extends UnifiedMessage
 
 

@@ -88,7 +88,9 @@ case class UploadCsvRow(line: String) extends UploadRecord {
 	} catch {
 		case _ => "Unknown"
 	}
-	val generatedAt = new DateTime();
+	val generatedAt = new DateTime()
 
 
 }
+
+case class HistoryRow(regionId: Long, typeId: Int, date: DateTime, quantity: Long, low: Double, high: Double, average: Double)

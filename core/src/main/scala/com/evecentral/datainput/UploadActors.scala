@@ -158,5 +158,7 @@ class UploadStorageActor extends Actor {
 		case msg : UnifiedUploadMessage =>
 			log.info("Storing unified message")
 			msg.rowsets.foreach(s => procData(s))
+		case hist : UnifiedHistoryMessage =>
+			log.info("Storing history information")
 	}
 }
