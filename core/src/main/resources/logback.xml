@@ -8,15 +8,27 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>logs/evec.log</file>
-        <!-- encoders are assigned the type
-     ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	<!-- rollover daily -->
+	<fileNamePattern>logs/evec.log-%d{yyyy-MM-dd}.%i</fileNamePattern>
+	<maxHistory>2</maxHistory>
+	<cleanHistoryOnStart>true</cleanHistoryOnStart>
+	<timeBasedFileNamingAndTriggeringPolicy
+	  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <!-- or whenever the file size reaches 100MB -->
+        <maxFileSize>100MB</maxFileSize>
+	<maxHistory>20</maxHistory>
+	</timeBasedFileNamingAndTriggeringPolicy>
+      </rollingPolicy>
+      <!-- encoders are assigned the type
+	   ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+      <encoder>
+	<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+      </encoder>
     </appender>
-
+    
 
     <logger name="cc.spray.can" level="INFO"/>
 
