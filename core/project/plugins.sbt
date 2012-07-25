@@ -10,4 +10,4 @@ resolvers += Resolver.url("sbt-plugin-releases",
 libraryDependencies <+= sbtVersion(v => "com.mojolly.scalate" %% "xsbt-scalate-generator" % (v + "-0.1.6"))
 
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.8.0")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.8.3")
