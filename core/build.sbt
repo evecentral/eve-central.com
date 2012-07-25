@@ -1,4 +1,21 @@
+import AssemblyKeys._ // put this at the top of the file                                                                                                                                                                                            
 import com.mojolly.scalate.ScalatePlugin._
+
+assemblySettings                                                                                                                                                                                                                                   
+
+mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>                                                                                                                                                                                 {                                                                                                                                                                                                                                                 
+    case "META-INF/NOTICE.txt" => MergeStrategy.discard                                                                                                                                                                                             
+    case "META-INF/LICENSE.txt" => MergeStrategy.discard                                                                                                                                                                                            
+    case "META-INF\\MANIFEST.MF" => MergeStrategy.discard                                                                                                                                                                                           
+    case "META-INF\\NOTICE.txt" => MergeStrategy.discard                                                                                                                                                                                            
+    case "META-INF\\LICENSE.txt" => MergeStrategy.discard                                                                                                                                                                                           
+    case "META-INF/MANIFEST.MF" => MergeStrategy.discard                                                                                                                                                                                            
+    case "META-INF/BCKEY.SF" => MergeStrategy.discard                                                                                                                                                                                               
+    case "META-INF\\BCKEY.SF" => MergeStrategy.discard                                                                                                                                                                                              
+    case x => old(x)                                                                                                                                                                                                                                
+  }                                                                                                                                                                                                                                                 
+}                                                                                                                                                                                                                                                   
+    
 
 name := "eve-central-ng"
 
@@ -66,7 +83,7 @@ seq(scalateSettings:_*)
 scalateTemplateDirectory in Compile <<= (baseDirectory) { _ / "src/main/resources/com" }
 
 
-seq(assemblySettings: _*)
+
 
 
 
