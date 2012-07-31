@@ -4,19 +4,40 @@
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
 --
--- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+-- Name: evec; Type: DATABASE; Schema: -; Owner: evec
 --
 
-CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
+CREATE DATABASE evec WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
 
 
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
+ALTER DATABASE evec OWNER TO evec;
+
+\connect evec
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
 
 SET search_path = public, pg_catalog;
 
@@ -74,19 +95,6 @@ ALTER FUNCTION public.min(double precision, double precision) OWNER TO evec;
 SET default_tablespace = '';
 
 SET default_with_oids = false;
-
---
--- Name: adlocation; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE TABLE adlocation (
-    adid integer NOT NULL,
-    type bigint NOT NULL,
-    expires timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE public.adlocation OWNER TO evec;
 
 --
 -- Name: api_market_transid; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
@@ -191,42 +199,6 @@ CREATE TABLE blueprint_types (
 ALTER TABLE public.blueprint_types OWNER TO evec;
 
 --
--- Name: browserads; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE TABLE browserads (
-    adid integer NOT NULL,
-    owner bigint NOT NULL,
-    name character varying(100) NOT NULL,
-    adcopy character varying(300) NOT NULL,
-    other text NOT NULL
-);
-
-
-ALTER TABLE public.browserads OWNER TO evec;
-
---
--- Name: browserads_adid_seq; Type: SEQUENCE; Schema: public; Owner: evec
---
-
-CREATE SEQUENCE browserads_adid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.browserads_adid_seq OWNER TO evec;
-
---
--- Name: browserads_adid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: evec
---
-
-ALTER SEQUENCE browserads_adid_seq OWNED BY browserads.adid;
-
-
---
 -- Name: constellations; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
 --
 
@@ -239,54 +211,6 @@ CREATE TABLE constellations (
 
 
 ALTER TABLE public.constellations OWNER TO evec;
-
---
--- Name: corp_wallet; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE TABLE corp_wallet (
-    corpid bigint,
-    walletkey integer,
-    balance numeric,
-    timeat timestamp without time zone
-);
-
-
-ALTER TABLE public.corp_wallet OWNER TO evec;
-
---
--- Name: corppages; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE TABLE corppages (
-    corpid bigint NOT NULL,
-    pagename text NOT NULL,
-    contents text NOT NULL,
-    edit timestamp without time zone DEFAULT now() NOT NULL,
-    title text NOT NULL,
-    view character varying(20) DEFAULT 'public'::character varying NOT NULL
-);
-
-
-ALTER TABLE public.corppages OWNER TO evec;
-
---
--- Name: corps; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE TABLE corps (
-    corpid bigint NOT NULL,
-    corpname text NOT NULL,
-    description text NOT NULL,
-    headquarters text NOT NULL,
-    join_password text DEFAULT ''::text NOT NULL,
-    ticker character varying(10) DEFAULT ''::character varying NOT NULL,
-    ceo bigint,
-    evecpoints double precision DEFAULT 10 NOT NULL
-);
-
-
-ALTER TABLE public.corps OWNER TO evec;
 
 --
 -- Name: current_market; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
@@ -313,6 +237,22 @@ CREATE TABLE current_market (
 
 
 ALTER TABLE public.current_market OWNER TO evec;
+
+--
+-- Name: jumps; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
+--
+
+CREATE TABLE jumps (
+    fromregion integer NOT NULL,
+    fromconstellation integer NOT NULL,
+    fromsystem integer NOT NULL,
+    tosystem integer NOT NULL,
+    toconstellation integer NOT NULL,
+    toregion integer NOT NULL
+);
+
+
+ALTER TABLE public.jumps OWNER TO evec;
 
 --
 -- Name: materials_for_activity; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
@@ -384,7 +324,11 @@ CREATE TABLE trends_type_region (
     volume double precision,
     stddev double precision,
     buyup double precision,
-    timeat timestamp without time zone
+    timeat timestamp with time zone DEFAULT now(),
+    systemid bigint,
+    bid integer DEFAULT 0,
+    minimum double precision DEFAULT 0,
+    maximum double precision DEFAULT 0
 );
 
 
@@ -407,20 +351,6 @@ CREATE TABLE types (
 
 
 ALTER TABLE public.types OWNER TO evec;
-
---
--- Name: uploads; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE TABLE uploads (
-    userid bigint NOT NULL,
-    typeid bigint NOT NULL,
-    regionid bigint NOT NULL,
-    stamp timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE public.uploads OWNER TO evec;
 
 --
 -- Name: user_prefs; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
@@ -527,38 +457,11 @@ CREATE TABLE wallet_market_transactions (
 ALTER TABLE public.wallet_market_transactions OWNER TO evec;
 
 --
--- Name: adid; Type: DEFAULT; Schema: public; Owner: evec
---
-
-ALTER TABLE browserads ALTER COLUMN adid SET DEFAULT nextval('browserads_adid_seq'::regclass);
-
-
---
--- Name: browserads_pkey; Type: CONSTRAINT; Schema: public; Owner: evec; Tablespace: 
---
-
-ALTER TABLE ONLY browserads
-    ADD CONSTRAINT browserads_pkey PRIMARY KEY (adid);
-
-ALTER TABLE browserads CLUSTER ON browserads_pkey;
-
-
---
 -- Name: constellations_pkey; Type: CONSTRAINT; Schema: public; Owner: evec; Tablespace: 
 --
 
 ALTER TABLE ONLY constellations
     ADD CONSTRAINT constellations_pkey PRIMARY KEY (constellationid);
-
-
---
--- Name: corps_pkey; Type: CONSTRAINT; Schema: public; Owner: evec; Tablespace: 
---
-
-ALTER TABLE ONLY corps
-    ADD CONSTRAINT corps_pkey PRIMARY KEY (corpid);
-
-ALTER TABLE corps CLUSTER ON corps_pkey;
 
 
 --
@@ -603,13 +506,6 @@ ALTER TABLE types CLUSTER ON types_typeid_key;
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (userid);
-
-
---
--- Name: archive_o_vl_r; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE UNIQUE INDEX archive_o_vl_r ON archive_market USING btree (orderid, regionid, volremain);
 
 
 --
@@ -666,24 +562,10 @@ CREATE INDEX c_m_volremain ON current_market USING btree (volremain);
 
 
 --
--- Name: corppages_page; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE UNIQUE INDEX corppages_page ON corppages USING btree (corpid, pagename);
-
-
---
 -- Name: current_market_bid_system_reported_time; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
 --
 
 CREATE INDEX current_market_bid_system_reported_time ON current_market USING btree (bid, systemid, reportedtime);
-
-
---
--- Name: current_market_orderid; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE UNIQUE INDEX current_market_orderid ON current_market USING btree (orderid);
 
 
 --
@@ -721,6 +603,20 @@ CREATE INDEX current_market_typeid ON current_market USING btree (typeid);
 CREATE INDEX mfa_typeid_activity ON materials_for_activity USING btree (typeid, activity);
 
 ALTER TABLE materials_for_activity CLUSTER ON mfa_typeid_activity;
+
+
+--
+-- Name: regions_regionid; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
+--
+
+CREATE INDEX regions_regionid ON regions USING btree (regionid);
+
+
+--
+-- Name: regions_regionname; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
+--
+
+CREATE INDEX regions_regionname ON regions USING btree (regionname);
 
 
 --
@@ -772,22 +668,6 @@ CREATE INDEX types_type_size ON types USING btree (typeid, size);
 --
 
 CREATE INDEX types_typename ON types USING btree (typename);
-
-
---
--- Name: upload_upser; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE INDEX upload_upser ON uploads USING btree (userid);
-
-
---
--- Name: uploads_stamp; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE INDEX uploads_stamp ON uploads USING btree (stamp);
-
-ALTER TABLE uploads CLUSTER ON uploads_stamp;
 
 
 --
@@ -849,35 +729,11 @@ CREATE INDEX wmt_transtime ON wallet_market_transactions USING btree (transtime)
 
 
 --
--- Name: adlocation_adid; Type: FK CONSTRAINT; Schema: public; Owner: evec
---
-
-ALTER TABLE ONLY adlocation
-    ADD CONSTRAINT adlocation_adid FOREIGN KEY (adid) REFERENCES browserads(adid) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: adlocation_type; Type: FK CONSTRAINT; Schema: public; Owner: evec
---
-
-ALTER TABLE ONLY adlocation
-    ADD CONSTRAINT adlocation_type FOREIGN KEY (type) REFERENCES types(typeid) ON UPDATE RESTRICT ON DELETE RESTRICT;
-
-
---
 -- Name: api_market_counts_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: evec
 --
 
 ALTER TABLE ONLY api_market_transid
     ADD CONSTRAINT api_market_counts_userid_fkey FOREIGN KEY (userid) REFERENCES users(userid) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: corppages_corp; Type: FK CONSTRAINT; Schema: public; Owner: evec
---
-
-ALTER TABLE ONLY corppages
-    ADD CONSTRAINT corppages_corp FOREIGN KEY (corpid) REFERENCES corps(corpid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
