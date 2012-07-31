@@ -1,7 +1,7 @@
 EVE-Central.com Code Base - AGPL Release
 ----------------------------------------
 
-* Introduction *
+== Introduction ==
 
 Welcome to the source code to EVE-Central.com, the oldest and still
 the most popular cross region EVE market browser site.
@@ -40,12 +40,23 @@ http://groups.google.com/eve-central
 Development wiki:
 http://dev.eve-central.com/
 
-* Requirements (new tech) *
-- Java 6 u24 or Java 7 (JDK)
-- SBT (Scala Simple Build Tool)
-- PostgreSQL 9.0+
+Next Generation Project
+-----------------------
 
-* Requirements (old tech) *
+EVE-Central is currently under a revitalization project, and is transition architectures.
+In a way, we're going "3.0", and the new version number reflects that.
+
+The new code base is in Scala (http://scala-lang.org) with Akka (http://akka.io/),
+and Spray (http://spray.cc).
+
+
+== Requirements (new tech) ==
+
+- Java 6 u24 or Java 7 (JDK)
+- SBT (Scala Simple Build Tool) 11.x
+- PostgreSQL 9.1+
+
+== Requirements (old tech, web UI stack) ==
 
 - Python 2.7 (3.x not supported)
   - psycopg2
@@ -54,7 +65,7 @@ http://dev.eve-central.com/
   - CherryPy 3.2 (primary web server)
 - PostgreSQL 9.0+
 
-* High level view of directories *
+== High level view of directories ==
 
 core/
         - SBT Driven Scala project (version "3.0")
@@ -79,14 +90,4 @@ pathfinder_src/
         - C++ implementation of a shortest path server
 
 
-Next Generation Project
------------------------
 
-EVE-Central is currently under a revitalization project, and is transition architectures.
-In a way, we're going "3.0", and the new version number reflects that.
-
-The new code base is in Scala (http://scala-lang.org) with Akka (http://akka.io/),
-and Spray (http://spray.cc).
-
-Watch the "core" directory for developments in this area. It will take a month or two
-in order to get to a usable state.
