@@ -1,7 +1,7 @@
-EVE-Central.com Code Base - AGPL Release
-----------------------------------------
+# EVE-Central.com Code Base - AGPL Release #
 
-== Introduction ==
+
+## Introduction ##
 
 Welcome to the source code to EVE-Central.com, the oldest and still
 the most popular cross region EVE market browser site.
@@ -40,8 +40,8 @@ http://groups.google.com/eve-central
 Development wiki:
 http://dev.eve-central.com/
 
-Next Generation Project
------------------------
+## Next Generation Project ##
+
 
 EVE-Central is currently under a revitalization project, and is transition architectures.
 In a way, we're going "3.0", and the new version number reflects that.
@@ -50,13 +50,13 @@ The new code base is in Scala (http://scala-lang.org) with Akka (http://akka.io/
 and Spray (http://spray.cc).
 
 
-== Requirements (new tech) ==
+### Requirements (new tech) ###
 
 - Java 6 u24 or Java 7 (JDK)
 - SBT (Scala Simple Build Tool) 11.x
 - PostgreSQL 9.1+
 
-== Requirements (old tech, web UI stack) ==
+### Requirements (old tech, web UI stack) ###
 
 - Python 2.7 (3.x not supported)
   - psycopg2
@@ -65,7 +65,7 @@ and Spray (http://spray.cc).
   - CherryPy 3.2 (primary web server)
 - PostgreSQL 9.0+
 
-== High level view of directories ==
+### High level view of directories ###
 
 core/
         - SBT Driven Scala project (version "3.0")
