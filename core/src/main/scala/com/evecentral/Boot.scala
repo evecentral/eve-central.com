@@ -10,7 +10,6 @@ import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
 import datainput.{StatisticsCaptureActor, UploadStorageActor}
-import mail.MailDispatchActor
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
 import cc.spray.can.{MessageParserConfig, HttpServer}
@@ -61,7 +60,6 @@ object Boot extends App {
         Supervise(actorOf(new GetOrdersActor()), Permanent),
         Supervise(actorOf(new RouteFinderActor()), Permanent),
         Supervise(actorOf(new OrderCacheActor()), Permanent),
-        Supervise(actorOf(new MailDispatchActor()), Permanent),
 				Supervise(actorOf(new UploadStorageActor()), Permanent),
 	      Supervise(actorOf(new StatisticsCaptureActor()), Permanent)
 

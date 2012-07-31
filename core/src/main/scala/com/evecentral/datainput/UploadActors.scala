@@ -1,6 +1,5 @@
 package com.evecentral.datainput
 
-import com.evecentral.mail.MailDispatchActor
 import akka.actor.Actor
 import Actor.actorOf
 import cc.spray.typeconversion.DefaultMarshallers
@@ -62,11 +61,6 @@ class UnifiedUploadParsingActor extends Actor with Directives with DefaultMarsha
 class UploadStorageActor extends Actor {
 
 	private val log = LoggerFactory.getLogger(getClass)
-
-	def mailActor = {
-		val r = Actor.registry.actorsFor[MailDispatchActor]
-		r(0)
-	}
 
 	def statCaptureActor = { val r = Actor.registry.actorsFor[StatisticsCaptureActor]; r(0) }
 
@@ -137,7 +131,6 @@ class UploadStorageActor extends Actor {
 			val regionId = data.regionId
 			val typeId = data.typeId
 			val generatedAt = data.generatedAt
-			mailActor ! rows
 			confirmGeneratedAt(generatedAt, typeId, regionId) match {
 				case true =>
 					insertData(typeId, regionId, rows)
