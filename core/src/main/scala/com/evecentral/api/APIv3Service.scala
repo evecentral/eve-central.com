@@ -107,7 +107,7 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 						respondWithMediaType(`application/json`) {
 							import  net.liftweb.json.JsonDSL._
 							completeWith {
-								compact(render(StaticProvider.typesMap.filter(_._2.name.contains(rest)).map(types => ("typename" -> types._2.name) ~ ("typeid" -> types._2.typeid))))
+								compact(render(StaticProvider.typesMap.filter(_._2.name.contains(rest)).filter(!_._2.name.contains("Blueprint")).map(types => ("typename" -> types._2.name) ~ ("typeid" -> types._2.typeid))))
 							}
 						}
 					}
