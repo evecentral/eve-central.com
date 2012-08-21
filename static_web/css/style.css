@@ -46,7 +46,7 @@ h1 {
 }
 
 body {	
-    font-family: "EVE Neue", "Source Sans Pro", sans-serif;
+    font-family: "Source Sans Pro", sans-serif;
     margin: 0px;
     background: #fff;
 }
@@ -213,7 +213,9 @@ a {
 }
 
 .adLink {
-    background-color: #FFFF66;
+    background-color: #FFFFaa;
+    padding: 10px;
+    font-size: 90%;
 }
 
 
