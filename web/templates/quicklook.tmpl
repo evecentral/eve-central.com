@@ -155,7 +155,7 @@ Looking at regions:
 
 <div class="LHS formBlock">
 <form method="get" action="quicklook.html">
-Viewing data up to <input type="text" value="$hours" name="sethours" size="5" /> hours old. Minimum Qty: <input type="text" value="$minQ" name="setminQ" size="7" /> (entered for stats, remain for view)
+Viewing data up to <input type="text" value="$hours" name="sethours" size="5" /> hours old. Minimum Qty: <input type="text" value="$minQ" name="setminQ" size="7" />
 <input type="hidden" name="typeid" value="$typeid" />
 <input type="submit" value="Refresh" />
 </form>
@@ -175,9 +175,7 @@ Search for: <input type="text" name="search" /> <input type="submit" value="Sear
 <b>Median selling price in view:</b> $avg_price ISK
 <br />
 <b>Volume for sale now:</b> $total_vol units
-<br />
-<b class="view">Movement <span>(Initial volume - volume remaining)</span></b>: $total_movement units
-
+</p>
 </p>
 </td>
 <td>
@@ -186,8 +184,6 @@ Search for: <input type="text" name="search" /> <input type="submit" value="Sear
 <b>Median buying price in view:</b> $b_avg_price ISK
 <br />
 <b>Volume buying now:</b> $b_total_vol units
-<br />
-<b class="view">Movement <span>(Initial volume - volume remaining)</span></b>: $b_total_movement units
 </p>
 </td></tr></table>
 <p>Jump to: <a href="#sells">Sell Orders</a> | <a href="#buys">Buy Orders</a></p>
