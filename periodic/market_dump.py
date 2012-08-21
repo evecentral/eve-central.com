@@ -16,7 +16,7 @@ sys.path.append('../lib/')
 from evecentral import display
 
 #import evec_func
-db = psycopg2.connect(database='evec', user='evec', host = 'localhost', port = '9999')
+db = psycopg2.connect(database='evec', user='evec', host = '172.20.20.1', port = '5432')
 
 
 

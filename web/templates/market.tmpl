@@ -19,7 +19,7 @@ Market Browser
 <table border="0">
 <tr>
 <td><b>1. Filter by regions</b>. Limit the view to regions (Control or shift click to select more than one). Note that the In Game Browser breaks if you select too many regions. So don't. If you don't select anything here, you will be seeing all regions. </td>
-<td><select name="regionlimit" size="7" multiple="multiple">
+<td><select name="regionlimit" size="14" multiple="multiple">
 	#for $region in $regions
 		<option value="$region['regionid']"
 		#if $region['regionid'] in $regionlimit

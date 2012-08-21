@@ -1,6 +1,7 @@
-Crucible locked and loaded.
-Contribtastic 2.0.3 now available, with far less bugs
-EVE-Central revival project under way.
+Escalation locked and loaded.
+Contribtastic 2.1.1 is the current uploader.
+
+Unified uploader support is in beta testing.
 
 
 

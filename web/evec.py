@@ -41,13 +41,6 @@ from tradetool import TradeTool
 from evecentral.suggest import upload_suggest
 
 
-try:
-    from api import Api
-except:
-    pass
-
-
-
 class Home:
 
     @cherrypy.expose
@@ -104,90 +97,6 @@ class Home:
 
 
     typesearch_html = typesearch
-
-    @cherrypy.expose
-    def marketstat_xml(self, hours = "360", minQ = 0, typeid = None, dump=None, evemon = None, regionlimit = None):
-
-        cherrypy.response.headers['Content-Type'] = 'text/xml'
-        db = evec_func.db_con()
-
-        if regionlimit is None:
-            regionlimit = []
-
-        if not isinstance(regionlimit, list):
-            regionlimit = [regionlimit]
-
-        regionlimit = map(int, regionlimit)
-
-
-
-        if int(hours) > 360:
-            hours = "360"
-        hours = int(hours)
-
-        response = ""
-
-        response += "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
-        response += "<!-- Automatically generated data from EVE-Central.com -->\n"
-        response += "<!-- WARNING: THIS API IS NOW DEPRECATED - PLEASE USE THE NEW API -->\n"
-
-        if typeid is not None and dump is None:
-
-            typeid = int(typeid)
-
-            if minQ == 0 and typeid in stats.MINQ_TYPES:
-                minQ = MINQ_VOL
-
-            prices = stats.item_stat(db, typeid, hours, buysell = False, regionlimit = regionlimit, minQ = minQ)
-            (sell,buy) = stats.item_stat(db, typeid, hours, regionlimit = regionlimit)
-
-            response += "<market_stat>\n"
-            response += " <typeid>"+`typeid`+"</typeid>\n"
-            response += " <avg_price>"+`prices['avg_price']`+"</avg_price>\n"
-            response += " <total_volume>"+`prices['total_vol']`[:-1]+"</total_volume>\n"
-            response += " <avg_buy_price>"+`buy['avg_price']`+"</avg_buy_price>\n"
-            response += " <total_buy_volume>"+`buy['total_vol']`[:-1]+"</total_buy_volume>\n"
-            response += " <stddev_buy_price>" + `buy['stddev']`+"</stddev_buy_price>\n"
-            response += " <max_buy_price>" + `buy['max']`+"</max_buy_price>\n"
-            response += " <min_buy_price>" + `buy['min']`+"</min_buy_price>\n"
-            response += "\n"
-            response += " <avg_sell_price>"+`sell['avg_price']`+"</avg_sell_price>\n"
-            response += " <total_sell_volume>"+`sell['total_vol']`[:-1]+"</total_sell_volume>\n"
-            response += " <stddev_sell_price>" + `sell['stddev']`+"</stddev_sell_price>\n"
-            response += " <max_sell_price>" + `sell['max']`+"</max_sell_price>\n"
-            response += " <min_sell_price>" + `sell['min']`+"</min_sell_price>\n"
-
-            response += " <median>"
-            response += "  <sell>" + `sell['median']`+ "</sell>"
-            response += "  <buy>" + `buy['median']` + "</buy>"
-            response += "  <all>" + `prices['median']` + "</all></median>"
-
-            response += "</market_stat>"
-        elif typeid is not None and dump is not None:
-            typeid = int(typeid)
-            response += "<market_dump>\n"
-        elif evemon is not None:
-
-            response += "<minerals>\n"
-
-            for mineral in [34, 35, 36, 37, 38, 39, 40, 11399]:
-                prices = stats.item_stat(db, mineral, hours, buysell = False, minQ = 5000)
-
-                typename = evec_func.get_type_name(db, mineral)
-                response += " <mineral>\n"
-                response += " <name>"+typename+"</name>"
-                response += " <price>"+`prices['median']`+"</price>"
-                response += " </mineral>\n"
-
-            response += "</minerals>\n"
-
-
-
-        db.close()
-        return response
-
-    marketstat_xml_html = marketstat_xml
-
 
     @cherrypy.expose
     def quicklook(self, typeid, setorder=None, setdir = None, igbover = False, sethours = None, regionlimit = None, usesystem = None, setminQ = 0, poffset = 0, outtype = 'html', api = 1.0):
@@ -386,7 +295,11 @@ class Home:
                         rec['reportedtime'] = rt[5:]
         
                     rec['stationname'] = r[9]
-                    rec['security'] = str(r[10])[0:3]
+                    sec = r[10]
+                    ssec = str(sec)[0:3]
+                    if sec <= 0.0:
+                        ssec = "0.0"
+                    rec['security'] = ssec
                     # Try to grab regionid from the end of the query
                     if isbuy:
                         if int(r[11]) > 1:
@@ -435,6 +348,11 @@ class Home:
 
 
     quicklook_html = quicklook
+
+#####
+    # Warning: This is easily the worst piece of code I have ever written.
+    # I really am sorry.
+#####
 
     @cherrypy.expose
     def tradefind_display(self, qtype, fromt, to, set = None, age = 24, cashonhand = 10000000.00, minprofit = 100000, size = 10000, startat = 0, limit = 50, newsearch = "0", sort = "jprofit", prefer_sec = "0"):
@@ -500,6 +418,12 @@ class Home:
 
         cur_f = db.cursor()
         cur_t = db.cursor()
+
+
+#####
+    # Warning: This is easily the worst piece of code I have ever written.
+    # I really am sorry.
+#####
 
 
         # Pure suck query
@@ -599,37 +523,6 @@ class Home:
             cur_f.execute("SELECT systemid,(systemname || ' / ')  || regionname FROM systems,regions WHERE systems.regionid = regions.regionid AND systemid = %s ORDER BY systemname", [fromt])
             cur_t.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [to])
 
-        elif qtype == "Global" and newsearch:
-            cur.execute("""SELECT types.typeid,types.typename,fs.systemid,ts.systemid,fs.stationname,ts.stationname,t.price - f.price AS pricediff,
-            min(t.volremain,f.volremain),
-            (t.price - f.price)*min(t.volremain,f.volremain) AS profit,
-
-
-            """+ sql_profit_size + """ AS profit_size,
-            """ + sql_profit_jumps + """ AS profit_jumps,
-
-
-            t.price,f.price
-
-            FROM types, current_market AS f, current_market AS t, stations AS fs, stations AS ts, systems AS fsys, systems AS tsys
-            WHERE
-            """ + sql_sec_limit + """
-            ts.systemid = tsys.systemid AND fs.systemid = fsys.systemid AND
-            f.minvolume <= 1 AND t.minvolume <= 1 AND
-            f.bid = 0 AND t.bid = 1 AND t.typeid = f.typeid AND t.stationid = ts.stationid AND
-            f.stationid = fs.stationid AND
-            age(f.reportedtime) < %(age)s AND age(t.reportedtime) < %(age)s AND
-            """ + sql_profit_size + """ >=	%(minprofit)s AND
-
-            types.size <= """ + size + """ AND
-            t.typeid = types.typeid
-            AND f.typeid = types.typeid
-            AND f.price < t.price""",
-    #    ORDER BY profit_size DESC LIMIT %(limit)s OFFSET %(startat)s""",
-                        {'age':age_t, 'minprofit':minprofit})
-            cur_f.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [fromt])
-            cur_t.execute("SELECT regionid,regionname FROM regions WHERE regionid = %s ORDER BY regionname", [to])
-
 
 
         trades = []
@@ -661,10 +554,6 @@ class Home:
                 from_set.add(fr)
 
 
-
-
-
-
                 row['tprice'] = format_price(float(r[11]))
                 row['fprice'] = format_price(float(r[12]))
                 row['tvol'] = format_long(long(r[13]))
@@ -688,15 +577,10 @@ class Home:
 
 
             # Now we try to compute distance
-
-
-
             for compsys in from_set:
 
                 distance_map = {}
                 distance = 0
-
-
                 time_net_ = time.time()
 
                 distance_map = mapserver.route_comp(compsys, list(from_to_map[compsys]))
@@ -712,8 +596,6 @@ class Home:
                             distance = distance_map[row['to2']]
 
                         ps = row['profit_size']
-
-
                         row['profit_size'] = format_price(ps)
 
                         if sort == "jprofit":

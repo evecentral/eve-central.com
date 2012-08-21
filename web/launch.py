@@ -24,10 +24,8 @@ sys.path.append('../lib')
 
 import cherrypy
 
-from datainput import DataInput
 from tradetool import TradeTool
 from evec import Home
-from api import Api
 from json_tools import JsonTools
 
 
@@ -45,9 +43,7 @@ if __name__=="__main__":
     cherrypy.config.update({'server.socket_port': int(sys.argv[1])})
 
     cherrypy.tree.mount(Home(), '/home')
-    cherrypy.tree.mount(Api(), '/api', {'/' : { 'tools.sessions.on' : False } })
 
-    cherrypy.tree.mount(DataInput(), '/datainput.py', {'/' : { 'tools.sessions.on' : False }})
     cherrypy.tree.mount(TradeTool(), '/tradetool')
     cherrypy.tree.mount(JsonTools(), '/json_tools')
 

@@ -68,7 +68,7 @@ def import_stations(dbs,db):
         db.commit()
 
 def main(sqle):
-    db = psycopg2.connect(database = 'evec', user = 'evec')
+    db = psycopg2.connect(database = 'evec', user = 'evec', port = 9999)
     dbs = sqlite3.connect(sqle)
     import_jumps(dbs, db)
     import_regions(dbs, db)
