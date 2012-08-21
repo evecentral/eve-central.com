@@ -78,22 +78,21 @@ bgcolor="#DDDDDD"
 #end if
  <td>$order['regionname']</td>
  <td>
-<a href="quicklook.html?typeid=$typeid&amp;usesystem=$order['systemid']"><img src="/images/solarsystem.gif"></a> 
-$order['stationname'] ($order['security']) 
+<a href="quicklook.html?typeid=$typeid&amp;usesystem=$order['systemid']" class="sslimit">[-]</a> 
+<span class="sec_status" sec_status="$order['security']">$order['security']</span>  $order['stationname'] 
 
 #if $order['range'] > -2
-<br />
-<i>
+<span class="range_view">
 #if $order['range'] == -1
  (Station)
 #elif $order['range'] == 0
  (Solarsystem)
-#elif $order['range'] == 32767
+#elif $order['range'] == 32767 or $order['range'] == 65535
  (Region)
 #else
-(Range: $order['range'])
+($order['range'] jumps)
 #end if
-</i>
+</span>
 #end if
 </td>
 

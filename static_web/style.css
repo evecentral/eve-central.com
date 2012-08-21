@@ -1,3 +1,4 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,900,400italic,600italic,700italic);
 
 .view {position: relative;}
 
@@ -45,15 +46,15 @@ h1 {
 }
 
 body {	
-    font-family: "EVE Neue", sans-serif;
+    font-family: "EVE Neue", "Source Sans Pro", sans-serif;
     margin: 0px;
     background: #fff;
 }
 
 a {	 
-    font-family: sans-serif;
     color: #001122;
 }
+
 
 #bodyText {
     line-height: 1.5em;
@@ -71,6 +72,18 @@ a {
 
 #linkBar {
     font-size: 9pt;
+}
+
+#linkBar form {
+    display: inline;
+    padding: 5px;
+    
+}
+
+#linkBar form button {
+    border: 0px;
+    border-radius: 4px;
+    background-color: #cec;
 }
 
 #header {
@@ -101,6 +114,72 @@ a {
     margin-left: 2ex;
 
 }
+
+#bodyText .sslimit {
+    text-decoration: none;
+    font-size: 50%;
+    padding-right: 2ex;
+}
+
+#bodyText .range_view {
+    font-size: 80%;
+    padding-left: 3ex;
+}
+
+#bodyText .sec_status {
+    font-size: 70%;
+    padding-right: 1ex;
+}
+
+#bodyText span[sec_status="0.0"] {
+    color: red;
+}
+
+#bodyText span[sec_status="0.1"], #bodyText span[sec_status="0.2"], #bodyText span[sec_status="0.3"], #bodyText span[sec_status="0.4"] {
+    color: #a22;
+}
+
+
+#bodyText span[sec_status="0.5"], #bodyText span[sec_status="0.6"], #bodyText span[sec_status="0.7"], #bodyText span[sec_status="0.8"], #bodyText span[sec_status="0.9"], #bodyText span[sec_status="1.0"] {
+    color: #2a2;
+}
+
+
+#bodyText form a, #bodyText form a:visited {
+    border-radius: 5px;
+    background-color: #cce;
+    padding: 1ex;
+    text-decoration: none;
+}
+
+#bodyText form button {
+    border-radius: 5px;
+    background-color: #cec;
+    padding: 1ex;
+    font-size: 100%;
+    border: 0px;
+    text-decoration: none;
+}
+
+#bodyText form input[type="text"] {
+    font-size: 100%;
+    border-radius: 3px;
+    border: 0px;
+    padding: 1ex;
+}
+
+
+.search_suggestions {
+    color: #666;
+    font-size: 85%;
+    padding-left: 1em;
+}
+
+.search_suggestions a, .search_suggestions a:visited {
+    color: #666;
+    padding-left: 1.1em;
+}
+
 
 
 .formBlock {

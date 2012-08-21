@@ -1,54 +1,44 @@
 #extends templates.basebase
 
 #def title
-EVE-Central: EVE-Online Market Aggregator and Trade Finder
+EVE-Central: The EVE-Online Market Aggregator and Toolkit
 #end def
-
 #def body
 
-
-#if 'user' in $session
-<p>--------&gt; <b>For user tools, check out the <a href="/users/">Users</a> portal!</b></p>
-#end if
-
-<p>
-
-Welcome to EVE-Central.com, your source for <a href="http://www.eve-online.com/">EVE-Online</a> cross-region market information and statistics, and more. 
-
-</p>
-
-<h3>Browse</h3>
+<h3>The Market</h3>
 
 <form method="get" action="/home/typesearch.html">
 <div>
-Search for <input type="text" name="search" placeholder="Item name" id="af_field" autofocus> <input type="submit" value="Search" />
+Search for <input type="text" name="search" placeholder="Item name" id="af_field" autofocus> <button type="submit" value="Search">Search</button>
 <script>
     if (!("autofocus" in document.createElement("input"))) {
       document.getElementById("ad_field").focus();
     }
   </script>
+<a href="/home/market.html">Advanced</a> <a href="/home/tradefind.html">Trade Finder</a>
+<span class="search_suggestions">
+Suggestions: <a href="http://eve-central.com/home/quicklook.html?typeid=34">Tritanium</a> 
+<a href="http://eve-central.com/home/quicklook.html?typeid=35">Pyerite</a>
+<a href="http://eve-central.com/home/quicklook.html?typeid=36">Mexallon</a>
+<a href="http://eve-central.com/home/quicklook.html?typeid=17918">Rattlesnake</a>
+<a href="http://eve-central.com/home/quicklook.html?typeid=24698">Drake</a>
+</span>
 <br />
 </div>
 </form>
 
-<ul>
- <li><a href="/home/market.html">Market Browser</a></li>
- <li><a href="/home/tradefind.html">Trade Finder</a></li>
-</ul>
-
-
 <h3>Contribute!</h3>
-<p>All of our data comes from user contributions! <a href="http://eve-central.com/home/software.html">Download the Contribtastic software to contribute seamlessly today</a>
-<p>If you're running <a href="http://dev.eve-central.com/contribtastic/">Contribtastic</a> please visit our <a href="/home/upload_suggest.html">upload suggestion page</a> in your EVE ingame browser and help us closing the gaps.<br/>
+<p>All of our data comes from user contributions! You can either contribute using <a href="http://evemon.battleclinic.com">EVE Mon</a> or <a href="http://eve-central.com/home/software.html">download the Contribtastic software</a>.
+<p>If you're running <a href="http://dev.eve-central.com/contribtastic/">Contribtastic</a> please visit our <a href="/home/upload_suggest.html">upload suggestion page</a> in your EVE ingame browser and help us closing the gaps in data.<br/>
 
 <h3>News and Updates</h3>
 
-See the <!-- related <a href="http://www.eveonline.com/ingameboard.asp?a=topic&amp;threadID=282942&amp;page=1">thread on EVE-online.com</a>, as well as --> the <a href="http://yannramin.com/category/eve-central/">development blog</a> for update on EVE-Central, the uploader, and more. You can also take a look at the <a href="http://dev.eve-central.com/">development wiki</a> for information on the EVE-Central.com codebase, API usage tips, and libevecache development.
+See the the <a href="http://yannramin.com/category/eve-central/">development blog</a> for update on EVE-Central, the uploader, and more. You can also take a look at the <a href="http://dev.eve-central.com/">development wiki</a> for information on the EVE-Central.com codebase, API usage tips, and libevecache development.
 </p>
 
 
 <p>Powered by:<br />
-<a href="http://www.python.org/"> <img src="/images/python-powered-w-100x40.png" /></a>  <a href="http://postgresql.org"><img src="/images/postgresql.png" /></a> <a href="http://numpy.scipy.org/"><img src="/images/numpylogo.png" /></a> <img src="/images/cplogo.jpg" /> <img src="/images/agplv3.png">
+<a href="http://scala-lang.org"><img src="/images/scala.png"></a> <a href="http://www.python.org/"> <img src="/images/python-powered-w-100x40.png" /></a>  <a href="http://postgresql.org"><img src="/images/postgresql.png" /></a> <a href="http://numpy.scipy.org/"><img src="/images/numpylogo.png" /></a> <img src="/images/cplogo.jpg" /> <img src="/images/agplv3.png">
 <br /></p>
 
 <script type="text/javascript">
