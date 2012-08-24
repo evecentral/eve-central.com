@@ -68,27 +68,27 @@ and Spray (http://spray.cc).
 ### High level view of directories ###
 
 core/
-        - SBT Driven Scala project (version "3.0")
-        - This is the new API core and API ingester, but doesn't drive any of the web front end.
+- SBT Driven Scala project (version "3.0")
+- This is the new API core and API ingester, but doesn't drive any of the web front end.
 
 db/
-        - Database schemas
+- Database schemas
 
 web/
-        - CherryPy launcher, web front end classes (Python)
+- CherryPy launcher, web front end classes (Python)
 
 lib/evecentral
-        - Utility classes (Python)
+- Utility classes (Python)
 
 periodic/
-        - Batch programs which make EVE-Central tick (scripts, Python)
+- Batch programs which make EVE-Central tick (scripts, Python)
 
 static_web/
-        - Static HTML files (served by front-end server on the main
-        server)
+- Static HTML files (served by front-end server on the main server)
 
 pathfinder_src/
-        - C++ implementation of a shortest path server with Pyro node
+- C++ implementation of a shortest path server with Pyro node
+- This is actually pretty terrible and slow. The core API has a much better pathfinder which can logically cache more data and is faster from a cold start.
 
 
 
