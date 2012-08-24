@@ -4,9 +4,9 @@
 ## Introduction ##
 
 Welcome to the source code to EVE-Central.com, the oldest and still
-the most popular cross region EVE market browser site.
+the most popular cross region EVE market browser site (since 2006!).
 
-I (Yann) have decided to release the source code behind the site in
+I have decided to release the source code behind the site in
 order to foster new development activities and allow for community
 contributions to the core of the site. I believe in open source
 software, and hope this model can be successfully applied to
@@ -43,24 +43,24 @@ http://dev.eve-central.com/
 ## Next Generation Project ##
 
 
-EVE-Central is currently under a revitalization project, and is transition architectures.
+EVE-Central is currently under a revitalization project, and is transitioning architectures (abliet slowly).
 In a way, we're going "3.0", and the new version number reflects that.
 
 The new code base is in Scala (http://scala-lang.org) with Akka (http://akka.io/),
 and Spray (http://spray.cc).
 
 
-### Requirements (new tech) ###
+### Requirements (new tech, API and upload ingester) ###
 
-- Java 6 u24 or Java 7 (JDK)
-- SBT (Scala Simple Build Tool) 11.x
+- Java 7u5 (JDK)
+- SBT (Scala Simple Build Tool) 0.11.x
 - PostgreSQL 9.1+
 
 ### Requirements (old tech, web UI stack) ###
 
 - Python 2.7 (3.x not supported)
   - psycopg2
-  - Pyro (for the pathfinder server
+  - Pyro (for the pathfinder server)
   - numpy (for statistic calculations)
   - CherryPy 3.2 (primary web server)
 - PostgreSQL 9.0+
@@ -69,25 +69,26 @@ and Spray (http://spray.cc).
 
 core/
         - SBT Driven Scala project (version "3.0")
+        - This is the new API core and API ingester, but doesn't drive any of the web front end.
 
 db/
         - Database schemas
 
 web/
-        - CherryPy launcher, web front end classes
+        - CherryPy launcher, web front end classes (Python)
 
 lib/evecentral
-        - Utility classes
+        - Utility classes (Python)
 
 periodic/
-        - Batch programs which make EVE-Central tick
+        - Batch programs which make EVE-Central tick (scripts, Python)
 
 static_web/
         - Static HTML files (served by front-end server on the main
         server)
 
 pathfinder_src/
-        - C++ implementation of a shortest path server
+        - C++ implementation of a shortest path server with Pyro node
 
 
 
