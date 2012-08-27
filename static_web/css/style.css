@@ -46,7 +46,7 @@ h1 {
 }
 
 body > h1 {
-    margin-top: -30px;
+/*     margin-top: -30px; */
 }
 
 body {	
@@ -66,12 +66,25 @@ a {
     padding: 0 1em 1ex 1em;
 }
 
+#footer a {
+    color: #ccc;
+}
+
+#footer .adLink {
+    color: #222;
+}
+
+#footer .adLink a {
+    color: #222;
+}
+
 #footer {
-    background-color: #ddd;
+
+    background-color: #1d1d1d;
+    color: #ccc;
     padding: 10px;
     margin-top: 20px;
-    border-top: 4px solid #333333;
-    border-bottom: 4px solid #333333;
+    font-size: 70%;
 }
 
 #linkBar {
@@ -91,6 +104,67 @@ a {
     background-color: #cec;
 }
 
+/* New style header */
+
+.topbar {
+    background-color: #1b1b1b;
+    background-image: -moz-linear-gradient(top, #222222, #111111);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#222222), to(#111111));
+    background-image: -webkit-linear-gradient(top, #222222, #111111);
+    background-image: -o-linear-gradient(top, #222222, #111111);
+    background-image: linear-gradient(to bottom, #222222, #111111);
+    background-repeat: repeat-x;
+    border-color: #252525;
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff222222', endColorstr='#ff111111', GradientType=0);
+    height: 40px;
+    padding: 5px;
+    color: #999;
+}
+
+.topbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.topbar ul li {
+    display: inline;
+    float: left;
+}
+
+.topbar ul li a {
+    text-decoration: none;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 110%;
+    line-height: 40px;
+    display:block;
+    color: #aaa;
+}
+
+.topbar .right {
+    float: right;
+    padding-left: 10px;
+    font-size: 80%;
+    line-height: 40px;
+}
+
+
+.topbar form {
+    display: inline;
+    padding: 5px;
+    
+}
+
+.topbar form button {
+    border: 0px;
+    border-radius: 4px;
+    behavior: url(http://cdn.eve-central.com/PIE.htc);
+    background-color: #cec;
+}
+
+
+/* Old style header */
 #header {
     white-space: nowrap;
     background: url(/newlook/spacer.png);
@@ -102,6 +176,7 @@ a {
     margin: 0px;
 }
 
+/* Body text */
 
 #bodyTextFlat {
     margin: 10mm 1em 0 1em;
