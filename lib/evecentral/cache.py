@@ -19,7 +19,7 @@ import memcache
 import copy
 import hashlib
 
-DEFAULT_EXPIRE = 100
+DEFAULT_EXPIRE = 30
 
 _hits = 0
 _miss = 0
