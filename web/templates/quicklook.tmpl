@@ -2,7 +2,7 @@
 #extends templates.basebase
 
 #def title
-$typename - Market Browser - Quick Look At Item
+$typename - Market Browser
 #end def
 
 
@@ -118,26 +118,9 @@ bgcolor="#DDDDDD"
 
 
 #def body
-<p>
-
-#if $upload_sug is not None
-<p><b>&gt; </b> <i>Some upload suggestions for <b>
-
-	#for $region in $regions
-		#if $region['regionid'] == $upload_reg
-				$region['regionname'] 
-		#end if
-	#end for
 
 
-</b>: 
-</i>
-#for $sug in $upload_sug
- <a href="#" onclick="CCPEVE.showMarketDetails($sug[1])">$sug[0]</a>,
-#end for
-</p>
-#end if
-
+<form method="get" action="quicklook.html">
 <div>
 Item: <a href="#" onclick="CCPEVE.showMarketDetails($typeid)"><b>$typename</b></a> (size: $typesize m<sup>3</sup>),
 Looking at regions: 
@@ -153,68 +136,38 @@ Looking at regions:
 
 </div>
 
-<div class="LHS formBlock">
-<form method="get" action="quicklook.html">
 Viewing data up to <input type="text" value="$hours" name="sethours" size="5" /> hours old. Minimum Qty: <input type="text" value="$minQ" name="setminQ" size="7">
 <input type="hidden" name="typeid" value="$typeid">
 <button type="submit">Refresh</button>
+
 </form>
-</div>
 
 
 <table width="100%">
 <tr>
 <td>
-<h3>Quick Selling Statistics</h3>
-<p>
+<b>Quick Selling Statistics</b><br>
 <b>Median selling price in view:</b> $avg_price ISK
-<br />
+<br>
 <b>Volume for sale now:</b> $total_vol units
-</p>
-</p>
+
 </td>
 <td>
-<h3>Quick Buying Statistics</h3>
-<p>
+<b>Quick Buying Statistics</b><br>
 <b>Median buying price in view:</b> $b_avg_price ISK
 <br />
 <b>Volume buying now:</b> $b_total_vol units
-</p>
+
 </td></tr></table>
-<p>Jump to: <a href="#sells">Sell Orders</a> | <a href="#buys">Buy Orders</a></p>
-
-
-<p class="adLink">
+<div class="adLink">
 <b>EVETIMECODE buy 14 etc get 1 free <a href="http://evetimecode.com">EVETIMECODE.com</a> - Where your business counts!</b>
-</p>
-
-<p class="adLink">
-<b><a href="http://www.shatteredcrystal.com/code.php/eve_online/~325">EVE Online Game Time Codes</a></b> - Support EVE-Central by purchasing them at ShatteredCrystal.com through this affiliate link.</p>
-<a name="trans"></a>
-
-#if $mtransaction
-
-<h3>Latest Transactions (<a href="http://yannramin.com/2009/04/19/api-pulling-going-well-data-starting-to-be-incorporated-and-other-small-changes/">?</a>)</h3>
-<table width="95%">
-<tr><th>Location</th><th>Qty</th><th>Price</th><th>Transaction Time</th></tr>
-
-
-#for $mt in $mtransaction
-<tr>
-<td>$mt['stationname']</td>
-<td>$mt['quantity']</td>
-<td>$mt['price']</td>
-<td>$mt['transtime']</td>
-</tr>
-#end for
-
-</table>
-
-#end if
+</div>
+<div class="adLink">
+<b><a href="http://www.shatteredcrystal.com/code.php/eve_online/~325">EVE Online Game Time Codes</a></b> - Support EVE-Central by purchasing them at ShatteredCrystal.com through this affiliate link.</div>
 
 <div id="sell_orders">
 <a name="sells"></a>
-<h3>Sell Orders</h3>
+<h3>Sell Orders (<a href="#buys">Buy Orders</a>)</h3>
 $MarketList($sells, "#DDDDEE", "#444477")
 </div>
 

@@ -16,7 +16,7 @@
 
 
 h1, h2, h3 {
-    font-family: Myriad Pro, sans-serif; 
+    font-family: "Source Sans Pro", Myriad Pro, sans-serif; 
 }
 
 
@@ -38,11 +38,15 @@ h1, h2, h3 {
 
 
 h1 {
-    padding-left: 5px;
+    padding-left: 15px;
     font-weight: bold;
     font-size: 150%;
-    border-bottom: 1px solid;
-    padding-bottom: 0.5ex;
+    font-variant: small-caps;
+
+}
+
+body > h1 {
+    margin-top: -30px;
 }
 
 body {	
@@ -58,7 +62,7 @@ a {
 
 #bodyText {
     line-height: 1.5em;
-    margin: 10mm 1.5em 0 1em;
+    margin: 10px 1.5em 0 1em;
     padding: 0 1em 1ex 1em;
 }
 
@@ -83,6 +87,7 @@ a {
 #linkBar form button {
     border: 0px;
     border-radius: 4px;
+    behavior: url(http://cdn.eve-central.com/PIE.htc);
     background-color: #cec;
 }
 
@@ -112,7 +117,8 @@ a {
     background-color: #ddd;
     padding: 1ex;
     margin-left: 2ex;
-
+    line-height: 5ex;
+    text-align: top;
 }
 
 #bodyText .sslimit {
@@ -147,13 +153,17 @@ a {
 
 #bodyText form a, #bodyText form a:visited {
     border-radius: 5px;
+    behavior: url(http://cdn.eve-central.com/PIE.htc);
     background-color: #cce;
     padding: 1ex;
+
+
     text-decoration: none;
 }
 
 #bodyText form button {
     border-radius: 5px;
+    behavior: url(http://cdn.eve-central.com/PIE.htc);
     background-color: #cec;
     padding: 1ex;
     font-size: 100%;
@@ -164,6 +174,7 @@ a {
 #bodyText form input[type="text"] {
     font-size: 100%;
     border-radius: 3px;
+    behavior: url(http://cdn.eve-central.com/PIE.htc);
     border: 0px;
     padding: 1ex;
 }
@@ -171,11 +182,19 @@ a {
 
 .search_suggestions {
     color: #666;
+
     font-size: 85%;
     padding-left: 1em;
+    margin-top: 1em;
+
+}
+
+.search_frontbox {
+
 }
 
 .search_suggestions a, .search_suggestions a:visited {
+    background-color: #ccd !important;
     color: #666;
     padding-left: 1.1em;
 }

@@ -55,7 +55,7 @@ class Home:
 
 
     @cherrypy.expose
-    def typesearch(self, search):
+    def typesearch(self, search = ""):
         session = EVCstate()
 
         t = display.template('typesearch.tmpl', session)
@@ -132,18 +132,18 @@ class Home:
 
 
         up_sug = None
-        if len(regionlimit) == 0:
-            pass
-        elif random.randint(1,50) > 10:
-            random.shuffle(regionlimit)
-            randomregion = regionlimit[0]
-            up_sug = upload_suggest(db, randomregion, rettype = "both")
+        #if len(regionlimit) == 0:
+        #    pass
+        #elif random.randint(1,50) > 10:
+        #    random.shuffle(regionlimit)
+        #    randomregion = regionlimit[0]
+        #    up_sug = upload_suggest(db, randomregion, rettype = "both")
 
 
         order = 'price'
         orderdir = 'ASC'
         borderdir = 'DESC'
-        hours = 15*24
+        hours = 24
         minQ = 0
 
         if setminQ:
@@ -236,20 +236,7 @@ class Home:
         cur_sell = db.cursor()
         limit = "LIMIT 10000 OFFSET 0"
 
-        cur_trans = db.cursor()
-        cur_trans.execute("SELECT wmt.price,wmt.stationname,wmt.transtime,wmt.quantity FROM wallet_market_transactions AS wmt WHERE typeid = %s ORDER BY transtime DESC LIMIT 10", [typeid])
-
         transactions = []
-
-        r = cur_trans.fetchone()
-        while r:
-            rec = {}
-            rec['price'] = format_price(float(r[0]))
-            rec['stationname'] = r[1]
-            rec['transtime'] = r[2]
-            rec['quantity'] = format_long(long(r[3]))
-            r = cur_trans.fetchone()
-            transactions.append(rec)
 
         t.poffset = int(poffset)
 
@@ -264,9 +251,9 @@ class Home:
 
         def run_query():
 
-            cur_buy.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname, (reportedtime),stationname,security,minvolume,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND stations.systemid = systems.systemid AND typeid = %s AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"' AND volremain >= %s AND current_market.bid = 1  " + sql_system + " ORDER BY " + order + " " + borderdir + " " + limit, [typeid,minQ])
+            cur_buy.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname, (reportedtime),stationname,security,minvolume,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND stations.systemid = systems.systemid AND typeid = %s AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND now() - reportedtime <= '"+sql_age+"' AND volremain >= %s AND current_market.bid = 1  " + sql_system + " ORDER BY " + order + " " + borderdir + " " + limit, [typeid,minQ])
 
-            cur_sell.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname,(reportedtime),stationname,security,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND typeid = %s AND stations.systemid = systems.systemid AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND age(reportedtime) < '"+sql_age+"'	AND volremain >= %s AND current_market.bid = 0 " + sql_system + " ORDER BY " + order + " " + orderdir + " " + limit, [typeid,minQ])
+            cur_sell.execute("SELECT bid,current_market.systemid,current_market.stationid,price,volremain,(issued+duration),range,regionname,(reportedtime),stationname,security,regions.regionid,orderid FROM current_market,regions,stations,systems WHERE " + reg_block + " AND typeid = %s AND stations.systemid = systems.systemid AND stations.stationid = current_market.stationid AND current_market.regionid = regions.regionid AND now() - reportedtime <= '"+sql_age+"'	AND volremain >= %s AND current_market.bid = 0 " + sql_system + " ORDER BY " + order + " " + orderdir + " " + limit, [typeid,minQ])
 
 
             for (query,lista,isbuy) in [(cur_buy, buys, True), (cur_sell, sells, False)]:
@@ -289,6 +276,7 @@ class Home:
                         rec['range'] = -2
                     rec['regionname'] = r[7]
                     rt = str(r[8])
+
                     if '.' in rt:
                         rec['reportedtime'] = rt[5:-7]
                     else:

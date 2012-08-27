@@ -2,7 +2,11 @@
 #extends templates.basebase
 
 #def title
+#if len($search) > 0:
 Search for Type
+#else
+All Items
+#end if
 #end def
 
 #def body
@@ -11,21 +15,13 @@ Search for Type
 
 <p>
 
-<!-- <img src="/images/market.png" align="right" /> -->
 
-<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the EVE client</p>
+#if len($search) > 0:
 <p>You searched the items list for for $search. $len($types) results:
-
+#end if
 #for $item in $types
 <br />
 <a href="quicklook.html?typeid=$item['typeid']">$item['typename']</a>
 #end for
-
-<form method="get" action="typesearch.html">
-<div>
-Search for a type of item where the name contains (i.e., Afterburner, Trit, Nocx): <input type="text" name="search" value="$search" /> <input type="submit" value="Search" />
-</div>
-</form>
-
 
 #end def
