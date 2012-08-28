@@ -102,15 +102,8 @@ class Home:
     def quicklook(self, typeid, setorder=None, setdir = None, igbover = False, sethours = None, regionlimit = None, usesystem = None, setminQ = 0, poffset = 0, outtype = 'html', api = 1.0):
         session = {}
 
-
-
-
-        if outtype == 'html':
-            session = EVCstate()
-            cherrypy.response.headers['Content-Type'] = 'text/html'
-        elif outtype == 'xml':
-            cherrypy.response.headers['Content-Type'] = 'text/xml'
-
+        session = EVCstate()
+        cherrypy.response.headers['Content-Type'] = 'text/html'
 
         db = evec_func.db_con()
 
@@ -122,14 +115,10 @@ class Home:
         else:
             regionlimit = [int(x) for x in regionlimit]
 
-
-
         if 'regionlimit' in session and len(regionlimit) == 0:
             regionlimit = session['regionlimit']
 
         randomregion = None
-
-
 
         up_sug = None
         #if len(regionlimit) == 0:
@@ -138,7 +127,6 @@ class Home:
         #    random.shuffle(regionlimit)
         #    randomregion = regionlimit[0]
         #    up_sug = upload_suggest(db, randomregion, rettype = "both")
-
 
         order = 'price'
         orderdir = 'ASC'
@@ -167,8 +155,6 @@ class Home:
             orderdir = session['orderdir']
         if 'borderdir' in session:
             borderdir = session['borderdir']
-
-
 
         if sethours:
             hours = int(sethours)

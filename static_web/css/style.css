@@ -17,6 +17,7 @@
 
 h1, h2, h3 {
     font-family: "Source Sans Pro", Myriad Pro, sans-serif; 
+    text-shadow: 0 1px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -87,34 +88,19 @@ a {
     font-size: 70%;
 }
 
-#linkBar {
-    font-size: 9pt;
-}
-
-#linkBar form {
-    display: inline;
-    padding: 5px;
-    
-}
-
-#linkBar form button {
-    border: 0px;
-    border-radius: 4px;
-    behavior: url(http://cdn.eve-central.com/PIE.htc);
-    background-color: #cec;
-}
-
 /* New style header */
 
 .topbar {
     background-color: #1b1b1b;
-    background-image: -moz-linear-gradient(top, #222222, #111111);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#222222), to(#111111));
-    background-image: -webkit-linear-gradient(top, #222222, #111111);
-    background-image: -o-linear-gradient(top, #222222, #111111);
-    background-image: linear-gradient(to bottom, #222222, #111111);
+    background-image: -moz-linear-gradient(top, #333333, #111111);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#333333), to(#111111));
+    background-image: -webkit-linear-gradient(top, #333333, #111111);
+    background-image: -o-linear-gradient(top, #333333, #111111);
+    background-image: linear-gradient(to bottom, #333333, #111111);
     background-repeat: repeat-x;
     border-color: #252525;
+    border-bottom: 2px;
+    box-shadow: 0 2px rgba(0,0,0,0.2);
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff222222', endColorstr='#ff111111', GradientType=0);
     height: 40px;
     padding: 5px;
@@ -139,7 +125,9 @@ a {
     font-size: 110%;
     line-height: 40px;
     display:block;
-    color: #aaa;
+    color: #ccc;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
 }
 
 .topbar .right {
@@ -163,18 +151,6 @@ a {
     background-color: #cec;
 }
 
-
-/* Old style header */
-#header {
-    white-space: nowrap;
-    background: url(/newlook/spacer.png);
-}
-
-#header img {
-    border: 0px;
-    padding: 0px;
-    margin: 0px;
-}
 
 /* Body text */
 
@@ -257,11 +233,9 @@ a {
 
 .search_suggestions {
     color: #666;
-
     font-size: 85%;
     padding-left: 1em;
     margin-top: 1em;
-
 }
 
 .search_frontbox {
