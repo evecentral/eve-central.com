@@ -16,8 +16,14 @@
 
 
 h1, h2, h3 {
-    font-family: "Source Sans Pro", Myriad Pro, sans-serif; 
-    text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+    font-family:  "freight-sans-pro", sans-serif; 
+
+/*     text-shadow: 0 1px rgba(0, 0, 0, 0.2); */
+}
+
+h3 {
+    font-size: 150%;
+    font-weight: 500;
 }
 
 
@@ -40,9 +46,8 @@ h1, h2, h3 {
 
 h1 {
     padding-left: 15px;
-    font-weight: bold;
-    font-size: 150%;
-    font-variant: small-caps;
+    font-weight: 400;
+    font-size: 190%;
 
 }
 
@@ -127,12 +132,16 @@ a {
     display:block;
     color: #ccc;
     text-shadow: 0 1px rgba(0, 0, 0, 0.2);
-    font-weight: bold;
+    font-family: "freight-sans-pro", sans-serif;
+    font-weight: 300;
 }
 
 .topbar .right {
     float: right;
     padding-left: 10px;
+    font-family: "freight-sans-pro", sans-serif;
+    font-weight: 500;
+    color: #fff;
     font-size: 80%;
     line-height: 40px;
 }
@@ -152,7 +161,25 @@ a {
 }
 
 
+/* Quicklook columns */
+
+.quicklookSorted {
+    background-color: #ddd;
+}
+
+.highlightSell {
+    background-color: #dde;
+}
+
+.highlightBuy {
+    background-color: #eed;
+}
+
 /* Body text */
+
+#bodyText {
+    min-height: 600px;
+}
 
 #bodyTextFlat {
     margin: 10mm 1em 0 1em;
@@ -164,6 +191,7 @@ a {
     margin-left: 2ex;
 }
 
+
 #bodyText form {
     background-color: #ddd;
     padding: 1ex;
@@ -171,6 +199,16 @@ a {
     line-height: 5ex;
     text-align: top;
 }
+
+#bodyText .quicklookHeader form {
+    text-align: top;
+    line-height: 5ex;
+    background-color: #eee;
+    margin-left: 0px;
+    padding-bottom: 5px;
+    font-size: 90%;
+}
+
 
 #bodyText .sslimit {
     text-decoration: none;

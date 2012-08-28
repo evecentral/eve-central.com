@@ -524,6 +524,7 @@ class Home:
                 row['pricediff'] = r[6]
                 row['tradeable'] = format_long(long(r[7]))
                 row['profit'] = format_price(float(r[8]))
+                row['profit_num'] = float(r[8])
                 row['profit_size'] = float(r[9])
                 from_set.add(fr)
 
@@ -579,7 +580,7 @@ class Home:
                             row['sortby'] = ps
                             t.sort_nice = "Profit per trip"
                         elif sort == "profit":
-                            row['sortby'] = row['profit']
+                            row['sortby'] = row['profit_num']
                             t.sort_nice = "Profit"
                         elif sort == "jumps":
                             t.sort_nice = "Distance"

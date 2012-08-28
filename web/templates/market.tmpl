@@ -1,4 +1,4 @@
-
+#import re
 #extends templates.basebase
 
 #def title
@@ -8,43 +8,39 @@ Market Browser
 #def body
 
 
-
-<p>
-<i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software">software page</a> to download the free utility which will upload market dumps from the EVE client. If you don't know what market data to upload, please visit our <a href="/home/upload_suggest.html">upload suggestion page</a> in your EVE ingame browser.
-</p>
-
+<h3>Step One: Filter by regions</h3>
 <form method="post" action="market.html">
 <div>
 <input type="hidden" name="pickregion" value="1" />
-<table border="0">
-<tr>
-<td><b>1. Filter by regions</b>. Limit the view to regions (Control or shift click to select more than one). Note that the In Game Browser breaks if you select too many regions. So don't. If you don't select anything here, you will be seeing all regions. </td>
-<td><select name="regionlimit" size="14" multiple="multiple">
+Limit the view to regions (Control or shift click to select more than one). If you don't select anything here, you will be seeing all regions.
+<br>
+<select name="regionlimit" size="14" multiple="multiple">
 	#for $region in $regions
+	#if not $re.match("[A-F]\-", $region['regionname'])
 		<option value="$region['regionid']"
 		#if $region['regionid'] in $regionlimit
 			selected="selected"
 		#end if
 
 >$region['regionname']</option>
+#end if
 	#end for
-	</select></td>
-</tr>
-<tr>
-	<td colspan="2"><button type="submit">Limit to selected regions</button> or <button name="empire" value="Limit to empire regions" type="submit">Limit to empire regions</button> ($len($regionlimit) currently selected). To deselect regions, use ctrl+click, followed by clicking "Limit to selected regions."</td></tr>
-</table>
+	</select>
+<br>
+	<td colspan="2"><button type="submit">Limit to selected regions</button> or <button name="empire" value="Limit to empire regions" type="submit">Limit to empire regions</button> ($len($regionlimit) currently selected). To deselect regions, use ctrl+click, followed by clicking "Limit to selected regions."
+
 </div>
 </form>
-<hr />
 
-<p><b>2. View an item</b></p>
+
+<h3>Step Two: Search by name</h3>
 
 <div>
 <form method="get" action="typesearch.html">
 <div>
-Search for a type of item where the name contains (i.e., Afterburner, trit, mexal): <input type="text" name="search" /> <button type="submit">Search</button>
-<br />
-This will take you to the Quicklook page automatically if there is only one item with the search string. You can get every item in one big long list by not typing anything.
+Search for an item where the name contains (i.e., Afterburner, trit, mexal): <input type="text" name="search" /> <button type="submit">Search</button>
+
+
 </div>
 </form>
 </div>

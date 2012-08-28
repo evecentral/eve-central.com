@@ -6,7 +6,7 @@ $typename - Market Browser
 #end def
 
 
-#def MarketList($list, $color, $igbcolor)
+#def MarketList($list, $color)
 <table width="95%">
 
 <tr>
@@ -14,22 +14,22 @@ $typename - Market Browser
 
 
 #if $sortorder == 'regionname':
-bgcolor="#DDDDDD"
+class="quicklookSorted"
 #end if
 >Region <a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=0"><img src="/images/up.gif"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=regionname&amp;setdir=1"><img src="/images/down.gif"></a> </th>
 
 <th
 #if $sortorder == 'stationname':
-bgcolor="#DDDDDD"
+class="quicklookSorted"
+
 #end if
-
-
 
 >System - Station <a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=0"><img src="/images/up.gif"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=stationname&amp;setdir=1"><img src="/images/down.gif"></a>  </th>
 
 <th
 #if $sortorder == 'price':
-bgcolor="#DDDDDD"
+class="quicklookSorted"
+
 #end if
 
 
@@ -37,45 +37,28 @@ bgcolor="#DDDDDD"
 
 <th
 #if $sortorder == 'volremain':
-bgcolor="#DDDDDD"
+class="quicklookSorted"
+
 #end if
 
 
 >Qty<a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=0"><img src="/images/up.gif"></a><a href="quicklook.html?typeid=$typeid&amp;setorder=volremain&amp;setdir=1"><img src="/images/down.gif"></a> </th>
 
-<th
-
->Expires</th><th
-
-
->Reported Time</th>
+<th>Expires</th><th>Reported Time</th>
 </tr>
 
 
 #set $altB = False
-
 #for $order in $list
 #if $altB
-
-#if $isigb
-<tr bgcolor="$igbcolor">
-#else
-<tr bgcolor="$color">
-#end if
+<tr class="$color">
 #set $altB = False
-
 #else
-
 #set $altB = True
-
-
-#if $isigb
 <tr>
-#else
-<tr bgcolor="#FFFFFF">
 #end if
 
-#end if
+
  <td>$order['regionname']</td>
  <td>
 <a href="quicklook.html?typeid=$typeid&amp;usesystem=$order['systemid']" class="sslimit">[-]</a> 
@@ -120,6 +103,7 @@ bgcolor="#DDDDDD"
 #def body
 
 
+<div class="quicklookHeader">
 <form method="get" action="quicklook.html">
 <div>
 Item: <a href="#" onclick="CCPEVE.showMarketDetails($typeid)"><b>$typename</b></a> (size: $typesize m<sup>3</sup>),
@@ -141,34 +125,34 @@ Viewing data up to <input type="text" value="$hours" name="sethours" size="5" />
 <button type="submit">Refresh</button>
 
 </form>
-
+</div>
 
 <table width="100%">
 <tr>
 <td>
-<b>Quick Selling Statistics</b><br>
-<b>Median selling price in view:</b> $avg_price ISK
+Quick Selling Statistics<br>
+Median selling price in view: $avg_price ISK
 <br>
-<b>Volume for sale now:</b> $total_vol units
+Volume for sale now: $total_vol units
 
 </td>
 <td>
-<b>Quick Buying Statistics</b><br>
-<b>Median buying price in view:</b> $b_avg_price ISK
+Quick Buying Statistics<br>
+Median buying price in view: $b_avg_price ISK
 <br />
-<b>Volume buying now:</b> $b_total_vol units
+Volume buying now: $b_total_vol units
 
 </td></tr></table>
 <div class="adLink">
-<b>EVETIMECODE buy 14 etc get 1 free <a href="http://evetimecode.com">EVETIMECODE.com</a> - Where your business counts!</b>
+EVETIMECODE buy 14 etc get 1 free <a href="http://evetimecode.com">EVETIMECODE.com</a> - Where your business counts!
 </div>
 <div class="adLink">
-<b><a href="http://www.shatteredcrystal.com/code.php/eve_online/~325">EVE Online Game Time Codes</a></b> - Support EVE-Central by purchasing them at ShatteredCrystal.com through this affiliate link.</div>
+<a href="http://www.shatteredcrystal.com/code.php/eve_online/~325">EVE Online Game Time Codes</a> - Support EVE-Central by purchasing them at ShatteredCrystal.com through this affiliate link.</div>
 
 <div id="sell_orders">
 <a name="sells"></a>
 <h3>Sell Orders (<a href="#buys">Buy Orders</a>)</h3>
-$MarketList($sells, "#DDDDEE", "#444477")
+$MarketList($sells, "highlightSell")
 </div>
 
 <script type="text/javascript"><!--
@@ -195,7 +179,7 @@ google_color_url = "008000";
 
 <h3>Buy Orders</h3>
 
-$MarketList($buys, "#EEEEDD", "#666644")
+$MarketList($buys, "highlightBuy")
 
 </div>
 #end def
