@@ -363,3 +363,41 @@ td {
 img {
     border: 0px;
 }
+
+
+#statsHolder {
+    background-color: #222;
+    color: #eee;
+    padding: 10px;
+}
+
+#statsHolder .noticeText {
+    padding: 10px 0px 0px 0px;
+    font-size: 80%;
+    font-family: "freight-sans-pro";
+    -webkit-transform:rotate(270deg);
+    -moz-transform:rotate(270deg);
+    -o-transform: rotate(270deg);
+    -moz-transform-origin: 50% 50%;
+    -webkit-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    display: inline-block;
+
+}
+
+#statsHolder .explain {
+    font-size: 70%;
+    font-weight: 300;
+
+}
+
+#statsHolder .price {
+
+    font-size: 170%;
+    font-weight: 600;
+}
+
+#statsHolder .volume {
+    font-size: 90%;
+}
+

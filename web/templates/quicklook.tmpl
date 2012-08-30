@@ -126,25 +126,35 @@ Viewing data up to <input type="text" value="$hours" name="sethours" size="5" />
 
 </form>
 </div>
-<script>
-\$(function() { ec.quicklook(); }());
+<div id="statsHolder">Getting delicious statistics...</div>
+
+<script id="statsTemplate" type="text/x-handlebars-template">
+
+<span class="noticeText">SELLING</span> 
+{{#with sell}} 
+<span class="price">{{formatPrice fivePercent}}</span> <span class="explain">5%</span> / <span class="price">{{formatPrice wavg}}</span> <span class="explain">wavg</span> <span class="volume">({{formatPrice volume}} units)</span>
+{{/with}}
+
+<span class="noticeText">BUYING</span> 
+{{#with buy}} 
+<span class="price">{{formatPrice fivePercent}}</span> / <span class="price">{{formatPrice wavg}}</span> <span class="volume">({{formatPrice volume}} units)</span>
+{{/with}}
+
+
 </script>
-<table width="100%">
-<tr>
-<td>
-Quick Selling Statistics<br>
-Median selling price in view: $avg_price ISK
-<br>
-Volume for sale now: $total_vol units
 
-</td>
-<td>
-Quick Buying Statistics<br>
-Median buying price in view: $b_avg_price ISK
-<br />
-Volume buying now: $b_total_vol units
+<script type="application/javascript">
 
-</td></tr></table>
+\$(function() { 
+var _regionlist = new Array();
+#for $region in $regionlimit
+_regionlist.push($region);
+#end for
+ec.quicklook(_regionlist); }());
+</script>
+
+
+
 <div class="adLink">
 EVETIMECODE buy 14 etc get 1 free <a href="http://evetimecode.com">EVETIMECODE.com</a> - Where your business counts!
 </div>

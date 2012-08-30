@@ -204,18 +204,6 @@ class Home:
 
         # statistics for selling
 
-
-        (sell, buy) = stats.item_stat(db, typeid, hours, sql_system, regionlimit = regionlimit, minQ = minQ)
-
-        t.b_avg_price = format_price(buy['median'])
-        t.b_total_vol = format_long(buy['total_vol'])
-        t.b_total_movement = format_long(buy['total_movement'])
-
-        t.avg_price = format_price(sell['median'])
-        t.total_vol = format_long(sell['total_vol'])
-        t.total_movement = format_long(sell['total_movement'])
-
-
         # do query here
 
         cur_buy = db.cursor()
