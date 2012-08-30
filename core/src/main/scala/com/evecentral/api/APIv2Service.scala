@@ -197,8 +197,10 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 					val regionLimitListStrings = paramsFromQuery("regionlimit", params)
 					val regionLimit = if (regionLimitListStrings.size > 1) {
 						regionLimitListStrings.map(_.toLong).distinct
-					} else {
+					} else if (regionLimitListStrings.size == 1) {
 						regionLimitListStrings(0).split(",").toList.filter(_.size > 0).map(_.toLong).distinct // Come up with a list of regionlimits comma seperated
+					} else {
+						Seq[Long]()
 					}
 					val usesystem = singleParam("usesystem", params)
 					val minq = singleParam("minQ", params)
