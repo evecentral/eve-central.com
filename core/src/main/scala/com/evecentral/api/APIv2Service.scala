@@ -174,7 +174,7 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 	private val log = LoggerFactory.getLogger(getClass)
 	val liftJsonFormats = DefaultFormats
 
-
+	/* This is for the Akka 1.3 pool of actors */
 
 	def instance = { actorOf(new Actor {
 		def receive = {
@@ -198,11 +198,11 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 					val usesystem = singleParam("usesystem", params)
 					val minq = singleParam("minQ", params)
 
-					val result = marketStatQuery(typeid, setHours, regionLimit, usesystem, minq)
 					if (dtype == "json")
-						ctx.complete(toJson(result))
-					else
-						ctx.complete(result)
+						ctx.complete(wrapAsJson())
+					else {
+						ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
+					}
 
 
 				} catch {
@@ -221,47 +221,22 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 			</mineral>
 		}
 
-		def subGroupXml(alls: OrderStatistics) : NodeSeq = {
-			<volume>{alls.volume}</volume>
-				<avg>{priceString(alls.wavg)}</avg>
-				<max>{priceString(alls.max)}</max>
-				<min>{priceString(alls.min)}</min>
-				<stddev>{priceString(alls.stdDev)}</stddev>
-				<median>{priceString(alls.median)}</median>
-				<percentile>{priceString(alls.fivePercent)}</percentile>
-		}
+		/* Produce an XML document of all statistics */
+		def typeXml(r: (OrderStatistics, OrderStatistics, OrderStatistics), typeid: Long) : NodeSeq = {
 
-		def fetchOrdersFor(buyq: GetOrdersFor) : Seq[MarketOrder] = {
-			val buyf = (ordersActor ? buyq)
-			(buyf.as[OrderList] getOrElse OrderList(null, List[MarketOrder]())).result
-		}
-
-		def fetchCachedStats(query: GetOrdersFor, highToLow: Boolean) : Option[OrderStatistics] = {
-			val r = (statCache ? GetCacheFor(query, highToLow))
-			r.as[Option[OrderStatistics]] getOrElse  None
-		}
-
-		def storeCachedStats(stats: OrderStatistics, query: GetOrdersFor) : OrderStatistics = {
-			val cached = OrderStatistics.cached(query, stats)
-			(statCache! RegisterCacheFor(cached))
-			cached
-		}
-
-		def typeXml(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]) : NodeSeq = {
-
-			val numminq = minq getOrElse QueryDefaults.minQ(typeid)
-			val usesys = usesystem match {
-				case None => Nil
-				case Some(x) => List[Long](x)
+			def subGroupXml(alls: OrderStatistics) : NodeSeq = {
+				<volume>{alls.volume}</volume>
+					<avg>{priceString(alls.wavg)}</avg>
+					<max>{priceString(alls.max)}</max>
+					<min>{priceString(alls.min)}</min>
+					<stddev>{priceString(alls.stdDev)}</stddev>
+					<median>{priceString(alls.median)}</median>
+					<percentile>{priceString(alls.fivePercent)}</percentile>
 			}
 
-			val allq = GetOrdersFor(None, List(typeid), regionLimit, usesys, setHours, numminq)
-			val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
-			val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
-
-			val alls = fetchCachedStats(allq, false) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
-			val sels = fetchCachedStats(selq, false) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
-			val buys = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
+			val buys: OrderStatistics = r._1
+			val alls: OrderStatistics = r._2
+			val sels: OrderStatistics = r._3
 
 			<type id={typeid.toString}>
 				<buy>
@@ -276,13 +251,15 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 			</type>
 		}
 
-		def marketStatQuery(types: Seq[Long], hours: Long, regionLimit: Seq[Long], usesystem: Option[Long],  minq: Option[Long]) : NodeSeq = {
-			<evec_api version="2.0" method="marketstat_xml">
-				<marketstat>
-					{types.map(t => typeXml(t, hours, regionLimit, usesystem, minq))}
-				</marketstat>
-			</evec_api>
-		}
+
+		def wrapAsXml(nodes: Seq[NodeSeq]) = <evec_api version="2.0" method="marketstat_xml">
+			<marketstat>
+				{nodes}
+			</marketstat>
+		</evec_api>
+
+		def wrapAsJson() : String = ""
+
 	})}
 
 }
@@ -348,9 +325,9 @@ trait APIv2Service extends Directives {
 						<html>
 							<body>
 								<form method="POST" action="/api/quicklook">
-										<input type="text" name="typeid" value="2003"/>
-										<input type="text" name="regionlimit" value="10000049"/>
-										<input type="submit" value="Go"/>
+									<input type="text" name="typeid" value="2003"/>
+									<input type="text" name="regionlimit" value="10000049"/>
+									<input type="submit" value="Go"/>
 								</form>
 							</body>
 						</html>
