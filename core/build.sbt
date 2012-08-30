@@ -19,7 +19,7 @@ mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>            
 
 name := "eve-central-ng"
 
-version := "3.0.1"
+version := "3.0.2"
 
 scalaVersion := "2.9.1"
 
@@ -32,6 +32,12 @@ resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/
 resolvers += "Akka Repository" at "http://akka.io/repository/"
 
 resolvers += "Spray" at "http://repo.spray.cc/"
+
+resolvers += "Codehale" at "http://repo.codahale.com"
+
+resolvers += "theatr.us" at "http://repo.theatr.us"
+
+libraryDependencies += "com.codahale" %% "jerkson" % "0.5.0"
 
 libraryDependencies += "se.scalablesolutions.akka" % "akka-actor" % "1.3.1"
 
