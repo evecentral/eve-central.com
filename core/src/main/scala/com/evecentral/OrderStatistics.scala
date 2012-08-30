@@ -29,7 +29,7 @@ trait OrderStatistics {
 	def highToLow : Boolean
 }
 
-class CachedOrderStatistics(val forQuery: GetOrdersFor, private[this] var from: OrderStatistics) extends OrderStatistics {
+case class CachedOrderStatistics(forQuery: GetOrdersFor, private[this] var from: OrderStatistics) extends OrderStatistics {
 	private val _volume = from.volume
 	private val _wavg = from.wavg
 	private val _avg = from.avg
