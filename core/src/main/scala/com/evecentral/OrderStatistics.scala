@@ -29,30 +29,9 @@ trait OrderStatistics {
 	def highToLow : Boolean
 }
 
-case class CachedOrderStatistics(forQuery: GetOrdersFor, private[this] var from: OrderStatistics) extends OrderStatistics {
-	private val _volume = from.volume
-	private val _wavg = from.wavg
-	private val _avg = from.avg
-	private val _variance = from.variance
-	private val _stdDev = from.stdDev
-	private val _median = from.median
-	private val _fivePercent = from.fivePercent
-	private val _max = from.max
-	private val _min = from.min
-	private val _highToLow = from.highToLow
-
-	override def volume = _volume
-	override def wavg = _wavg
-	override def avg = _avg
-	override def variance = _variance
-	override def stdDev = _stdDev
-	override def median = _median
-	override def fivePercent = _fivePercent
-	override def max = _max
-	override def min = _min
-	override def highToLow = _highToLow
-
-}
+case class CachedOrderStatistics(forQuery: GetOrdersFor, volume : Long, wavg : Double, avg : Double, variance : Double,
+                                 stdDev : Double, median : Double, fivePercent : Double, max : Double, min : Double,
+                                 highToLow : Boolean) extends OrderStatistics
 
 private class LazyOrderStatistics(over: Seq[MarketOrder], val highToLow: Boolean = false) extends OrderStatistics {
 	override lazy val volume = OrderStatistics.volume(over)
@@ -73,7 +52,6 @@ object OrderStatistics {
 
 	import MarketOrder._
 
-
 	def apply(over: Seq[MarketOrder], highToLow: Boolean = false) : OrderStatistics = {
 		if (over.length < 10)
 			new LazyOrderStatistics(over, highToLow)
@@ -87,7 +65,8 @@ object OrderStatistics {
 	}
 
 	def cached(query: GetOrdersFor, data: OrderStatistics) : CachedOrderStatistics = {
-		new CachedOrderStatistics(query, data)
+		CachedOrderStatistics(query, data.volume, data.wavg, data.avg, data.variance, data.stdDev, data.median,
+			data.fivePercent, data.max, data.min, data.highToLow)
 	}
 
 	def max(over: Seq[MarketOrder]) : Double = {
