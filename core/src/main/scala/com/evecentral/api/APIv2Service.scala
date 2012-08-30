@@ -8,8 +8,8 @@ import cc.spray.typeconversion.LiftJsonSupport
 import org.slf4j.LoggerFactory
 import org.joda.time.DateTime
 
+import com.codahale.jerkson.Json._
 import net.liftweb.json._
-import net.liftweb.json.Xml.{toJson, toXml}
 
 import akka.actor.Actor
 import Actor.actorOf
@@ -198,9 +198,9 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 					val usesystem = singleParam("usesystem", params)
 					val minq = singleParam("minQ", params)
 
-					if (dtype == "json")
-						ctx.complete(wrapAsJson())
-					else {
+					if (dtype == "json") {
+						ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+					} else {
 						ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
 					}
 
@@ -258,7 +258,9 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 			</marketstat>
 		</evec_api>
 
-		def wrapAsJson() : String = ""
+		case class BuyAllSell(buy: OrderStatistics, all: OrderStatistics, sell: OrderStatistics)
+
+		def wrapAsJson(types: Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]) : String = generate(types.map(u => BuyAllSell(u._1, u._2, u._3)))
 
 	})}
 
@@ -317,22 +319,6 @@ trait APIv2Service extends Directives {
 						olduploadActor ! OldUploadPayload(_, typename, userid, data, typeid, region)
 				}
 
-			}
-		} ~ path("api/goofy") {
-			get {
-				respondWithContentType(`text/html`) {
-					completeWith {
-						<html>
-							<body>
-								<form method="POST" action="/api/quicklook">
-									<input type="text" name="typeid" value="2003"/>
-									<input type="text" name="regionlimit" value="10000049"/>
-									<input type="submit" value="Go"/>
-								</form>
-							</body>
-						</html>
-					}
-				}
 			}
 		}
 	}
