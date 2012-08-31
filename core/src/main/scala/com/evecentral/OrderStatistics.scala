@@ -57,7 +57,12 @@ object OrderStatistics {
 			new LazyOrderStatistics(over, highToLow)
 		else {
 			val l = new LazyOrderStatistics(over, highToLow)
-			new LazyOrderStatistics(over.filter(order => order.price > (l.wavg/3) && order.price < (l.wavg*3)), highToLow)
+			if (highToLow) {
+				new LazyOrderStatistics(over.filter(order => order.price > (l.wavg/3)), highToLow)
+			} else {
+				new LazyOrderStatistics(over.filter(order => order.price < (l.wavg*3)), highToLow)
+
+			}
 		}
 
 
