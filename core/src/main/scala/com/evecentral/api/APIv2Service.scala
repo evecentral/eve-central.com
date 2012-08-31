@@ -187,21 +187,26 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 				</minerals>)
 			case MarketstatQuery(ctx, dtype) =>
 				try {
+
+					def paramUnpack(strings: Seq[String]) : Seq[Long] = {
+						if (strings.size > 1) {
+							strings.map(_.toLong).distinct
+						} else if (strings.size == 1) {
+							strings(0).split(",").toList.filter(_.size > 0).map(_.toLong).distinct // Come up with a list of regionlimits comma seperated
+						} else {
+							Seq[Long]()
+						}
+					}
+
 					val params = listFromContext(ctx)
-					val typeid = paramsFromQuery("typeid", params).map(_.toLong).distinct
+					val typeid = paramUnpack(paramsFromQuery("typeid", params))
 
 					val setHours = singleParam("hours", params) match {
 						case Some(x) => x
 						case None => 24
 					}
-					val regionLimitListStrings = paramsFromQuery("regionlimit", params)
-					val regionLimit = if (regionLimitListStrings.size > 1) {
-						regionLimitListStrings.map(_.toLong).distinct
-					} else if (regionLimitListStrings.size == 1) {
-						regionLimitListStrings(0).split(",").toList.filter(_.size > 0).map(_.toLong).distinct // Come up with a list of regionlimits comma seperated
-					} else {
-						Seq[Long]()
-					}
+
+					val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
 					val usesystem = singleParam("usesystem", params)
 					val minq = singleParam("minQ", params)
 
