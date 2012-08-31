@@ -13,11 +13,12 @@ var urlParams = {};
 
 (function() {
     
+
     Handlebars.registerHelper("formatPrice", function(price) {
 	price = parseFloat(price.toString()); // make sure we have a string
 
 	if (price < 100000) { // 100k
-	    return new Handlebars.SafeString(price.toFixed(2));
+	    return new Handlebars.SafeString(price.toFixed(2).replace(/(^\d{1,3}|\d{3})(?=(?:\d{3})+(?:$|\.))/g, '$1,'));
 	} else if (price < 1000000000) { // 1b
 	    price = price / 1000000;
 	    return new Handlebars.SafeString(price.toFixed(2) + " M");
@@ -31,7 +32,16 @@ var urlParams = {};
 
 (function(ec) {
 
-    
+    ec.types = {
+	34 : "Tritanium",
+	35 : "Pyerite",
+	36 : "Mexallon",
+	37 : "Isogen",
+	38 : "Nocxium",
+	39 : "Zydrine",
+	40 : "Megacyte"
+    };
+
 
     ec.statsModel = Backbone.Model.extend({
 	url:'/api/marketstat/json'
@@ -44,9 +54,37 @@ var urlParams = {};
 	render: function (event) { 
 	    var source   = $("#statsTemplate").html();
 	    var template = Handlebars.compile(source);
-	    $("#statsHolder").empty().append(template(this.model.toJSON()[0]));
+	    this.$el.html(template(this.model.toJSON()[0]));
+	    return this;
 	}
     });
+
+    ec.statsScrollView = Backbone.View.extend({
+	initialize: function() {            this.model.bind("change", this.render, this); },
+	render: function(event) {
+	    var template = Handlebars.compile($("#statsTemplate").html());
+	    var data = this.model.toJSON();
+
+	    this.$el.empty();
+	    var model = this;
+	    $.each(data, function() {
+		model.$el.append(template({ typeid : this.sell.forQuery.types[0], typename : ec.types[this.sell.forQuery.types[0]], values: this }));
+	    });
+
+	    return this;
+	}
+    });
+
+    ec.indexpage = function() {
+	var stats = new ec.statsModel();
+	var statsView = new ec.statsScrollView( { model : stats, el : $("#statsHolder")});
+	var data = {"typeid" : "34,35,36,37,38,39,40", "usesystem" : "30000142"};
+	stats.fetch({data: data});
+	window.setInterval(function() {
+	    stats.fetch({data: data});
+	}, 60000);
+	
+    };
 
     ec.quicklook = function (regionlist) {
 	var stats = new ec.statsModel();
@@ -56,8 +94,10 @@ var urlParams = {};
 	    regionstr = regionstr + this.toString() + ",";
 	});
 	urlParams["regionlimit"] = regionstr;
+
+	this.statsView = new ec.statsView({ model: stats, el: $("#statsHolder") } );
 	stats.fetch({data:urlParams});
-	this.statsView = new ec.statsView({ model: stats } );
+
 	window.setInterval(function() {
 	    stats.fetch({data: urlParams});
 	}, 60000);

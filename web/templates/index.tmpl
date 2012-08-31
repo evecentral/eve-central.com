@@ -29,6 +29,45 @@ Suggestions: <a href="http://eve-central.com/home/quicklook.html?typeid=34">Trit
 </span>
 
 </form>
+<br>
+<div class="stat-bar">
+  <span class="priceSm">Jita Snapshot</span>
+</div>
+<div id="statsHolder" class="stat-bar">Reticulating splines...</div>
+
+<script id="statsTemplate" type="text/x-handlebars-template">
+  <div class="sepdiv">
+    <a href="/home/quicklook.html?typeid={{typeid}}">
+    <span class="typename">{{typename}}</span>
+    {{#with values}}
+
+    <span class="partialWidth">
+    <span class="noticeText">SELLING</span> 
+    {{#with sell}} 
+    <span class="price">{{formatPrice fivePercent}}</span> <span class="explain">5%</span> / <span class="priceSm">{{formatPrice median}}</span> <span class="explain">median</span> <span class="volume">({{formatPrice volume}} units)</span>
+    {{/with}}
+    </span>
+    <span class="partialWidth">
+    <span class="noticeText">BUYING</span> 
+    {{#with buy}} 
+    <span class="price">{{formatPrice fivePercent}}</span> <span class="explain">5%</span> / <span class="priceSm">{{formatPrice median}}</span> <span class="explain">median</span> <span class="volume">({{formatPrice volume}} units)</span>
+    </span>
+    
+    {{/with}}
+    {{/with}}
+    </a>
+  </div>
+</script>
+<script id="statsDropdown" type="text/x-handlebars-template">
+  
+</script>
+<script type="application/javascript">
+
+\$(function() { 
+ec.indexpage(); 
+}());
+</script>
+
 
 <h3>Contribute!</h3>
 <p>All of our data comes from user contributions! You can either contribute using <a href="http://evemon.battleclinic.com">EVE Mon</a> or <a href="http://eve-central.com/home/software.html">download the Contribtastic software</a>.

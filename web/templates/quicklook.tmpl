@@ -126,23 +126,24 @@ Viewing data up to <input type="text" value="$hours" name="sethours" size="5" />
 
 </form>
 </div>
-<div id="statsHolder">Getting delicious statistics...</div>
-
+<div id="statsHolder" class="stat-bar">Getting delicious statistics...</div>
+<div id="statsDropdown"></div>
 <script id="statsTemplate" type="text/x-handlebars-template">
-
-<span class="noticeText">SELLING</span> 
-{{#with sell}} 
-<span class="price">{{formatPrice fivePercent}}</span> <span class="explain">5%</span> / <span class="price">{{formatPrice wavg}}</span> <span class="explain">wavg</span> <span class="volume">({{formatPrice volume}} units)</span>
-{{/with}}
-
-<span class="noticeText">BUYING</span> 
-{{#with buy}} 
-<span class="price">{{formatPrice fivePercent}}</span> / <span class="price">{{formatPrice wavg}}</span> <span class="volume">({{formatPrice volume}} units)</span>
-{{/with}}
-
-
+  <span class="noticeText">SELLING</span> 
+  {{#with sell}} 
+  <span class="price">{{formatPrice fivePercent}}</span> <span class="explain">5%</span> / <span class="priceSm">{{formatPrice wavg}}</span> <span class="explain">wavg</span> / <span class="priceSm">{{formatPrice median}}</span> <span class="explain">median</span> <span class="volume">({{formatPrice volume}} units)</span>
+  {{/with}}
+  
+  <span class="noticeText">BUYING</span> 
+  {{#with buy}} 
+  <span class="price">{{formatPrice fivePercent}}</span> <span class="explain">5%</span> / <span class="priceSm">{{formatPrice wavg}}</span> <span class="explain">wavg</span> / <span class="priceSm">{{formatPrice median}}</span> <span class="explain">median</span> <span class="volume">({{formatPrice volume}} units)</span>
+  
+  
+  {{/with}}
 </script>
-
+<script id="statsDropdown" type="text/x-handlebars-template">
+  
+</script>
 <script type="application/javascript">
 
 \$(function() { 

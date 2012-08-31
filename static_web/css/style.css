@@ -156,7 +156,6 @@ a {
 .topbar form button {
     border: 0px;
     border-radius: 4px;
-    behavior: url(http://cdn.eve-central.com/PIE.htc);
     background-color: #cec;
 }
 
@@ -195,7 +194,7 @@ a {
 #bodyText form {
     background-color: #ddd;
     padding: 1ex;
-    margin-left: 2ex;
+    /*margin-left: 2ex;*/
     line-height: 5ex;
     text-align: top;
 }
@@ -242,7 +241,6 @@ a {
 
 #bodyText form a, #bodyText form a:visited {
     border-radius: 5px;
-    behavior: url(http://cdn.eve-central.com/PIE.htc);
     background-color: #cce;
     padding: 1ex;
 
@@ -252,7 +250,6 @@ a {
 
 #bodyText form button {
     border-radius: 5px;
-    behavior: url(http://cdn.eve-central.com/PIE.htc);
     background-color: #cec;
     padding: 1ex;
     font-size: 100%;
@@ -263,7 +260,6 @@ a {
 #bodyText form input[type="text"] {
     font-size: 100%;
     border-radius: 3px;
-    behavior: url(http://cdn.eve-central.com/PIE.htc);
     border: 0px;
     padding: 1ex;
 }
@@ -365,16 +361,19 @@ img {
 }
 
 
-#statsHolder {
+.stat-bar {
     background-color: #222;
     color: #eee;
     padding: 10px;
 }
 
-#statsHolder .noticeText {
+.stat-bar .inner {
+}
+
+.stat-bar .noticeText {
     padding: 10px 0px 0px 0px;
     font-size: 80%;
-    font-family: "freight-sans-pro";
+    font-family: "freight-sans-pro", sans-serif;
     -webkit-transform:rotate(270deg);
     -moz-transform:rotate(270deg);
     -o-transform: rotate(270deg);
@@ -385,19 +384,49 @@ img {
 
 }
 
-#statsHolder .explain {
+.stat-bar .explain {
     font-size: 70%;
     font-weight: 300;
 
 }
 
-#statsHolder .price {
+.stat-bar .price {
 
-    font-size: 170%;
+    font-size: 180%;
     font-weight: 600;
 }
 
-#statsHolder .volume {
+.stat-bar .priceSm {
+    font-size: 150%;
+    font-weight: 600;
+}
+
+.stat-bar .volume {
     font-size: 90%;
 }
 
+.stat-bar .typename {
+    font-size: 100%;
+    font-weight: 300;
+    font-family: "freight-sans-pro", sans-serif;
+    width: 10%;
+    display: inline-block;
+}
+
+.stat-bar a, .stat-bara:visited {
+    color: #eee;
+    text-decoration: none;
+}
+
+
+.stat-bar .sepdiv {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.stat-bar .partialWidth {
+    width: 44%;
+    white-space : nowrap;
+    min-width: 200px;
+    display: inline-block;
+}
