@@ -186,7 +186,11 @@ case class PoisonAllCache()
 
 class OrderCacheActor extends Actor {
 
-	private val cacheLruHash = new org.apache.commons.collections.map.LRUMap(200000)
+	type LLGCF = scala.collection.mutable.HashSet[GetCacheFor]
+	
+	private val typeQueryCache = StaticProvider.typesMap.values.foldLeft(Map[Long, LLGCF]()) { (b,a) => b ++ Map(a.typeid -> new LLGCF()) }
+	
+	private val cacheLruHash = new org.apache.commons.collections.map.LRUMap(400000)
 	private val regionLru = StaticProvider.regionsMap.values.foldLeft(Map[Region, LRUMap]()) { (b,a) =>  b ++ Map[Region, LRUMap](a -> new LRUMap(10000)) }
 	private val log = LoggerFactory.getLogger(getClass)
 
@@ -216,26 +220,27 @@ class OrderCacheActor extends Actor {
 				mi.next()
 			}
 		case RegisterCacheFor(cached) =>
-			cacheLruHash.put(GetCacheFor(cached.forQuery, cached.highToLow), cached)
+			val gcf = GetCacheFor(cached.forQuery, cached.highToLow)
+			cacheLruHash.put(gcf, cached)
+			cached.forQuery.types.foreach(typeQueryCache(_) += gcf)
 			if (!cached.forQuery.systems.nonEmpty) // Only store when systems are empty
 				cached.forQuery.regions.foreach {
 					regionid =>
-						regionLru(StaticProvider.regionsMap(regionid)).put(GetCacheFor(cached.forQuery, cached.highToLow), cached) // Register per regions
+						regionLru(StaticProvider.regionsMap(regionid)).put(gcf, cached) // Register per regions
 				}
 
 		case PoisonAllCache =>
 			log.info("Poisoning all cache entries")
 			cacheLruHash.clear()
-		case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
-			// @TODO: Make this non-linear-time
-			val ks = cacheLruHash.keySet
-			import scalaj.collection.Imports._
-			val ls = ks.asScala
+			typeQueryCache.foreach(_._2.clear)
+			regionLru.foreach(_._2.clear)
+			
+		case PoisonCache(region, mtype) => // Poisoning of the cache for regions and types
+			val ls = typeQueryCache(mtype.typeid)
 			
 			val lsf = ls.filter({
 					case of : GetCacheFor =>
-						if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
-							of.query.types.contains(mtype.typeid))
+						if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty))
 						{ log.info("Removing from cache " + of); true }
 						else
 							false
@@ -245,6 +250,7 @@ class OrderCacheActor extends Actor {
 				
 			lsf.foreach { 
 				case gcf : GetCacheFor =>
+					ls.remove(gcf)
 					cacheLruHash.remove(gcf)
 					gcf.query.regions.foreach { regionid => regionLru(StaticProvider.regionsMap(regionid)).remove(gcf) } // Remove per region LRU cache
 			}

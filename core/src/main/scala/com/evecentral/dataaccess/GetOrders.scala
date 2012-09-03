@@ -20,6 +20,10 @@ object MarketOrder {
   implicit def pimpMoToDouble(m: MarketOrder) : Double = { m.price }
 }
 
+/**
+ * Get a list of orders.
+ * @TODO: the Long parameters really should be a MarketType, Region etc
+ */
 case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24, minq: Long = 1)
 
 case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
