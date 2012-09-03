@@ -1,7 +1,6 @@
-import AssemblyKeys._ // put this at the top of the file                                                                                                                                                                                            
-import com.mojolly.scalate.ScalatePlugin._
+import AssemblyKeys._ // put this at the top of the file                                                                                                                                                                                 
 
-assemblySettings                                                                                                                                                                                                                                   
+assemblySettings
 
 mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>                                                                                                                                                                                 {                                                                                                                                                                                                                                                 
     case "META-INF/NOTICE.txt" => MergeStrategy.discard                                                                                                                                                                                             
@@ -82,11 +81,6 @@ libraryDependencies += "org.zeromq" %% "zeromq-scala-binding" % "0.0.5"
 libraryDependencies += "com.jcraft" % "jzlib" % "1.1.1"
 
 libraryDependencies += "commons-collections" % "commons-collections" % "3.2.1"
-
-
-seq(scalateSettings:_*)
-
-scalateTemplateDirectory in Compile <<= (baseDirectory) { _ / "src/main/resources/com" }
 
 
 
