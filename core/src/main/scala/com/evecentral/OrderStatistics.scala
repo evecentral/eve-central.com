@@ -11,9 +11,6 @@ import org.slf4j.LoggerFactory
 
 import org.apache.commons.collections.map.LRUMap
 
-import scala.Some
-
-
 trait OrderStatistics {
 	def volume : Long
 	def wavg : Double
@@ -232,9 +229,10 @@ class OrderCacheActor extends Actor {
 		case PoisonCache(region, mtype) => // Slow poisoning of the cache for regions and types
 			// @TODO: Make this non-linear-time
 			val ks = cacheLruHash.keySet
-			val ls = ks.toArray.toList
-			ls.filter({ of =>
-				of match {
+			import scalaj.collection.Imports._
+			val ls = ks.asScala
+			
+			val lsf = ls.filter({
 					case of : GetCacheFor =>
 						if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty) &&
 							of.query.types.contains(mtype.typeid))
@@ -243,13 +241,13 @@ class OrderCacheActor extends Actor {
 							false
 					case _ =>
 						false
-				}}
-			).foreach { t =>
-				t match {
+				})
+				
+			lsf.foreach { 
 				case gcf : GetCacheFor =>
 					cacheLruHash.remove(gcf)
 					gcf.query.regions.foreach { regionid => regionLru(StaticProvider.regionsMap(regionid)).remove(gcf) } // Remove per region LRU cache
-				}
 			}
+			
 	}
 }
