@@ -1,3 +1,5 @@
+EVEC = {};
+
 var urlParams = {};
 (function () {
     var match,
@@ -39,7 +41,8 @@ var urlParams = {};
 	37 : "Isogen",
 	38 : "Nocxium",
 	39 : "Zydrine",
-	40 : "Megacyte"
+	40 : "Megacyte",
+	29668 : "PLEX"
     };
 
 
@@ -78,7 +81,7 @@ var urlParams = {};
     ec.indexpage = function() {
 	var stats = new ec.statsModel();
 	var statsView = new ec.statsScrollView( { model : stats, el : $("#statsHolder")});
-	var data = {"typeid" : "34,35,36,37,38,39,40", "usesystem" : "30000142"};
+	var data = {"typeid" : "34,35,36,37,38,39,40,29668", "usesystem" : "30000142"};
 	stats.fetch({data: data});
 	window.setInterval(function() {
 	    stats.fetch({data: data});
