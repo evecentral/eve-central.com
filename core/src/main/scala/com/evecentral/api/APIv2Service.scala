@@ -219,7 +219,7 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 					} else {
 						ctx.fail(StatusCodes.BadRequest)
 					}
-							
+
 				} catch {
 					case t : Throwable => ctx.fail(t)
 				}

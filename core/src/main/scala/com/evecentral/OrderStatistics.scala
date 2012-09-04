@@ -245,13 +245,12 @@ class OrderCacheActor extends Actor {
 			
 			val lsf = ls.filter({
 					case of : GetCacheFor =>
-						if ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty))
-						{ log.info("Removing from cache " + of); true }
-						else
-							false
+						((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty))
 					case _ =>
 						false
 				})
+
+			log.info("Expiring " + lsf.size + " entries from cache")
 				
 			lsf.foreach { 
 				case gcf : GetCacheFor =>
