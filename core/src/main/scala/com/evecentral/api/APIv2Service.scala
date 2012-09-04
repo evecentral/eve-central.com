@@ -26,6 +26,7 @@ import routes.{Jump, RouteBetween}
 import util.BaseOrderQuery
 import dataaccess.OrderList
 import akka.dispatch.Future
+import cc.spray.http.StatusCodes
 
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
@@ -200,23 +201,25 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 
 					val params = listFromContext(ctx)
 					val typeid = paramUnpack(paramsFromQuery("typeid", params))
+					if (typeid.foldLeft(true)((n,t) => n && StaticProvider.typesMap.contains(t))) {
+						val setHours = singleParam("hours", params) match {
+							case Some(x) => x
+							case None => 24
+						}
 
-					val setHours = singleParam("hours", params) match {
-						case Some(x) => x
-						case None => 24
-					}
+						val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
+						val usesystem = singleParam("usesystem", params)
+						val minq = singleParam("minQ", params)
 
-					val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
-					val usesystem = singleParam("usesystem", params)
-					val minq = singleParam("minQ", params)
-
-					if (dtype == "json") {
-						ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+						if (dtype == "json") {
+							ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+						} else {
+							ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
+						}
 					} else {
-						ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
+						ctx.fail(StatusCodes.BadRequest)
 					}
-
-
+							
 				} catch {
 					case t : Throwable => ctx.fail(t)
 				}
