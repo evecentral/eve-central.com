@@ -220,7 +220,7 @@ class OrderCacheActor extends Actor {
 				mi.next()
 			}
 		case RegisterCacheFor(cached) =>
-			val present = cached.forQuery.types.foldLeft(true)((t,n) => typeQueryCache.contains(n))
+			val present = cached.forQuery.types.foldLeft(true)((t,n) => t && typeQueryCache.contains(n))
 			if (present) {
 				val gcf = GetCacheFor(cached.forQuery, cached.highToLow)
 				cacheLruHash.put(gcf, cached)
