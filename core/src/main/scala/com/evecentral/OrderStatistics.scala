@@ -220,14 +220,19 @@ class OrderCacheActor extends Actor {
 				mi.next()
 			}
 		case RegisterCacheFor(cached) =>
-			val gcf = GetCacheFor(cached.forQuery, cached.highToLow)
-			cacheLruHash.put(gcf, cached)
-			cached.forQuery.types.foreach(typeQueryCache(_) += gcf)
-			if (!cached.forQuery.systems.nonEmpty) // Only store when systems are empty
-				cached.forQuery.regions.foreach {
-					regionid =>
-						regionLru(StaticProvider.regionsMap(regionid)).put(gcf, cached) // Register per regions
+			val present = cached.forQuery.types.foldLeft(true)((t,n) => typeQueryCache.contains(n))
+			if (present) {
+				val gcf = GetCacheFor(cached.forQuery, cached.highToLow)
+				cacheLruHash.put(gcf, cached)
+				cached.forQuery.types.foreach(typeQueryCache(_) += gcf)
+				if (!cached.forQuery.systems.nonEmpty) // Only store when systems are empty
+					cached.forQuery.regions.foreach {
+						regionid =>
+							regionLru(StaticProvider.regionsMap(regionid)).put(gcf, cached) // Register per regions
 				}
+			} else {
+				log.warn("Generated statistics for something non-marketable. I'm confused: " + cached.forQuery.types.headOption)
+			}
 
 		case PoisonAllCache =>
 			log.info("Poisoning all cache entries")
