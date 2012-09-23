@@ -152,6 +152,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 		val buyr = ordersActor ? buyq
 		val selr = ordersActor ? selq
 
+		try {
 		<evec_api version="2.0" method="quicklook">
 			<quicklook>
 				<item>{typeid}</item>
@@ -163,6 +164,9 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 				<buy_orders>{showOrders(buyr.as[OrderList])}</buy_orders>
 			</quicklook>
 		</evec_api>
+		} catch {
+		case e: Exception => <evec_api version="2.0" method="quicklook"><error>Type not found</error></evec_api>
+		}
 	}
 
 }
