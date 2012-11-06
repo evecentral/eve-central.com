@@ -1,11 +1,12 @@
 package com.evecentral
 
-import com.evecentral.dataaccess.MarketOrder
+import dataaccess.{StaticProvider, GetOrdersFor, MarketOrder}
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
+import akka.testkit.{TestActorRef, TestKit}
 
-class OrderStatisticsTest extends FunSuite with ShouldMatchers {
+class OrderStatisticsTest extends FunSuite with ShouldMatchers with TestKit {
   
   def makeOrder(price: Double, vol: Int) = {
     MarketOrder(34, 1, price, false, null, null, null, 1, vol, vol, 1, null, null)
@@ -84,4 +85,27 @@ class OrderStatisticsTest extends FunSuite with ShouldMatchers {
     val p = OrderStatistics.cached(null, os)
     p.wavg should be (1.99 plusOrMinus 0.01)
   }
+
+	val ca = TestActorRef(new OrderCacheActor).start()
+
+	test("Cache actor put, expire") {
+		val domain = StaticProvider.regionsByName("Domain")
+		val theforge = StaticProvider.regionsByName("The Forge")
+		val orders = List(makeOrder(1,1), makeOrder(1,1000))
+		val os = OrderStatistics(orders)
+		val gof = GetOrdersFor(Some(false), Seq(34), Seq(domain.regionid), Seq())
+		val cached = OrderStatistics.cached(gof, os)
+		ca ! RegisterCacheFor(cached)
+		ca ! GetCacheFor(gof, false)
+		expectMsg(Some(cached))
+		ca ! PoisonCache(domain, StaticProvider.typesMap(35))
+		ca ! GetCacheFor(gof, false)
+		expectMsg(Some(cached))
+		ca ! PoisonCache(theforge, StaticProvider.typesMap(34))
+		ca ! GetCacheFor(gof, false)
+		expectMsg(Some(cached))
+		ca ! PoisonCache(domain, StaticProvider.typesMap(34))
+		ca ! GetCacheFor(gof, false)
+		expectMsg(None)
+	}
 }

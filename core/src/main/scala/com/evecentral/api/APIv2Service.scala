@@ -26,6 +26,7 @@ import routes.{Jump, RouteBetween}
 import util.BaseOrderQuery
 import dataaccess.OrderList
 import akka.dispatch.Future
+import cc.spray.http.StatusCodes
 
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
@@ -151,6 +152,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 		val buyr = ordersActor ? buyq
 		val selr = ordersActor ? selq
 
+		try {
 		<evec_api version="2.0" method="quicklook">
 			<quicklook>
 				<item>{typeid}</item>
@@ -162,6 +164,9 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 				<buy_orders>{showOrders(buyr.as[OrderList])}</buy_orders>
 			</quicklook>
 		</evec_api>
+		} catch {
+		case e: Exception => <evec_api version="2.0" method="quicklook"><error>Type not found</error></evec_api>
+		}
 	}
 
 }
@@ -200,22 +205,24 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 
 					val params = listFromContext(ctx)
 					val typeid = paramUnpack(paramsFromQuery("typeid", params))
+					if (typeid.foldLeft(true)((n,t) => n && StaticProvider.typesMap.contains(t))) {
+						val setHours = singleParam("hours", params) match {
+							case Some(x) => x
+							case None => 24
+						}
 
-					val setHours = singleParam("hours", params) match {
-						case Some(x) => x
-						case None => 24
-					}
+						val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
+						val usesystem = singleParam("usesystem", params)
+						val minq = singleParam("minQ", params)
 
-					val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
-					val usesystem = singleParam("usesystem", params)
-					val minq = singleParam("minQ", params)
-
-					if (dtype == "json") {
-						ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+						if (dtype == "json") {
+							ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+						} else {
+							ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
+						}
 					} else {
-						ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
+						ctx.fail(StatusCodes.BadRequest)
 					}
-
 
 				} catch {
 					case t : Throwable => ctx.fail(t)

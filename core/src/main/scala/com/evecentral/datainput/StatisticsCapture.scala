@@ -19,7 +19,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
 	override def preStart() {
 		log.info("Pre-starting statistics capture actor")
-		Scheduler.schedule(self, CaptureStatistics, 2, 60, TimeUnit.MINUTES)
+		Scheduler.schedule(self, CaptureStatistics(), 2, 60, TimeUnit.MINUTES)
 	}
 
 	def buildQueries(bid: Boolean, typeid: Int, regionid: Long) : List[GetOrdersFor] = {
@@ -61,10 +61,11 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 		case UploadTriggerEvent(typeid, regionid) =>
 			/* Build queries for orders */
 			log.debug("Generating list of queries to get results for")
-			toCaptureSet ++= (buildQueries(true, typeid, regionid) ++ buildQueries(false, typeid, regionid))
+			if (StaticProvider.typesMap.contains(typeid))
+				toCaptureSet ++= (buildQueries(true, typeid, regionid) ++ buildQueries(false, typeid, regionid))
 		case StoreStatistics(query, result) =>
 			storeStatistics(query, result)
-		case CaptureStatistics =>
+		case CaptureStatistics() =>
 			log.info("Capturing statistics in a large batch")
 			val results = toCaptureSet.toList.map(ordersActor ? _)
 			// Attach an oncomplete to all the actors
