@@ -1,9 +1,3 @@
-#import pylab
-#import matplotlib
-
-#import matplotlib.text
-#import matplotlib.dates
-
 import psycopg2
 import sys
 from mx.DateTime import *
@@ -15,7 +9,6 @@ sys.path.append('../lib/')
 
 from evecentral import display
 
-#import evec_func
 db = psycopg2.connect(database='evec', user='evec', host = '172.20.20.1', port = '5432')
 
 
@@ -108,5 +101,5 @@ pickle.dump(dumps_data, f)
 f.close()
 
 cur = db.cursor()
-cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '1 week'")
+cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '2 days'")
 db.commit()

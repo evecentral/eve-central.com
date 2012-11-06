@@ -800,16 +800,6 @@ class Home:
     upload_suggest_html = upload_suggest
 
     @cherrypy.expose
-    def reports(self):
-        session = EVCstate()
-
-        t = display.template('reports.tmpl', session)
-
-        return t.respond()
-
-    reports_html = reports
-
-    @cherrypy.expose
     def index(self):
         session = EVCstate()
 
