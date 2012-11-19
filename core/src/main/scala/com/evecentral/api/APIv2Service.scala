@@ -26,7 +26,7 @@ import routes.{Jump, RouteBetween}
 import util.BaseOrderQuery
 import dataaccess.OrderList
 import akka.dispatch.Future
-import cc.spray.http.StatusCodes
+import cc.spray.http.{HttpHeader, StatusCodes}
 
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
@@ -301,43 +301,44 @@ trait APIv2Service extends Directives {
 	import LookupHelper._
 
 	val v2Service = {
-		path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
-			(fromr, tor, types) =>
-				val fromid = lookupSystem(fromr)
-				val toid = lookupSystem(tor)
+		respondWithHeader(HttpHeader("Access-Control-Allow-Origin", "*")) {
+			path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
+				(fromr, tor, types) =>
+					val fromid = lookupSystem(fromr)
+					val toid = lookupSystem(tor)
+					(get | post) {
+						ctx =>
+							quicklookActor ! QuickLookPathQuery(ctx, fromid, toid, types)
+					}
+			} ~
+				path("api/quicklook") {
+
+					(get | post) {
+						ctx =>
+							(quicklookActor ! QuickLookSimpleQuery(ctx))
+
+					}
+				} ~ path("api/marketstat" / Remaining) {
+				dtype =>
+					(get | post) {
+						ctx =>
+							if (dtype.size > 0)
+								(marketstatActor ! MarketstatQuery(ctx, dtype))
+							else
+								(marketstatActor ! MarketstatQuery(ctx))
+					}
+			} ~ path("api/evemon") {
 				(get | post) {
 					ctx =>
-						quicklookActor ! QuickLookPathQuery(ctx, fromid, toid, types)
+						(marketstatActor ! EvemonQuery(ctx))
 				}
-		} ~
-			path("api/quicklook") {
-
-				(get | post) {
-					ctx =>
-						(quicklookActor ! QuickLookSimpleQuery(ctx))
-
+			} ~ path("datainput.py/inputdata") {
+				post {
+					formFields("typename"?, "userid"?, "data", "typeid"?, "region"?) {
+						(typename, userid, data, typeid, region) =>
+							olduploadActor ! OldUploadPayload(_, typename, userid, data, typeid, region)
+					}
 				}
-			} ~ path("api/marketstat" / Remaining) {
-			dtype =>
-				(get | post) {
-					ctx =>
-						if (dtype.size > 0)
-							(marketstatActor ! MarketstatQuery(ctx, dtype))
-						else
-							(marketstatActor ! MarketstatQuery(ctx))
-				}
-		} ~ path("api/evemon") {
-			(get | post) {
-				ctx =>
-					(marketstatActor ! EvemonQuery(ctx))
-			}
-		} ~ path("datainput.py/inputdata") {
-			post {
-				formFields("typename"?, "userid"?, "data", "typeid"?, "region"?) {
-					(typename, userid, data, typeid, region) =>
-						olduploadActor ! OldUploadPayload(_, typename, userid, data, typeid, region)
-				}
-
 			}
 		}
 	}
