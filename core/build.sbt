@@ -66,7 +66,7 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.3"
 
 libraryDependencies += "org.fusesource.scalate" % "scalate-core" % "1.5.3"
 
-libraryDependencies += "cc.spray" %% "spray-json" % "1.2.0-SNAPSHOT" % "compile" changing() withSources()
+libraryDependencies += "cc.spray" %% "spray-json" % "1.1.1" 
 
 libraryDependencies += "net.sf.jung" % "jung-algorithms" % "2.0.1"
 
