@@ -1,24 +1,24 @@
-import AssemblyKeys._ // put this at the top of the file                                                                                                                                                                                 
+import AssemblyKeys._ // put this at the top of the file
 
 assemblySettings
 
-mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>                                                                                                                                                                                 {                                                                                                                                                                                                                                                 
-    case "META-INF/NOTICE.txt" => MergeStrategy.discard                                                                                                                                                                                             
-    case "META-INF/LICENSE.txt" => MergeStrategy.discard                                                                                                                                                                                            
-    case "META-INF\\MANIFEST.MF" => MergeStrategy.discard                                                                                                                                                                                           
-    case "META-INF\\NOTICE.txt" => MergeStrategy.discard                                                                                                                                                                                            
-    case "META-INF\\LICENSE.txt" => MergeStrategy.discard                                                                                                                                                                                           
-    case "META-INF/MANIFEST.MF" => MergeStrategy.discard                                                                                                                                                                                            
-    case "META-INF/BCKEY.SF" => MergeStrategy.discard                                                                                                                                                                                               
-    case "META-INF\\BCKEY.SF" => MergeStrategy.discard                                                                                                                                                                                              
-    case x => old(x)                                                                                                                                                                                                                                
-  }                                                                                                                                                                                                                                                 
-}                                                                                                                                                                                                                                                   
-    
+mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>                                                                                                                                                                                 {
+	case "META-INF/NOTICE.txt" => MergeStrategy.discard
+	case "META-INF/LICENSE.txt" => MergeStrategy.discard
+	case "META-INF\\MANIFEST.MF" => MergeStrategy.discard
+	case "META-INF\\NOTICE.txt" => MergeStrategy.discard
+	case "META-INF\\LICENSE.txt" => MergeStrategy.discard
+	case "META-INF/MANIFEST.MF" => MergeStrategy.discard
+	case "META-INF/BCKEY.SF" => MergeStrategy.discard
+	case "META-INF\\BCKEY.SF" => MergeStrategy.discard
+	case x => old(x)
+  }
+}
+
 
 name := "eve-central-ng"
 
-version := "3.0.4"
+version := "3.0.5"
 
 scalaVersion := "2.9.1"
 
@@ -66,7 +66,7 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.3"
 
 libraryDependencies += "org.fusesource.scalate" % "scalate-core" % "1.5.3"
 
-libraryDependencies += "cc.spray" %% "spray-json" % "1.1.1" 
+libraryDependencies += "cc.spray" %% "spray-json" % "1.1.1"
 
 libraryDependencies += "net.sf.jung" % "jung-algorithms" % "2.0.1"
 
