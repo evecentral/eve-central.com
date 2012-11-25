@@ -5,6 +5,7 @@ import akka.util.duration._
 import org.slf4j.LoggerFactory
 import com.evecentral.util.BaseOrderQuery
 import java.util.concurrent.TimeUnit
+import akka.pattern.ask
 
 import com.evecentral.dataaccess.{OrderList, StaticProvider, GetOrdersFor}
 import com.evecentral.{RegisterCacheFor, OrderStatistics, Database}
@@ -70,12 +71,9 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 			log.info("Capturing statistics in a large batch")
 			val results = toCaptureSet.toList.map(ordersActor ? _)
 			// Attach an oncomplete to all the actors
-			results.foreach(_.onComplete({ res =>
-				res.get match {
-					case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
-				}
+			results.map {
+				case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
 			}
-			))
 
 			log.info(results.size + " results to capture")
 			toCaptureSet.clear()

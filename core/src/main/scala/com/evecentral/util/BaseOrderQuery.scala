@@ -59,18 +59,31 @@ trait BaseOrderQuery {
 		val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
 		val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
 
-		val allCache = fetchCachedStats(allq, false)
-		val buyCache = fetchCachedStats(buyq, true)
-		val sellCache = fetchCachedStats(selq, false)
+		val allCache = fetchCachedStats(allq, false).map { value =>
+			value getOrElse {
+				fetchOrdersFor(allq).map { orders =>
+					storeCachedStats(OrderStatistics(orders), allq)
+				}
+			}
+		}.mapTo[OrderStatistics]
 
-		Future.sequence(Seq(, , )).map {
-			case (allr, buyr, selr) =>
-				val alls = allr getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
-				val sels = buyr getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
-				val buys = selr getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
-				(buys, alls, sels)
-		}
+		val buyCache = fetchCachedStats(buyq, true).map { value =>
+			value getOrElse {
+				fetchOrdersFor(buyq).map { orders =>
+					storeCachedStats(OrderStatistics(orders), buyq)
+				}
+			}
+		}.mapTo[OrderStatistics]
 
+		val sellCache = fetchCachedStats(selq, false).map { value =>
+			value getOrElse {
+				fetchOrdersFor(selq).map { orders =>
+					storeCachedStats(OrderStatistics(orders), selq)
+				}
+			}
+		}.mapTo[OrderStatistics]
+
+		(buyCache, allCache, sellCache)
 	}
 
 }
