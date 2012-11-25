@@ -1,17 +1,18 @@
 package com.evecentral
 
-import cc.spray.http._
+import spray.http._
 
 import java.net.URI
 import java.net.URLDecoder
 
 import org.parboiled.scala._
 import org.parboiled.errors.ErrorUtils
-import cc.spray.RequestContext
+import spray.routing.RequestContext
 import java.nio.charset.Charset
-import cc.spray.typeconversion.{SimpleMarshaller, DefaultMarshallers}
+
+//import spray.httpx.typeconversion.{SimpleMarshaller, DefaultMarshallers}
 import xml.NodeSeq
-import cc.spray.http.MediaTypes._
+import spray.http.MediaTypes._
 
 
 trait FixedSprayMarshallers extends DefaultMarshallers {

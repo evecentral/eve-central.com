@@ -1,18 +1,12 @@
 package com.evecentral.api
 
-import cc.spray.http.MediaTypes._
-import cc.spray.directives.{Remaining, IntNumber}
-import cc.spray.{RequestContext, Directives}
-import cc.spray.typeconversion.LiftJsonSupport
+import spray.http.MediaTypes._
+import spray.routing.{RequestContext, Directives}
+import spray.httpx.LiftJsonSupport
 
 import org.slf4j.LoggerFactory
 import org.joda.time.DateTime
-
-import com.codahale.jerkson.Json._
 import net.liftweb.json._
-
-import akka.actor.Actor
-import Actor.actorOf
 
 import scala.xml._
 
@@ -25,8 +19,7 @@ import frontend.DateFormats
 import routes.{Jump, RouteBetween}
 import util.BaseOrderQuery
 import dataaccess.OrderList
-import akka.dispatch.Future
-import cc.spray.http.{HttpHeader, StatusCodes}
+import spray.http.{HttpHeader, StatusCodes}
 
 
 case class QuickLookSimpleQuery(ctx: RequestContext)

@@ -1,15 +1,11 @@
 package com.evecentral.dataaccess
 
-import akka.dispatch.Future
-import akka.routing._
-import akka.actor.Actor
-import akka.event.EventHandler
-import Actor._
-import com.evecentral.{ECActorPool, Database}
+import com.evecentral.{Database}
 import org.joda.time.{DateTime, Period}
 import org.postgresql.util.PGInterval
 import net.noerd.prequel.{StringFormattable}
 import org.slf4j.LoggerFactory
+import akka.actor.Actor
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
                        volremain: Long,  volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {
@@ -28,7 +24,7 @@ case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Lon
 
 case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
-class GetOrdersActor extends ECActorPool {
+class GetOrdersActor extends Actor {
 
 	private val log = LoggerFactory.getLogger(getClass)
 
@@ -83,17 +79,17 @@ class GetOrdersActor extends ECActorPool {
               volremain, volenter, minvol,
               duration,
               new DateTime(row.nextDate.get)
-            );
+            )
         }
     }
   }
 
-  def instance = actorOf(new Actor { def receive = {
-      case x: GetOrdersFor => {
-	      val channel = self.channel
-	      channel ! OrderList(x, orderList(x))
-      }
-  }
-  }
-  )
+	def receive = {
+		case x: GetOrdersFor => {
+			val channel = self.path
+			channel ! OrderList(x, orderList(x))
+		}
+	}
+
+
 }

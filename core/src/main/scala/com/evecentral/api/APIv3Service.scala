@@ -2,21 +2,19 @@ package com.evecentral.api
 
 import net.liftweb.json.Xml.{toJson, toXml}
 
-import cc.spray.http.MediaTypes._
-import akka.actor.{PoisonPill, Actor, Scheduler}
-import Actor.actorOf
-import cc.spray.Directives
+import spray.http.MediaTypes._
+import spray.routing.Directives
 
 import com.evecentral.dataaccess._
 
 import net.liftweb.json._
 import com.evecentral.FixedSprayMarshallers
-import cc.spray.typeconversion.LiftJsonSupport
-import cc.spray.directives.{Remaining, IntNumber}
-import cc.spray.encoding.{Deflate, NoEncoding, Gzip}
+import spray.httpx.LiftJsonSupport
+//import spray.routing.directives.{Remaining, IntNumber}
+import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
 import com.evecentral.datainput.UnifiedUploadParsingActor
 import com.evecentral.routes._
-import cc.spray.http.HttpHeader
+//import spray.httpx.HttpHeader
 
 trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSupport {
 
