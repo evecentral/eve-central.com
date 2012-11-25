@@ -36,7 +36,6 @@ import time
 
 from evecentral.evec_func import EVCstate, SorterDict, format_long, format_price, emit_redirect, get_region_id
 
-from datainput import DataInput
 from tradetool import TradeTool
 from evecentral.suggest import upload_suggest
 
