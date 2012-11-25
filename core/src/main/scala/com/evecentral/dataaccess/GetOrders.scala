@@ -86,8 +86,7 @@ class GetOrdersActor extends Actor {
 
 	def receive = {
 		case x: GetOrdersFor => {
-			val channel = self.path
-			channel ! OrderList(x, orderList(x))
+			sender ! OrderList(x, orderList(x))
 		}
 	}
 

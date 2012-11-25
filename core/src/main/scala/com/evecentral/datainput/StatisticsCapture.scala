@@ -1,6 +1,7 @@
 package com.evecentral.datainput
 
-import akka.actor.{Scheduler, Actor}
+import akka.actor.{Actor, Props}
+import akka.util.duration._
 import org.slf4j.LoggerFactory
 import com.evecentral.util.BaseOrderQuery
 import java.util.concurrent.TimeUnit
@@ -19,7 +20,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
 	override def preStart() {
 		log.info("Pre-starting statistics capture actor")
-		Scheduler.schedule(self, CaptureStatistics(), 2, 60, TimeUnit.MINUTES)
+		context.system.scheduler.schedule(2.minutes, 60.minutes, self, CaptureStatistics())
 	}
 
 	def buildQueries(bid: Boolean, typeid: Int, regionid: Long) : List[GetOrdersFor] = {
