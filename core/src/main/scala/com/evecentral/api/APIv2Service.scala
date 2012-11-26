@@ -6,16 +6,17 @@ import spray.httpx.LiftJsonSupport
 import org.slf4j.LoggerFactory
 import org.joda.time.DateTime
 import net.liftweb.json._
-
+import com.codahale.jerkson.Json._
 import scala.xml._
 import com.evecentral.dataaccess._
 import com.evecentral.ParameterHelper._
 import com.evecentral.frontend.Formatter.priceString
 import com.evecentral._
+import com.evecentral.util.BaseOrderQuery
 import datainput.{OldUploadParsingActor, OldUploadPayload}
 import frontend.DateFormats
 import routes.{Jump, RouteBetween}
-import util.BaseOrderQuery
+
 import dataaccess.OrderList
 import spray.http.StatusCodes
 import spray.http.HttpHeaders.RawHeader
@@ -31,6 +32,7 @@ case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarS
 class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuery {
 
 	import com.evecentral.ParameterHelper._
+	import context.dispatcher
 
 	override implicit val timeout : Timeout = 10.seconds
 
@@ -147,22 +149,26 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 
 		val buyr = ordersActor ? buyq
 		val selr = ordersActor ? selq
-
-		try {
-		<evec_api version="2.0" method="quicklook">
-			<quicklook>
-				<item>{typeid}</item>
-				<itemname>{StaticProvider.typesMap(typeid).name}</itemname>
-				<regions>{regionName(regionLimit)}</regions>
-				<hours>{setHours}</hours>
-				<minqty>{minq}</minqty>
-				<sell_orders>{showOrders(selr.as[OrderList])}</sell_orders>
-				<buy_orders>{showOrders(buyr.as[OrderList])}</buy_orders>
-			</quicklook>
-		</evec_api>
-		} catch {
-		case e: Exception => <evec_api version="2.0" method="quicklook"><error>Type not found</error></evec_api>
+		Future.sequence(Seq(buyr, selr)).map { l =>
+			val buyr = l(0).asInstanceOf[OrderList]
+			val selr = l(1).asInstanceOf[OrderList]
+			try {
+				<evec_api version="2.0" method="quicklook">
+					<quicklook>
+						<item>{typeid}</item>
+						<itemname>{StaticProvider.typesMap(typeid).name}</itemname>
+						<regions>{regionName(regionLimit)}</regions>
+						<hours>{setHours}</hours>
+						<minqty>{minq}</minqty>
+						<sell_orders>{showOrders(Some(selr))}</sell_orders>
+						<buy_orders>{showOrders(Some(buyr))}</buy_orders>
+					</quicklook>
+				</evec_api>
+			} catch {
+				case e: Exception => <evec_api version="2.0" method="quicklook"><error>Type not found</error></evec_api>
+			}
 		}
+
 	}
 
 }
@@ -209,32 +215,32 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 					val minq = singleParam("minQ", params)
 
 					if (dtype == "json") {
-						ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+						ctx.complete(wrapAsJson(Future.sequence(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq)))))
 					} else {
-						ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
+						ctx.complete(wrapAsXml(Future.sequence(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t)))))
 					}
 				} else {
-					ctx.fail(StatusCodes.BadRequest)
+					ctx.complete(StatusCodes.BadRequest)
 				}
 
 			} catch {
-				case t : Throwable => ctx.fail(t)
+				case t : Throwable => ctx.failWith(t)
 			}
 	}
 
 
-	def evemonMineral(mineral: MarketType) : NodeSeq = {
-		val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
-		val s = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
-
+	def evemonMineral(mineral: MarketType) : Future[NodeSeq] = {
+		val q = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
+		getCachedStatistic(q).map { s =>
 		<mineral>
 			<name>{mineral.name}</name>
 			<price>{priceString(s.wavg)}</price>
 		</mineral>
+		}
 	}
 
 	/* Produce an XML document of all statistics */
-	def typeXml(r: (OrderStatistics, OrderStatistics, OrderStatistics), typeid: Long) : NodeSeq = {
+	def typeXml(r: Future[(OrderStatistics, OrderStatistics, OrderStatistics)], typeid: Long) : Future[NodeSeq] = {
 
 		def subGroupXml(alls: OrderStatistics) : NodeSeq = {
 				<volume>{alls.volume}</volume>
@@ -245,7 +251,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 					<median>{priceString(alls.median)}</median>
 					<percentile>{priceString(alls.fivePercent)}</percentile>
 			}
-
+		r.map {	r =>
 			val buys: OrderStatistics = r._1
 			val alls: OrderStatistics = r._2
 			val sels: OrderStatistics = r._3
@@ -262,25 +268,22 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 				</all>
 			</type>
 		}
+	}
 
 
-	def wrapAsXml(nodes: Seq[NodeSeq]) = <evec_api version="2.0" method="marketstat_xml">
+	def wrapAsXml(nodes: Future[Seq[NodeSeq]]) = Future { <evec_api version="2.0" method="marketstat_xml">
 		<marketstat>
 			{nodes}
 		</marketstat>
 	</evec_api>
+	}
 
 	case class BuyAllSell(buy: OrderStatistics, all: OrderStatistics, sell: OrderStatistics)
 
-	def wrapAsJson(types: Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]) : String = generate(types.map(u => BuyAllSell(u._1, u._2, u._3)))
+	def wrapAsJson(types: Future[Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]]) : Future[String] = types.map { types => generate(types.map(u => BuyAllSell(u._1, u._2, u._3))) }
 
 
 }
-///////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////

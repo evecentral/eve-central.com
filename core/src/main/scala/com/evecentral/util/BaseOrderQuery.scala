@@ -40,6 +40,17 @@ trait BaseOrderQuery {
 	def defaultMinQ(minq: Option[Long], typeid: Long) = minq getOrElse QueryDefaults.minQ(typeid)
 
 
+	def getCachedStatistic(query: GetOrdersFor) : Future[OrderStatistics] = {
+		fetchCachedStats(query, query.bid.getOrElse(false)).map { value =>
+			value getOrElse {
+				fetchOrdersFor(query).map { orders =>
+					storeCachedStats(OrderStatistics(orders), query)
+				}
+			}
+		}.mapTo[OrderStatistics]
+	}
+
+
 	/**
 	 * Return a tuple of order statistics for buy/sell/all in the most efficient way possible.
 	 * @param typeid
@@ -50,7 +61,7 @@ trait BaseOrderQuery {
 	 * @return
 	 */
 	def getCachedStatistics(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]):
-	(Future[OrderStatistics], Future[OrderStatistics], Future[OrderStatistics]) = {
+	Future[(OrderStatistics, OrderStatistics, OrderStatistics)] = {
 		val numminq = defaultMinQ(minq, typeid)
 		val usesys = usesystem match {
 			case None => Nil
@@ -61,31 +72,12 @@ trait BaseOrderQuery {
 		val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
 		val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
 
-		val allCache = fetchCachedStats(allq, false).map { value =>
-			value getOrElse {
-				fetchOrdersFor(allq).map { orders =>
-					storeCachedStats(OrderStatistics(orders), allq)
-				}
-			}
-		}.mapTo[OrderStatistics]
-
-		val buyCache = fetchCachedStats(buyq, true).map { value =>
-			value getOrElse {
-				fetchOrdersFor(buyq).map { orders =>
-					storeCachedStats(OrderStatistics(orders), buyq)
-				}
-			}
-		}.mapTo[OrderStatistics]
-
-		val sellCache = fetchCachedStats(selq, false).map { value =>
-			value getOrElse {
-				fetchOrdersFor(selq).map { orders =>
-					storeCachedStats(OrderStatistics(orders), selq)
-				}
-			}
-		}.mapTo[OrderStatistics]
-
-		(buyCache, allCache, sellCache)
+		val allCache = getCachedStatistic(allq)
+		val buyCache = getCachedStatistic(buyq)
+		val sellCache = getCachedStatistic(selq)
+		Future.sequence(Seq(buyCache, allCache, sellCache)).map { s =>
+			(s(0), s(1), s(2))
+		}
 	}
 
 }

@@ -40,7 +40,7 @@ resolvers += "Codehale" at "http://repo.codahale.com"
 
 resolvers += "theatr.us" at "http://repo.theatr.us"
 
-//libraryDependencies += "com.codahale" %% "jerkson" % "0.5.0"
+libraryDependencies += "us.theatr" %% "jerkson" % "0.6.0-SNAPSHOT"
 
 libraryDependencies += "io.spray" % "spray-can"     % "1.0-M5"
 
