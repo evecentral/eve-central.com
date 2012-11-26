@@ -20,15 +20,19 @@ name := "eve-central-ng"
 
 version := "3.1.0"
 
-scalaVersion := "2.9.1"
+scalaVersion := "2.9.2"
+
+scalacOptions += "-Ydependent-method-types"
 
 resolvers += "Twitter" at "http://maven.twttr.com/"
 
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 
+resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
-resolvers +=   "akka repo" at "http://repo.akka.io/releases/"
+resolvers += "akka repo" at "http://repo.akka.io/releases/"
 
 resolvers += "Spray" at "http://repo.spray.io/"
 
@@ -44,7 +48,9 @@ libraryDependencies += "io.spray" % "spray-routing"     % "1.0-M5"
 
 libraryDependencies +="io.spray" % "spray-testkit"     % "1.0-M5"
 
-libraryDependencies += "com.typesafe.akka" % "akka-actor"     % "2.0.3"
+libraryDependencies += "com.typesafe.akka" % "akka-actor"  % "2.0.4"
+
+libraryDependencies += "com.typesafe.akka" % "akka-testkit" % "2.0.4"
 
 libraryDependencies += "net.noerd" %% "prequel" % "0.3.8" changing()
 
@@ -52,7 +58,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "1.8" % "test"
 
 libraryDependencies += "postgresql" % "postgresql" % "9.1-901.jdbc4"
 
-libraryDependencies += "net.liftweb" %% "lift-json" % "2.4"
+libraryDependencies += "net.liftweb" %% "lift-json" % "2.5-SNAPSHOT"
 
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.6.4"
 

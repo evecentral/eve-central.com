@@ -18,10 +18,10 @@ import spray.http.MediaTypes._
  * Attach the xml header to a nodeseq
  */
 trait FixedSprayMarshallers extends BasicMarshallers {
-	override implicit val NodeSeqMarshaller =
+	override implicit val NodeSeqMarshaller : Marshaller[NodeSeq] =
 		Marshaller.delegate[NodeSeq, String](
 			`text/xml`, `text/html`, `application/xhtml+xml`
-		){nodes:NodeSeq => "<?xml version='1.0' encoding='utf-8'?>\n" + nodes.toString}
+		){ nodes:NodeSeq => "<?xml version='1.0' encoding='utf-8'?>\n" + nodes.toString }
 }
 /**
  * A helper object for dealing with parameter lists, especially ones
