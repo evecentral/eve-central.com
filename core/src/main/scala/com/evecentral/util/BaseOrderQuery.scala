@@ -11,9 +11,11 @@ import com.evecentral.GetCacheFor
 import com.evecentral.dataaccess.OrderList
 import akka.dispatch.Future
 import akka.util.duration._
+import akka.util.Timeout
 
 trait BaseOrderQuery {
 	this: Actor =>
+	import context.dispatcher
 
 	def ordersActor = context.actorFor("GetOrders")
 
@@ -21,7 +23,7 @@ trait BaseOrderQuery {
 
 	def pathActor = context.actorFor("RouteFinder")
 
-	implicit val timeout = 10.seconds
+	implicit val timeout : Timeout = 10.seconds
 
 	def fetchOrdersFor(buyq: GetOrdersFor) : Future[Seq[MarketOrder]] = {
 		(ordersActor ? buyq) mapTo manifest[Seq[MarketOrder]]

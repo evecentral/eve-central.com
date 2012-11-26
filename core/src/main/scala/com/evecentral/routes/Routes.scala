@@ -8,6 +8,8 @@ import edu.uci.ics.jung.graph.util.EdgeType
 import org.slf4j.{Logger,  LoggerFactory}
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath
 import edu.uci.ics.jung.algorithms.filters.KNeighborhoodFilter
+import scala.collection.JavaConversions._
+
 
 
 /**
@@ -60,7 +62,7 @@ class RouteFinderActor extends Actor {
   }
 
   private[routes] def route(from: SolarSystem, to: SolarSystem) : List[Jump] = {
-    dsp.getPath(from, to)
+    dsp.getPath(from, to).toList
   }
 
 	private[routes] def kNeighbors(origin: SolarSystem, radius: Int) : Seq[SolarSystem] = {

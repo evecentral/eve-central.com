@@ -20,11 +20,12 @@ import routes.{Jump, RouteBetween}
 import dataaccess.OrderList
 import spray.http.StatusCodes
 import spray.http.HttpHeaders.RawHeader
-import akka.actor.Actor
+import akka.actor.{ActorRef, Actor}
 import akka.pattern.ask
 import akka.util.duration._
 import akka.util.Timeout
 import akka.dispatch.Future
+import spray.routing.directives.BasicDirectives
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
 case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem, types: Int)
@@ -179,6 +180,8 @@ case class EvemonQuery(ctx: RequestContext)
 class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupport with BaseOrderQuery {
 
 	private val log = LoggerFactory.getLogger(getClass)
+	import context.dispatcher
+
 	val liftJsonFormats = DefaultFormats
 
 	def receive = {
@@ -289,9 +292,9 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 //////////////////////////////////////////////////////////////////////////////////////////////
 trait APIv2Service extends Directives {
 
-	val quicklookActor = actorOf(new QuickLookQuery())
-	val marketstatActor = actorOf(new MarketStatActor())
-	val olduploadActor = actorOf(new OldUploadParsingActor())
+	def quicklookActor : ActorRef
+	def marketstatActor : ActorRef
+	def olduploadActor : ActorRef
 
 	import LookupHelper._
 
