@@ -4,6 +4,7 @@ import akka.actor.Actor
 
 import com.evecentral.dataaccess.StaticProvider
 import com.evecentral.{Database, PoisonCache, OrderCacheActor}
+import com.evecentral.util.ActorNames
 import org.slf4j.LoggerFactory
 import spray.routing.{Directives, RequestContext}
 
@@ -101,8 +102,8 @@ class UploadStorageActor extends Actor {
 	}
 
 	def poisonCache(marketType: Int, regionId: Long) {
-		val a = Actor.registry.actorsFor[OrderCacheActor]
-		(a(0) ! PoisonCache(StaticProvider.regionsMap(regionId), StaticProvider.typesMap(marketType)))
+		val a = context.actorFor(ActorNames.statCache)
+		(a ! PoisonCache(StaticProvider.regionsMap(regionId), StaticProvider.typesMap(marketType)))
 	}
 
 	def confirmGeneratedAt(generatedAt: DateTime, typeId: Int, regionId: Long) : Boolean = {
