@@ -1,49 +1,49 @@
 package com.evecentral.api
 
+import akka.actor.Actor
+import akka.pattern.ask
+
 import net.liftweb.json.Xml.{toJson, toXml}
+import net.liftweb.json._
 
 import spray.http.MediaTypes._
-import spray.routing.Directives
-
-import com.evecentral.dataaccess._
-
-import net.liftweb.json._
-import com.evecentral.FixedSprayMarshallers
-import spray.httpx.LiftJsonSupport
-//import spray.routing.directives.{Remaining, IntNumber}
+import spray.routing.{RequestContext, Directives}
+import spray.http.HttpHeaders.RawHeader
 import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
-import com.evecentral.datainput.UnifiedUploadParsingActor
+import spray.httpx.LiftJsonSupport
+import com.evecentral.dataaccess._
+import com.evecentral.FixedSprayMarshallers
 import com.evecentral.routes._
-//import spray.httpx.HttpHeader
 
-trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSupport {
-
+trait APIv3Service extends FixedSprayMarshallers with LiftJsonSupport {
+	this: Actor =>
+	import Directives._
 	val liftJsonFormats = DefaultFormats
 
 	/* Lookup some global actors */
-	def pathActor = { val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0) }
-	def ordersActor = { val r = (Actor.registry.actorsFor[GetOrdersActor]); r(0) }
+	def pathActor = context.actorFor("RouteFinder")
+	def ordersActor = context.actorFor("GetOrders")
 	/* A local actor parsing helper actor */
 	/* Note we can't register this as we are not the actor - one odd spray decision */
-	val unifiedParser = actorOf[UnifiedUploadParsingActor]
+	val unifiedParser = context.actorFor("UnifiedParser")
 
 	import LookupHelper._
 
 	val api3Service = {
-		respondWithHeader(HttpHeader("Access-Control-Allow-Origin", "*")) {
+		respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
 			pathPrefix("api") {
-				path("station/shorten" / IntNumber) {
-					stationid =>
-						import net.liftweb.json.JsonDSL._
-						get {
-							respondWithContentType(`application/json`) {
-								ctx =>
-									val station = StaticProvider.stationsMap(stationid)
-									ctx.complete(compact(render(("short_name" -> station.shortName) ~ ("long_name" -> station.name))))
+				path("station/shorten" / IntNumber) { stationid =>
+					get {
+						ctx =>
+							val station = StaticProvider.stationsMap(stationid)
+							complete {
+								import net.liftweb.json.JsonDSL._
+								compact(render(("short_name" -> station.shortName) ~ ("long_name" -> station.name)))
 							}
-						}
-				} ~
-					path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
+							//ctx.complete("")//
+
+					}
+				} ~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
 						(fromr, tor) =>
 							get {
 								respondWithMediaType(`application/json`) {
@@ -53,16 +53,14 @@ trait APIv3Service extends Directives with FixedSprayMarshallers with LiftJsonSu
 										val to = lookupSystem(tor)
 
 										import net.liftweb.json.JsonDSL._
-
-										ctx.complete((pathActor ? DistanceBetween(from, to)).as[Int] match {
+										ctx.complete((pathActor ? DistanceBetween(from, to)).apply() match {
 											case Some(x) => compact(render(("distance" -> x)))
 											case _ => throw new Exception("No value returned")
 										}
 										)
 								}
 							}
-					} ~
-					path("route/from" / "[^/]+".r / "to" / "[^/]+".r) {
+					} ~ path("route/from" / "[^/]+".r / "to" / "[^/]+".r) {
 						(fromr, tor) =>
 							get {
 								respondWithMediaType(`application/json`) {

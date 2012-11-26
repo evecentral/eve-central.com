@@ -1,6 +1,5 @@
 package com.evecentral.api
 
-import spray.http.MediaTypes._
 import spray.routing.{RequestContext, Directives}
 import spray.httpx.LiftJsonSupport
 
@@ -9,7 +8,6 @@ import org.joda.time.DateTime
 import net.liftweb.json._
 
 import scala.xml._
-
 import com.evecentral.dataaccess._
 import com.evecentral.ParameterHelper._
 import com.evecentral.frontend.Formatter.priceString
@@ -19,8 +17,13 @@ import frontend.DateFormats
 import routes.{Jump, RouteBetween}
 import util.BaseOrderQuery
 import dataaccess.OrderList
-import spray.http.{HttpHeader, StatusCodes}
-
+import spray.http.StatusCodes
+import spray.http.HttpHeaders.RawHeader
+import akka.actor.Actor
+import akka.pattern.ask
+import akka.util.duration._
+import akka.util.Timeout
+import akka.dispatch.Future
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
 case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem, types: Int)
@@ -28,6 +31,8 @@ case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarS
 class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuery {
 
 	import com.evecentral.ParameterHelper._
+
+	override implicit val timeout : Timeout = 10.seconds
 
 	def receive = {
 		case QuickLookPathQuery(ctx, froms, tos, types) =>
@@ -68,7 +73,6 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 	}
 
 	def showOrders(orders: Option[OrderList]): NodeSeq = {
-
 		orders match {
 			case None => Seq[Node]()
 			case Some(o) => o.result.foldLeft(Seq[Node]()) {
@@ -89,44 +93,43 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 		}
 	}
 
-	def queryQuicklookPath(typeid: Long, setHours: Long, qminq: Option[Long], froms: SolarSystem, tos: SolarSystem) : NodeSeq = {
+	def queryQuicklookPath(typeid: Long, setHours: Long, qminq: Option[Long], froms: SolarSystem, tos: SolarSystem) : Future[NodeSeq] = {
 
 		val minq = qminq match {
 			case Some(x) => x
 			case None => QueryDefaults.minQ(typeid)
 		}
 
-		val path = (pathActor ? RouteBetween(froms, tos)).as[Seq[Jump]] match {
-			case Some(jumps) =>
-				jumps
-			case None => List[Jump]()
+		val path = (pathActor ? RouteBetween(froms, tos)).mapTo[Option[Seq[Jump]]].map {
+			case Some(jumps) =>	jumps
+			case None => Seq[Jump]()
 		}
 
-		val systems = path.foldLeft(Set[SolarSystem]()) { (set, j) => set + j.from + j.to }.toList.map(_.systemid)
-
-		val buyq = GetOrdersFor(Some(true), List(typeid), List(), systems, setHours)
-		val selq = GetOrdersFor(Some(false), List(typeid), List(), systems, setHours)
-
-		val buyr = ordersActor ? buyq
-		val selr = ordersActor ? selq
-
-		<evec_api version="2.0" method="quicklook_path">
-			<quicklook>
-				<item>{typeid}</item>
-				<itemname>{StaticProvider.typesMap(typeid).name}</itemname>
-				<regions></regions>
-				<hours>{setHours}</hours>
-				<minqty>{minq}</minqty>
-				<sell_orders>{showOrders(selr.as[OrderList])}</sell_orders>
-				<buy_orders>{showOrders(buyr.as[OrderList])}</buy_orders>
-				<from>{froms.systemid}</from>
-				<to>{tos.systemid}</to>
-			</quicklook>
-		</evec_api>
+		val systems = path.map { jumps => jumps.foldLeft(Set[SolarSystem]()) { (set, j) => set + j.from + j.to }.toList.map(_.systemid) }
+		systems.map { systems =>
+			val buyq = GetOrdersFor(Some(true), List(typeid), List(), systems, setHours)
+			val selq = GetOrdersFor(Some(false), List(typeid), List(), systems, setHours)
+			(ordersActor ? buyq, ordersActor ? selq)
+		}.map {
+			case (selr : OrderList, buyr : OrderList) =>
+			<evec_api version="2.0" method="quicklook_path">
+				<quicklook>
+					<item>{typeid}</item>
+					<itemname>{StaticProvider.typesMap(typeid).name}</itemname>
+					<regions></regions>
+					<hours>{setHours}</hours>
+					<minqty>{minq}</minqty>
+					<sell_orders>{showOrders(Some(selr))}</sell_orders>
+					<buy_orders>{showOrders(Some(buyr))}</buy_orders>
+					<from>{froms.systemid}</from>
+					<to>{tos.systemid}</to>
+				</quicklook>
+			</evec_api>
+		}
 	}
 
 	def queryQuicklook(typeid: Long, setHours: Long, regionLimit: List[Long],
-	                   usesystem: Option[Long], qminq: Option[Long]): NodeSeq = {
+	                   usesystem: Option[Long], qminq: Option[Long]): Future[NodeSeq] = {
 
 		val minq = qminq match {
 			case Some(x) => x
@@ -167,76 +170,73 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 case class MarketstatQuery(ctx: RequestContext, dtype: String = "xml")
 case class EvemonQuery(ctx: RequestContext)
 
-class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJsonSupport with BaseOrderQuery {
+class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupport with BaseOrderQuery {
 
 	private val log = LoggerFactory.getLogger(getClass)
 	val liftJsonFormats = DefaultFormats
 
-	/* This is for the Akka 1.3 pool of actors */
+	def receive = {
 
-	def instance = { actorOf(new Actor {
-		def receive = {
+		case EvemonQuery(ctx) =>
+			val types = List(34, 35, 36, 37, 38, 39, 40, 11399).map(StaticProvider.typesMap(_))
 
-			case EvemonQuery(ctx) =>
-				val types = List(34, 35, 36, 37, 38, 39, 40, 11399).map(StaticProvider.typesMap(_))
+			ctx.complete(<minerals>
+				{types.map(evemonMineral(_))}
+			</minerals>)
+		case MarketstatQuery(ctx, dtype) =>
+			try {
 
-				ctx.complete(<minerals>
-					{types.map(evemonMineral(_))}
-				</minerals>)
-			case MarketstatQuery(ctx, dtype) =>
-				try {
-
-					def paramUnpack(strings: Seq[String]) : Seq[Long] = {
-						if (strings.size > 1) {
-							strings.map(_.toLong).distinct
-						} else if (strings.size == 1) {
-							strings(0).split(",").toList.filter(_.size > 0).map(_.toLong).distinct // Come up with a list of regionlimits comma seperated
-						} else {
-							Seq[Long]()
-						}
-					}
-
-					val params = listFromContext(ctx)
-					val typeid = paramUnpack(paramsFromQuery("typeid", params))
-					if (typeid.foldLeft(true)((n,t) => n && StaticProvider.typesMap.contains(t))) {
-						val setHours = singleParam("hours", params) match {
-							case Some(x) => x
-							case None => 24
-						}
-
-						val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
-						val usesystem = singleParam("usesystem", params)
-						val minq = singleParam("minQ", params)
-
-						if (dtype == "json") {
-							ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
-						} else {
-							ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
-						}
+				def paramUnpack(strings: Seq[String]) : Seq[Long] = {
+					if (strings.size > 1) {
+						strings.map(_.toLong).distinct
+					} else if (strings.size == 1) {
+						strings(0).split(",").toList.filter(_.size > 0).map(_.toLong).distinct // Come up with a list of regionlimits comma seperated
 					} else {
-						ctx.fail(StatusCodes.BadRequest)
+						Seq[Long]()
+					}
+				}
+
+				val params = listFromContext(ctx)
+				val typeid = paramUnpack(paramsFromQuery("typeid", params))
+				if (typeid.foldLeft(true)((n,t) => n && StaticProvider.typesMap.contains(t))) {
+					val setHours = singleParam("hours", params) match {
+						case Some(x) => x
+						case None => 24
 					}
 
-				} catch {
-					case t : Throwable => ctx.fail(t)
+					val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
+					val usesystem = singleParam("usesystem", params)
+					val minq = singleParam("minQ", params)
+
+					if (dtype == "json") {
+						ctx.complete(wrapAsJson(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+					} else {
+						ctx.complete(wrapAsXml(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t))))
+					}
+				} else {
+					ctx.fail(StatusCodes.BadRequest)
 				}
-		}
+
+			} catch {
+				case t : Throwable => ctx.fail(t)
+			}
+	}
 
 
-		def evemonMineral(mineral: MarketType) : NodeSeq = {
-			val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
-			val s = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
+	def evemonMineral(mineral: MarketType) : NodeSeq = {
+		val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
+		val s = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
 
-			<mineral>
-				<name>{mineral.name}</name>
-				<price>{priceString(s.wavg)}</price>
-			</mineral>
-		}
+		<mineral>
+			<name>{mineral.name}</name>
+			<price>{priceString(s.wavg)}</price>
+		</mineral>
+	}
 
-		/* Produce an XML document of all statistics */
-		def typeXml(r: (OrderStatistics, OrderStatistics, OrderStatistics), typeid: Long) : NodeSeq = {
+	/* Produce an XML document of all statistics */
+	def typeXml(r: (OrderStatistics, OrderStatistics, OrderStatistics), typeid: Long) : NodeSeq = {
 
-			def subGroupXml(alls: OrderStatistics) : NodeSeq = {
+		def subGroupXml(alls: OrderStatistics) : NodeSeq = {
 				<volume>{alls.volume}</volume>
 					<avg>{priceString(alls.wavg)}</avg>
 					<max>{priceString(alls.max)}</max>
@@ -264,17 +264,16 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 		}
 
 
-		def wrapAsXml(nodes: Seq[NodeSeq]) = <evec_api version="2.0" method="marketstat_xml">
-			<marketstat>
-				{nodes}
-			</marketstat>
-		</evec_api>
+	def wrapAsXml(nodes: Seq[NodeSeq]) = <evec_api version="2.0" method="marketstat_xml">
+		<marketstat>
+			{nodes}
+		</marketstat>
+	</evec_api>
 
-		case class BuyAllSell(buy: OrderStatistics, all: OrderStatistics, sell: OrderStatistics)
+	case class BuyAllSell(buy: OrderStatistics, all: OrderStatistics, sell: OrderStatistics)
 
-		def wrapAsJson(types: Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]) : String = generate(types.map(u => BuyAllSell(u._1, u._2, u._3)))
+	def wrapAsJson(types: Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]) : String = generate(types.map(u => BuyAllSell(u._1, u._2, u._3)))
 
-	})}
 
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -294,7 +293,7 @@ trait APIv2Service extends Directives {
 	import LookupHelper._
 
 	val v2Service = {
-		respondWithHeader(HttpHeader("Access-Control-Allow-Origin", "*")) {
+		respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
 			path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
 				(fromr, tor, types) =>
 					val fromid = lookupSystem(fromr)

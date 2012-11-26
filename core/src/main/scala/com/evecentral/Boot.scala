@@ -1,18 +1,16 @@
 package com.evecentral
 
-import akka.config.Supervision._
-import akka.actor.{Supervisor, Actor}
+import akka.actor.{Actor}
 import Actor._
 
-import cc.spray.{SprayCanRootService, HttpService}
+import spray.{SprayCanRootService, HttpService}
 
-import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
 import datainput.{StatisticsCaptureActor, UploadStorageActor}
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
-import cc.spray.can.{MessageParserConfig, HttpServer}
+import spray.can.{MessageParserConfig, HttpServer}
 
 
 object Boot extends App {
