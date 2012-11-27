@@ -21,14 +21,14 @@ trait BaseOrderQuery {
 	def statCache = context.actorFor("/user/" + ActorNames.statCache)
 	def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
 
-	implicit val timeout : Timeout = 10.seconds
+	implicit val timeout : Timeout = 60.seconds
 
 	def fetchOrdersFor(buyq: GetOrdersFor) : Future[Seq[MarketOrder]] = {
-		(ordersActor ? buyq) mapTo manifest[Seq[MarketOrder]]
+		(ordersActor ? buyq).map(_.asInstanceOf[Seq[MarketOrder]])
 	}
 
 	def fetchCachedStats(query: GetOrdersFor, highToLow: Boolean) : Future[Option[OrderStatistics]] = {
-		(statCache ? GetCacheFor(query, highToLow)) mapTo manifest[Option[OrderStatistics]]
+		(statCache ? GetCacheFor(query, highToLow)).map(_.asInstanceOf[Option[OrderStatistics]])
 	}
 
 	def storeCachedStats(stats: OrderStatistics, query: GetOrdersFor) : OrderStatistics = {
@@ -39,15 +39,14 @@ trait BaseOrderQuery {
 
 	def defaultMinQ(minq: Option[Long], typeid: Long) = minq getOrElse QueryDefaults.minQ(typeid)
 
-
 	def getCachedStatistic(query: GetOrdersFor) : Future[OrderStatistics] = {
-		fetchCachedStats(query, query.bid.getOrElse(false)).map { value =>
-			value getOrElse {
-				fetchOrdersFor(query).map { orders =>
-					storeCachedStats(OrderStatistics(orders), query)
-				}
+		fetchCachedStats(query, query.bid.getOrElse(false)).flatMap { value =>
+			value match {
+				case None => fetchOrdersFor(query).map { orders =>
+					storeCachedStats(OrderStatistics(orders), query) }
+				case Some(v) => Future { v }
 			}
-		}.mapTo[OrderStatistics]
+		}
 	}
 
 
