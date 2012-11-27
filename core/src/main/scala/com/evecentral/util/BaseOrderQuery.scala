@@ -33,7 +33,7 @@ trait BaseOrderQuery {
 
 	def storeCachedStats(stats: OrderStatistics, query: GetOrdersFor) : OrderStatistics = {
 		val cached = OrderStatistics.cached(query, stats)
-		(statCache! RegisterCacheFor(cached))
+		(statCache ! RegisterCacheFor(cached))
 		cached
 	}
 
@@ -43,7 +43,7 @@ trait BaseOrderQuery {
 		fetchCachedStats(query, query.bid.getOrElse(false)).flatMap { value =>
 			value match {
 				case None => fetchOrdersFor(query).map { orders =>
-					storeCachedStats(OrderStatistics(orders), query) }
+					storeCachedStats(OrderStatistics(orders, query.bid.getOrElse(false)), query) }
 				case Some(v) => Future { v }
 			}
 		}
