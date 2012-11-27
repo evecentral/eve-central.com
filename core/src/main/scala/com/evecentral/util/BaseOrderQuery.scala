@@ -24,7 +24,7 @@ trait BaseOrderQuery {
 	implicit val timeout : Timeout = 60.seconds
 
 	def fetchOrdersFor(buyq: GetOrdersFor) : Future[Seq[MarketOrder]] = {
-		(ordersActor ? buyq).map(_.asInstanceOf[Seq[MarketOrder]])
+		(ordersActor ? buyq).map(_.asInstanceOf[OrderList].result)
 	}
 
 	def fetchCachedStats(query: GetOrdersFor, highToLow: Boolean) : Future[Option[OrderStatistics]] = {
