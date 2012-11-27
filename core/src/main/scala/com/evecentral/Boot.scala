@@ -7,11 +7,12 @@ import com.evecentral.api._
 import datainput.{UnifiedUploadParsingActor, StatisticsCaptureActor, UploadStorageActor}
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
-import spray.io.{IOExtension, SingletonHandler, IOBridge}
+import spray.io.{IOExtension, SingletonHandler}
 import util.ActorNames
 import spray.can.server.HttpServer
 import com.typesafe.config.ConfigFactory
 import akka.routing.SmallestMailboxRouter
+import akka.util.duration._
 
 
 object Boot extends App {
@@ -38,6 +39,7 @@ object Boot extends App {
 	class APIServiceActor extends Actor with APIv2Service with APIv3Service {
 		def actorRefFactory = context
 		def receive = runRoute(v2Service ~ api3Service)
+		override implicit val timeout = 60.seconds
 	}
 
   val apiModule = system.actorOf(Props[APIServiceActor], ActorNames.http_apiv3)
