@@ -31,12 +31,10 @@ object Boot extends App {
 	val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
 	val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
 	val statCapture = system.actorOf(Props[UnifiedUploadParsingActor], ActorNames.unifiedparser)
-	
+
 
 	class APIServiceActor extends Actor with APIv2Service with APIv3Service {
-
 		def actorRefFactory = context
-
 		def receive = runRoute(v2Service ~ api3Service)
 	}
 

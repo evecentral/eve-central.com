@@ -25,11 +25,11 @@
 		implicit val timeout: Timeout = 10.seconds
 
 		/* Lookup some global actors */
-		def pathActor = context.actorFor(ActorNames.routefinder)
-		def ordersActor = context.actorFor(ActorNames.getorders)
+		def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
+		def ordersActor = context.actorFor("/user/" + ActorNames.getorders)
 		/* A local actor parsing helper actor */
 		/* Note we can't register this as we are not the actor - one odd spray decision */
-		val unifiedParser = context.actorFor(ActorNames.unifiedparser)
+		val unifiedParser = context.actorFor("/user/" + ActorNames.unifiedparser)
 
 		import LookupHelper._
 

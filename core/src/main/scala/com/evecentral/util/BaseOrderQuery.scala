@@ -17,9 +17,9 @@ trait BaseOrderQuery {
 	this: Actor =>
 	import context.dispatcher
 
-	def ordersActor = context.actorFor(ActorNames.getorders)
-	def statCache = context.actorFor(ActorNames.statCache)
-	def pathActor = context.actorFor(ActorNames.routefinder)
+	def ordersActor = context.actorFor("/user/" + ActorNames.getorders)
+	def statCache = context.actorFor("/user/" + ActorNames.statCache)
+	def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
 
 	implicit val timeout : Timeout = 10.seconds
 
