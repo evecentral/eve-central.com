@@ -220,11 +220,18 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 					val minq = singleParam("minQ", params)
 
 					if (dtype == "json") {
-						val future = wrapAsJson(Future.sequence(typeid.map(t => getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
+						val future = wrapAsJson(Future.sequence(
+							typeid.map(t =>
+								getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
 						future.onSuccess { case succ : String => ctx.complete(succ) }
+						future.onFailure { case _ => ctx.failWith(_) }
 					} else {
-						val future = wrapAsXml(Future.sequence(typeid.map(t => typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t)))))
+						val future = wrapAsXml(Future.sequence(
+							typeid.map(t =>
+								typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t)
+							)))
 						future.onSuccess { case succ : NodeSeq => ctx.complete(succ) }
+						future.onFailure { case _ => ctx.failWith(_) }
 					}
 				} else {
 					ctx.complete(StatusCodes.BadRequest)
