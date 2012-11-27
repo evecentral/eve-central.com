@@ -16,6 +16,7 @@
 	import akka.util.Timeout
 	import akka.util.duration._
 	import com.evecentral.util.ActorNames
+	import spray.http.HttpResponse
 
 
 	trait APIv3Service extends HttpService with FixedSprayMarshallers with LiftJsonSupport {
@@ -55,7 +56,7 @@
 										import net.liftweb.json.JsonDSL._
 										complete {
 											(pathActor ? DistanceBetween(from, to)).map {
-												case Some(x : Int) => compact(render(("distance" -> x)))
+												case Some(x : Int) => (render(("distance" -> x)))
 												case _ => throw new Exception("No value returned")
 											}
 										}
@@ -71,96 +72,96 @@
 										val from  = lookupSystem(fromr)
 										val to = lookupSystem(tor)
 
-										ctx.complete((pathActor ? RouteBetween(from, to)).mapTo[List[Jump]].map { v =>
+										val routeFuture = (pathActor ? RouteBetween(from, to)).mapTo[List[Jump]].map { v =>
 											compact(render(v.map {jump =>
 												Map[String, String]("fromid" -> jump.from.systemid.toString, "toid" -> jump.to.systemid.toString,
 													"from" -> jump.from.name, "to" -> jump.to.name, "secchange" -> jump.secChange.toString) }
-											))
+											))}
 
+										routeFuture onComplete {
+											case Right(data) => ctx.complete(data)
+											case Left(t) => ctx.failWith(t)
 										}
-										)
-							}
-					}
-				} ~ path("neighbors/of" / "[^/]+".r / "radius" / IntNumber) {
-					(origin, radius) =>
 
-						import net.liftweb.json.JsonDSL._
-						get {
-							ctx =>
-								val or = lookupSystem(origin)
-								val json = (pathActor ? NeighborsOf(or, radius)).mapTo[Seq[SolarSystem]].map { sss =>
-									sss.map { ss => Map("solarsystemid" -> ss.systemid.toString, "name" -> ss.name, "security" -> ss.security.toString) }
 								}
-								ctx.complete(json)
-						}
-				} ~ path("types" / ".*".r) {
-					rest =>
+							}
+					} ~ path("neighbors/of" / "[^/]+".r / "radius" / IntNumber) {
+						(origin, radius) =>
+
+							import net.liftweb.json.JsonDSL._
+							get {
+								ctx =>
+									val or = lookupSystem(origin)
+									val json = (pathActor ? NeighborsOf(or, radius)).mapTo[Seq[SolarSystem]].map { sss =>
+										sss.map { ss => Map("solarsystemid" -> ss.systemid.toString, "name" -> ss.name, "security" -> ss.security.toString) }
+									}
+									json.onComplete {
+										case Right(data) => ctx.complete(json)
+										case Left(t) => ctx.failWith(t)
+									}
+							}
+					} ~ path("types" / ".*".r) {
+						rest =>
+							get {
+								respondWithMediaType(`application/json`) {
+									import  net.liftweb.json.JsonDSL._
+									complete {
+										compact(render(StaticProvider.typesMap.filter(_._2.name.contains(rest)).filter(!_._2.name.contains("Blueprint")).map(
+											types => Map("typename" -> types._2.name, "typeid" -> types._2.typeid.toString))))
+									}
+								}
+							}
+					} ~ path("regions") {
 						get {
 							respondWithMediaType(`application/json`) {
-								import  net.liftweb.json.JsonDSL._
 								complete {
-									compact(render(StaticProvider.typesMap.filter(_._2.name.contains(rest)).filter(!_._2.name.contains("Blueprint")).map(
-										types => Map("typename" -> types._2.name, "typeid" -> types._2.typeid.toString))))
+									import net.liftweb.json.JsonDSL._
+									compact(render(StaticProvider.regionsMap.map(region => Map("regionname" -> region._2.name, "regionid" -> region._2.regionid.toString))))
 								}
 							}
 						}
-				} ~ path("regions") {
-					get {
-						respondWithMediaType(`application/json`) {
-							complete {
-								import net.liftweb.json.JsonDSL._
-
-								compact(render(StaticProvider.regionsMap.map(region => Map("regionname" -> region._2.name, "regionid" -> region._2.regionid.toString))))
-							}
-						}
-					}
-				} ~ path("orders/type" / IntNumber) {
-					typeid =>
-						get {
-							respondWithMediaType(`text/plain`) {
-								complete {
-									//(getOrders ? GetOrdersFor(true, List[Long](typeid), Nil, Nil, 24)).as[Seq[MarketOrder]] match {
-									// case Some(x) => x(0).orderId.toString
-									//case None => "None"
-									"Hello!"
-									//}
-
-								}
-							}
-						}
-				} ~ path("upload" / Rest) {
-					fluff => // Fluff is anything trailing in the URL, which we'll just ignore for sanity here
-						(decodeRequest(NoEncoding) | decodeRequest(Gzip) | decodeRequest(Deflate)) {
+					} ~ path("orders/type" / IntNumber) {
+						typeid =>
 							get {
-								parameter("data") { data =>
-									unifiedParser ! data
-									complete {"1"}
+								respondWithMediaType(`text/plain`) {
+									complete {
+										"Hello!"
+									}
 								}
-							} ~ post {
-								formFields("data") { data =>
-									unifiedParser ! data
-									complete { "1" }
-								} ~ entity(as[String]) {
-									data =>
+							}
+					} ~ path("upload" / Rest) {
+						fluff => // Fluff is anything trailing in the URL, which we'll just ignore for sanity here
+							(decodeRequest(NoEncoding) | decodeRequest(Gzip) | decodeRequest(Deflate)) {
+								get {
+									parameter("data") { data =>
+										unifiedParser ! data
+										complete {"1"}
+									}
+								} ~ post {
+									formFields("data") { data =>
 										unifiedParser ! data
 										complete { "1" }
+									} ~ entity(as[String]) {
+										data =>
+											unifiedParser ! data
+											complete { "1" }
+									}
+								} ~ put {
+									ctx =>
+										val content = ctx.request.entity
+										val sb = new String(content.buffer, "UTF-8")
+										unifiedParser ! sb
+										ctx.complete(sb)
 								}
-							} ~ put {
-								ctx =>
-									val content = ctx.request.entity
-									val sb = new String(content.buffer, "UTF-8")
-									unifiedParser ! sb
-									ctx.complete(sb)
 							}
-						}
 				} ~ path ("syndicate") {
-					complete {
-						"1"
+						complete {
+							"1"
+						}
 					}
 				}
 			}
 		}
-	}
 	}
 
 
