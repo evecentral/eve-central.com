@@ -4,7 +4,7 @@ import akka.actor.{Props, ActorSystem, Actor}
 
 import com.evecentral.dataaccess._
 import com.evecentral.api._
-import datainput.{StatisticsCaptureActor, UploadStorageActor}
+import datainput.{UnifiedUploadParsingActor, StatisticsCaptureActor, UploadStorageActor}
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
 import spray.io.{IOExtension, SingletonHandler, IOBridge}
@@ -25,7 +25,13 @@ object Boot extends App {
   LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
-
+	// "Singleton" actors
+	val ordersActor = system.actorOf(Props[GetOrdersActor], ActorNames.getorders)
+	val unifiedActor = system.actorOf(Props[UploadStorageActor], ActorNames.uploadstorage)
+	val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
+	val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
+	val statCapture = system.actorOf(Props[UnifiedUploadParsingActor], ActorNames.unifiedparser)
+	
 
 	class APIServiceActor extends Actor with APIv2Service with APIv3Service {
 
