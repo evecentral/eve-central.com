@@ -188,10 +188,12 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
 		case EvemonQuery(ctx) =>
 			val types = List(34, 35, 36, 37, 38, 39, 40, 11399).map(StaticProvider.typesMap(_))
+			val typeFuture = Future.sequence(types.map(evemonMineral(_))).map { mins => <minerals>
+				{mins}
+			</minerals>
+			}
+			ctx.complete(typeFuture)
 
-			ctx.complete(<minerals>
-				{types.map(evemonMineral(_))}
-			</minerals>)
 		case MarketstatQuery(ctx, dtype) =>
 			try {
 
@@ -274,7 +276,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 	}
 
 
-	def wrapAsXml(nodes: Future[Seq[NodeSeq]]) = nodes.map { nodes => <evec_api version="2.0" method="marketstat_xml">
+	def wrapAsXml(nodes: Future[Seq[NodeSeq]]) : Future[NodeSeq] = nodes.map { nodes => <evec_api version="2.0" method="marketstat_xml">
 		<marketstat>
 			{nodes}
 		</marketstat>
