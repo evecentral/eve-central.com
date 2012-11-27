@@ -43,7 +43,7 @@ object Boot extends App {
 		override implicit val timeout : Timeout = 60.seconds
 	}
 
-  val apiModule = system.actorOf(Props[APIServiceActor], ActorNames.http_apiv3)
+  val apiModule = system.actorOf(Props[APIServiceActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.http_apiv3)
 
 
 	val server = system.actorOf(
