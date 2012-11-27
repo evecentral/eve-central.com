@@ -7,15 +7,16 @@ import com.evecentral.api._
 import datainput.{StatisticsCaptureActor, UploadStorageActor}
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
-import spray.io.{SingletonHandler, IOBridge}
+import spray.io.{IOExtension, SingletonHandler, IOBridge}
 import util.ActorNames
 import spray.can.server.HttpServer
+import com.typesafe.config.ConfigFactory
 
 
 object Boot extends App {
-
+val config = ConfigFactory.load()
 	val system = ActorSystem("evec")
-	val ioBridge = system.actorOf(Props[IOBridge], "iobridge")
+	val ioBridge = IOExtension(system).ioBridge
 
   val systemsMap = StaticProvider.systemsMap
 	val stationsMAp = StaticProvider.stationsMap
