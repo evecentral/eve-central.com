@@ -14,7 +14,8 @@ import com.typesafe.config.ConfigFactory
 
 
 object Boot extends App {
-val config = ConfigFactory.load()
+
+	val config = ConfigFactory.load()
 	val system = ActorSystem("evec")
 	val ioBridge = IOExtension(system).ioBridge
 
@@ -37,9 +38,10 @@ val config = ConfigFactory.load()
 
 
 	val server = system.actorOf(
-	Props(new HttpServer(ioBridge, SingletonHandler(apiModule)))
+	Props(new HttpServer(ioBridge, SingletonHandler(apiModule))),
+	"http_server"
 	)
 
-	server ! HttpServer.Bind("localhost", 8081)
+	server ! HttpServer.Bind("0.0.0.0", 8081)
 
 }
