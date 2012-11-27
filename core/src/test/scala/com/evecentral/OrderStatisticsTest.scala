@@ -5,9 +5,16 @@ import dataaccess.{StaticProvider, GetOrdersFor, MarketOrder}
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 import akka.testkit.{TestActorRef, TestKit}
+import akka.actor.ActorSystem
+import com.typesafe.config.ConfigFactory
 
-class OrderStatisticsTest extends FunSuite with ShouldMatchers with TestKit {
-  
+object OrderStatisticsTest {
+	implicit val system = ActorSystem("testsystem", ConfigFactory.parseString("""
+  akka.event-handlers = ["akka.testkit.TestEventListener"] """))
+}
+
+class OrderStatisticsTest extends TestKit(OrderStatisticsTest.system) with FunSuite with ShouldMatchers {
+
   def makeOrder(price: Double, vol: Int) = {
     MarketOrder(34, 1, price, false, null, null, null, 1, vol, vol, 1, null, null)
   }
@@ -86,7 +93,7 @@ class OrderStatisticsTest extends FunSuite with ShouldMatchers with TestKit {
     p.wavg should be (1.99 plusOrMinus 0.01)
   }
 
-	val ca = TestActorRef(new OrderCacheActor).start()
+	val ca = TestActorRef(new OrderCacheActor)
 
 	test("Cache actor put, expire") {
 		val domain = StaticProvider.regionsByName("Domain")

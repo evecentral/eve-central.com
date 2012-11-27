@@ -42,11 +42,11 @@ resolvers += "theatr.us" at "http://repo.theatr.us"
 
 libraryDependencies += "us.theatr" %% "jerkson" % "0.6.0-SNAPSHOT"
 
-libraryDependencies += "io.spray" % "spray-can"     % "1.0-M5"
+libraryDependencies += "io.spray" % "spray-can"     % "1.0-20121126"
 
-libraryDependencies += "io.spray" % "spray-routing"     % "1.0-M5"
+libraryDependencies += "io.spray" % "spray-routing"     % "1.0-20121126"
 
-libraryDependencies +="io.spray" % "spray-testkit"     % "1.0-M5"
+libraryDependencies +="io.spray" % "spray-testkit"     % "1.0-20121126"
 
 libraryDependencies += "com.typesafe.akka" % "akka-actor"  % "2.0.4"
 

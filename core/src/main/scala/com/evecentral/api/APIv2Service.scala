@@ -1,6 +1,6 @@
 package com.evecentral.api
 
-import spray.routing.{RequestContext, Directives}
+import spray.routing.{HttpService, RequestContext, Directives}
 import spray.httpx.LiftJsonSupport
 
 import org.slf4j.LoggerFactory
@@ -12,7 +12,7 @@ import com.evecentral.dataaccess._
 import com.evecentral.ParameterHelper._
 import com.evecentral.frontend.Formatter.priceString
 import com.evecentral._
-import com.evecentral.util.BaseOrderQuery
+import util.{ActorNames, BaseOrderQuery}
 import datainput.{OldUploadParsingActor, OldUploadPayload}
 import frontend.DateFormats
 import routes.{Jump, RouteBetween}
@@ -20,7 +20,7 @@ import routes.{Jump, RouteBetween}
 import dataaccess.OrderList
 import spray.http.StatusCodes
 import spray.http.HttpHeaders.RawHeader
-import akka.actor.{ActorRef, Actor}
+import akka.actor.{Props, ActorRef, Actor}
 import akka.pattern.ask
 import akka.util.duration._
 import akka.util.Timeout
@@ -288,17 +288,18 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
-trait APIv2Service extends Directives {
+trait APIv2Service extends HttpService with FixedSprayMarshallers {
+	this: Actor =>
 
-	def quicklookActor : ActorRef
-	def marketstatActor : ActorRef
-	def olduploadActor : ActorRef
+	val quicklookActor = context.actorOf(Props[QuickLookQuery], name = ActorNames.http_quicklookquery)
+	val marketstatActor = context.actorOf(Props[MarketStatActor], name = ActorNames.http_marketstat)
+	val olduploadActor = context.actorOf(Props[OldUploadParsingActor], name = ActorNames.http_oldupload)
+
 
 	import LookupHelper._
 
-	val v2Service = {
+	val v2Service : spray.routing.Route = {
 		respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
 			path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
 				(fromr, tor, types) =>
@@ -316,7 +317,7 @@ trait APIv2Service extends Directives {
 							(quicklookActor ! QuickLookSimpleQuery(ctx))
 
 					}
-				} ~ path("api/marketstat" / Remaining) {
+				} ~ path("api/marketstat" / Rest) {
 				dtype =>
 					(get | post) {
 						ctx =>

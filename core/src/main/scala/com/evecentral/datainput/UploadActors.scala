@@ -21,7 +21,7 @@ case class OldUploadPayload(ctx: RequestContext, typename: Option[String], useri
 class OldUploadParsingActor extends Actor with Directives with BasicMarshallers {
 	private val log = LoggerFactory.getLogger(getClass)
 
-	def storageActor = context.actorFor("UploadStorage")
+	def storageActor = context.actorFor(ActorNames.uploadstorage)
 
 	def receive = {
 		case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
@@ -39,7 +39,7 @@ class OldUploadParsingActor extends Actor with Directives with BasicMarshallers 
 
 class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshallers {
 
-	def storageActor = context.actorFor("UploadStorage")
+	def storageActor = context.actorFor(ActorNames.uploadstorage)
 
 	private val log = LoggerFactory.getLogger(getClass)
 
@@ -63,7 +63,7 @@ class UploadStorageActor extends Actor {
 
 	private val log = LoggerFactory.getLogger(getClass)
 
-	def statCaptureActor = context.actorFor("StatCapture")
+	def statCaptureActor = context.actorFor(ActorNames.statCapture)
 
 	override def preStart() {
 	}

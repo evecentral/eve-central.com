@@ -1,14 +1,20 @@
 package com.evecentral.routes
 
 import org.scalatest.FunSuite
-import akka.actor.Actor
+import akka.actor.{ActorSystem, Actor}
 import com.evecentral.dataaccess.StaticProvider
 import akka.testkit.{TestKit, TestActorRef, TestActor}
+import com.typesafe.config.ConfigFactory
 
-class RouteFinderTest extends FunSuite with TestKit {
+object RouteFinderTest {
+	implicit val system = ActorSystem("testsystem", ConfigFactory.parseString("""
+  akka.event-handlers = ["akka.testkit.TestEventListener"] """))
+}
+
+class RouteFinderTest extends TestKit(RouteFinderTest.system) with FunSuite {
 
 
-  val rfa = TestActorRef(new RouteFinderActor).start()
+  val rfa = TestActorRef(new RouteFinderActor)
   val rf = rfa.underlyingActor
 
   val jita = StaticProvider.systemsMap(30000142)

@@ -9,11 +9,14 @@ import akka.pattern.ask
 
 import com.evecentral.dataaccess.{OrderList, StaticProvider, GetOrdersFor}
 import com.evecentral.{RegisterCacheFor, OrderStatistics, Database}
+import akka.dispatch.Future
 
 private[this] case class CaptureStatistics()
 private[this] case class StoreStatistics(query: GetOrdersFor, result: OrderStatistics)
 
 class StatisticsCaptureActor extends Actor with BaseOrderQuery {
+
+	import context.dispatcher
 
 	private val log = LoggerFactory.getLogger(getClass)
 	private val toCaptureSet = scala.collection.mutable.Set[GetOrdersFor]()
@@ -70,9 +73,10 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 			log.info("Capturing statistics in a large batch")
 			val results = toCaptureSet.toList.map(capset => (ordersActor ? capset).mapTo[OrderList])
 			// Attach an oncomplete to all the actors
-			results.map { result => result match {
-				case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
-			}
+			results.map { entity =>
+				entity onSuccess {
+					case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
+				}
 			}
 			log.info(results.size + " results to capture")
 			toCaptureSet.clear()
