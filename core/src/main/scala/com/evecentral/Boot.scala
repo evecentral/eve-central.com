@@ -11,6 +11,7 @@ import spray.io.{IOExtension, SingletonHandler, IOBridge}
 import util.ActorNames
 import spray.can.server.HttpServer
 import com.typesafe.config.ConfigFactory
+import akka.routing.SmallestMailboxRouter
 
 
 object Boot extends App {
@@ -26,11 +27,12 @@ object Boot extends App {
   // initialize SLF4J early
 
 	// "Singleton" actors
-	val ordersActor = system.actorOf(Props[GetOrdersActor], ActorNames.getorders)
-	val unifiedActor = system.actorOf(Props[UploadStorageActor], ActorNames.uploadstorage)
+	val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.getorders)
+	val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(3)), ActorNames.uploadstorage)
 	val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
 	val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
-	val statCapture = system.actorOf(Props[UnifiedUploadParsingActor], ActorNames.unifiedparser)
+	val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
+	val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
 
 
 	class APIServiceActor extends Actor with APIv2Service with APIv3Service {

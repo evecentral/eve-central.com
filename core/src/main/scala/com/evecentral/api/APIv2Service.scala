@@ -184,6 +184,8 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
 	val liftJsonFormats = DefaultFormats
 
+	override implicit val timeout : Timeout = 60.seconds
+
 	def receive = {
 
 		case EvemonQuery(ctx) =>
@@ -192,8 +194,10 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 				{mins}
 			</minerals>
 			}
-			ctx.complete(typeFuture)
-
+			typeFuture.onComplete {
+				case Right(t) => ctx.complete(t)
+				case Left(t) => ctx.failWith(t)
+			}
 		case MarketstatQuery(ctx, dtype) =>
 			try {
 
