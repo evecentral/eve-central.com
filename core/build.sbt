@@ -36,6 +36,8 @@ resolvers += "akka repo" at "http://repo.akka.io/releases/"
 
 resolvers += "Spray" at "http://repo.spray.io/"
 
+resolvers += "Spray Nightlies" at "http://nightlies.spray.io/"
+
 resolvers += "Codehale" at "http://repo.codahale.com"
 
 resolvers += "theatr.us" at "http://repo.theatr.us"
