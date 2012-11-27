@@ -35,7 +35,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 	import com.evecentral.ParameterHelper._
 	import context.dispatcher
 
-	override implicit val timeout : Timeout = 10.seconds
+	override implicit val timeout : Timeout = 60.seconds
 
 	def receive = {
 		case QuickLookPathQuery(ctx, froms, tos, types) =>
@@ -274,7 +274,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 	}
 
 
-	def wrapAsXml(nodes: Future[Seq[NodeSeq]]) = Future { <evec_api version="2.0" method="marketstat_xml">
+	def wrapAsXml(nodes: Future[Seq[NodeSeq]]) = nodes.map { nodes => <evec_api version="2.0" method="marketstat_xml">
 		<marketstat>
 			{nodes}
 		</marketstat>
