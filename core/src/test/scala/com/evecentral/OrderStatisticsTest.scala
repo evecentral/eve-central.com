@@ -6,12 +6,6 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfter, FunSuite}
 import org.scalatest.matchers.ShouldMatchers
 import akka.testkit.{TestActorRef, TestKit}
 import akka.actor.ActorSystem
-import com.typesafe.config.ConfigFactory
-
-object OrderStatisticsTest {
-	implicit val system = ActorSystem("testsystem", ConfigFactory.parseString("""
-  akka.event-handlers = ["akka.testkit.TestEventListener"] """))
-}
 
 class OrderStatisticsTest(as: ActorSystem) extends TestKit(as) with FunSuite with ShouldMatchers with BeforeAndAfterAll {
 

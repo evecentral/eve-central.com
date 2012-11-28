@@ -1,20 +1,15 @@
 package com.evecentral.routes
 
-import org.scalatest.FunSuite
+import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import akka.actor.{ActorSystem, Actor}
 import com.evecentral.dataaccess.StaticProvider
-import akka.testkit.{TestKit, TestActorRef, TestActor}
-import com.typesafe.config.ConfigFactory
+import akka.testkit.{TestKit, TestActorRef}
 
-object RouteFinderTest {
-	implicit val system = ActorSystem("testsystem", ConfigFactory.parseString("""
-  akka.event-handlers = ["akka.testkit.TestEventListener"] """))
-}
+class RouteFinderTest(as: ActorSystem) extends TestKit(as) with FunSuite with BeforeAndAfterAll {
 
-class RouteFinderTest extends TestKit(RouteFinderTest.system) with FunSuite {
+	def this() = this(ActorSystem("MySpec"))
 
-
-  val rfa = TestActorRef(new RouteFinderActor)
+	val rfa = TestActorRef[RouteFinderActor]
   val rf = rfa.underlyingActor
 
   val jita = StaticProvider.systemsMap(30000142)
@@ -22,7 +17,6 @@ class RouteFinderTest extends TestKit(RouteFinderTest.system) with FunSuite {
   val perimiter = StaticProvider.systemsMap(30000144)
 
   test("Jita to Sagain distance") {
-
     assert(rf.routeDistance(jita, sagain) == 15)
   }
   

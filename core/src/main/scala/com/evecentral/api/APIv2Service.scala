@@ -106,11 +106,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 			case None => QueryDefaults.minQ(typeid)
 		}
 
-		val path = (pathActor ? RouteBetween(froms, tos)).mapTo[Option[Seq[Jump]]].map {
-			case Some(jumps) =>	jumps
-			case None => Seq[Jump]()
-		}
-
+		val path = (pathActor ? RouteBetween(froms, tos)).mapTo[Seq[Jump]]
 		val systems = path.map { jumps => jumps.foldLeft(Set[SolarSystem]()) { (set, j) => set + j.from + j.to }.toList.map(_.systemid) }
 		systems.map { systems =>
 			val buyq = GetOrdersFor(Some(true), List(typeid), List(), systems, setHours)
@@ -245,7 +241,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
 
 	def evemonMineral(mineral: MarketType) : Future[NodeSeq] = {
-		val q = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
+		val q = GetOrdersFor(Some(true), List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
 		getCachedStatistic(q).map { s =>
 		<mineral>
 			<name>{mineral.name}</name>
