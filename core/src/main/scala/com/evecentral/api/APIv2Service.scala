@@ -231,7 +231,7 @@ class MarketStatActor extends ECActorPool with FixedSprayMarshallers with LiftJs
 
 
 		def evemonMineral(mineral: MarketType) : NodeSeq = {
-			val buyq = GetOrdersFor(None, List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
+			val buyq = GetOrdersFor(Some(true), List(mineral.typeid), StaticProvider.empireRegions.map(_.regionid), Nil)
 			val s = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
 
 			<mineral>
