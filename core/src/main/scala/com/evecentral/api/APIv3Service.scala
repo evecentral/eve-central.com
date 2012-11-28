@@ -94,8 +94,8 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
 									case Right(data) => ctx.complete(json)
 									case Left(t) => ctx.failWith(t)
 								}
-							}
-					} ~ path("types" / ".*".r) {
+						}
+				} ~ path("types" / ".*".r) {
 					rest =>
 						get {
 							respondWithMediaType(`application/json`) {
