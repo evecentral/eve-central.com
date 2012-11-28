@@ -1,16 +1,20 @@
 package com.evecentral.routes
 
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
-import akka.actor.{ActorSystem, Actor}
+import akka.actor.{Props, ActorSystem, Actor}
 import com.evecentral.dataaccess.StaticProvider
-import akka.testkit.{TestKit, TestActorRef}
+import akka.testkit.{TestActorRef, TestKit}
 
 class RouteFinderTest(as: ActorSystem) extends TestKit(as) with FunSuite with BeforeAndAfterAll {
 
 	def this() = this(ActorSystem("MySpec"))
 
-	val rfa = TestActorRef[RouteFinderActor]
-	val rf = rfa.underlyingActor
+	override def afterAll() {
+		system.shutdown()
+	}
+
+	val rfa = system.actorOf(Props[RouteFinderActor])
+	val rf = TestActorRef[RouteFinderActor].underlyingActor
 
 	val jita = StaticProvider.systemsMap(30000142)
 	val sagain = StaticProvider.systemsMap(30001719)
