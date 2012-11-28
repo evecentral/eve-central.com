@@ -48,7 +48,7 @@ def import_systems(dbs,db):
         cur.execute('SELECT systemid FROM systems WHERE systemid = %s', (row[0],))
         r = cur.fetchone()
         if r:
-            cur.execute('UPDATE systems SET systemname = %s, security = %s, truesec = %s, constellationid = %s, faction = %s WHERE systemid = %s', (row[1], row[4], row[4], row[3], faction, row[0]))
+            cur.execute('UPDATE systems SET systemname = %s, security = %s, truesec = %s, constellationid = %s, faction = %s WHERE systemid = %s', (row[1], round(float(row[4]), 1), row[4], row[3], faction, row[0]))
         else:
             cur.execute('INSERT INTO systems (systemid, systemname, regionid, faction, security, constellationid, truesec) VALUES (%s, %s, %s, %s, %s, %s, %s)', (row[0], row[1], row[2], faction, row[4], row[3], row[4]))
             print "INSERT"

@@ -1,4 +1,4 @@
-import psycopg
+import psycopg2
 import time
 s = time.time()
 print "Initialize"
@@ -7,7 +7,7 @@ import sys
 
 
 
-db = psycopg.connect(database='evec', user='evec', host = 'localhost')
+db = psycopg2.connect(database='evec', user='evec', host = '172.20.20.1')
 
 print "Import time: ",time.time()-s
 s = time.time()
