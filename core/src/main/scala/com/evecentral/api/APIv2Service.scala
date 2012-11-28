@@ -108,12 +108,13 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 
 		val path = (pathActor ? RouteBetween(froms, tos)).mapTo[Seq[Jump]]
 		val systems = path.map { jumps => jumps.foldLeft(Set[SolarSystem]()) { (set, j) => set + j.from + j.to }.toList.map(_.systemid) }
-		systems.map { systems =>
+		systems.flatMap { systems =>
 			val buyq = GetOrdersFor(Some(true), List(typeid), List(), systems, setHours)
 			val selq = GetOrdersFor(Some(false), List(typeid), List(), systems, setHours)
-			(ordersActor ? buyq, ordersActor ? selq)
-		}.map {
-			case (selr : OrderList, buyr : OrderList) =>
+			Future.sequence(Seq(ordersActor ? buyq, ordersActor ? selq))
+		}.map { l =>
+			val buyr = l(0).asInstanceOf[OrderList]
+			val selr = l(1).asInstanceOf[OrderList]
 			<evec_api version="2.0" method="quicklook_path">
 				<quicklook>
 					<item>{typeid}</item>
