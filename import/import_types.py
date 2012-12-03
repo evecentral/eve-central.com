@@ -18,6 +18,7 @@ lines = stat.readlines()
 #    quoting = csv.QUOTE_MINIMAL
 
 # select typeID,groupID,typeName,description,iconID,0,mass,volume,capacity,portionSize,raceID,basePrice,published,marketGroupID, chanceOfDuplicating from invTypes
+# select typeID,groupID,typeName,description,iconID,0,mass,volume,capacity,1,raceID,1,published,marketGroupID,0 from invTypes;
 #typeID,groupID,typeName,description,graphicID,radius,mass,volume,capacity,portionSize,raceID,basePrice,published,marketGroupID,chanceOfDuplicating
 #0    1   2     3        4     5   6     7      8        9       10    11     12        13        14
 
