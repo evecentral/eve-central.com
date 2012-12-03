@@ -28,6 +28,11 @@ case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Lon
 
 case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
+class SuperPGInterval(interval: PGInterval) {
+	def toMillis = ((interval.getYears * 365 * 24 * 60 * 60).toLong + (interval.getDays * 24 * 60 * 60).toLong +
+		(interval.getMonths * 30 * 24 * 60 * 60).toLong + (interval.getHours * 60 * 60).toLong + (interval.getMinutes * 60).toLong + (interval.getSeconds.toLong)) * 1000
+}
+
 class GetOrdersActor extends ECActorPool {
 
 	private val log = LoggerFactory.getLogger(getClass)
@@ -54,7 +59,7 @@ class GetOrdersActor extends ECActorPool {
     db.transaction {
       tx =>
 
-        tx.select("SELECT typeid,orderid,price,bid,stationid,systemid,regionid,range,volremain,volenter,minvolume,duration,reportedtime" +
+        tx.select("SELECT typeid,orderid,price,bid,stationid,systemid,regionid,range,volremain,volenter,minvolume,EXTRACT(EPOCH FROM duration),reportedtime" +
           " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND " + bid + " AND (" +
           typeLimit + ") AND (" +
           regionLimit + ") AND ( " +
@@ -74,7 +79,7 @@ class GetOrdersActor extends ECActorPool {
             val volremain = row.nextLong.get
             val volenter = row.nextLong.get
             val minvol = row.nextLong.get
-            val duration = new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong * 1000)
+            val duration = new Period(row.nextLong.get * 1000)
             MarketOrder(typeid, orderid, price, bid,
               station,
               system,
