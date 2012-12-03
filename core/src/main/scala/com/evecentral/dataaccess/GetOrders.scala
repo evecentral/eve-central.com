@@ -70,7 +70,7 @@ class GetOrdersActor extends Actor {
             val volremain = row.nextLong.get
             val volenter = row.nextLong.get
             val minvol = row.nextLong.get
-            val duration = new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong)
+            val duration = new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong * 1000)
             MarketOrder(typeid, orderid, price, bid,
               station,
               system,
