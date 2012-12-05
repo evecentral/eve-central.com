@@ -1,0 +1,6 @@
+python-memcached
+psycopg2
+CherryPy
+Cheetah
+Pyro
+numpy
