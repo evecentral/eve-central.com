@@ -2,39 +2,38 @@ EVEC = {};
 
 var urlParams = {};
 (function () {
-    var match,
-    pl     = /\+/g,  // Regex for replacing addition symbol with a space
-    search = /([^&=]+)=?([^&]*)/g,
-    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-    query  = window.location.search.substring(1);
+	var match,
+	pl     = /\+/g,  // Regex for replacing addition symbol with a space
+	search = /([^&=]+)=?([^&]*)/g,
+	decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+	query  = window.location.search.substring(1);
 
-    while (match = search.exec(query))
+	while (match = search.exec(query))
 	urlParams[decode(match[1])] = decode(match[2]);
 })();
 
 
 (function() {
-    
 
-    Handlebars.registerHelper("formatPrice", function(price) {
+	Handlebars.registerHelper("formatPrice", function(price) {
 	price = parseFloat(price.toString()); // make sure we have a string
 
 	if (price < 100000) { // 100k
-	    return new Handlebars.SafeString(price.toFixed(2).replace(/(^\d{1,3}|\d{3})(?=(?:\d{3})+(?:$|\.))/g, '$1,'));
+		return new Handlebars.SafeString(price.toFixed(2).replace(/(^\d{1,3}|\d{3})(?=(?:\d{3})+(?:$|\.))/g, '$1,'));
 	} else if (price < 1000000000) { // 1b
-	    price = price / 1000000;
-	    return new Handlebars.SafeString(price.toFixed(2) + " M");
+		price = price / 1000000;
+		return new Handlebars.SafeString(price.toFixed(2) + " M");
 	} else if (price < 1000000000000) { // 1t
-	    price = price / 1000000000;
-	    return new Handlebars.SafeString(price.toFixed(3) + " B");
+		price = price / 1000000000;
+		return new Handlebars.SafeString(price.toFixed(3) + " B");
 	}
-    });
-    
+	});
+
 })();
 
 (function(ec) {
 
-    ec.types = {
+	ec.types = {
 	34 : "Tritanium",
 	35 : "Pyerite",
 	36 : "Mexallon",
@@ -43,58 +42,82 @@ var urlParams = {};
 	39 : "Zydrine",
 	40 : "Megacyte",
 	29668 : "PLEX"
-    };
+	};
 
+	// Some key market systems
+	ec.marketSystems = {
+		"Jita" : 30000142,
+		"Dodixie" : 30002659,
+		"Amarr" : 30002187,
+		"Rens" :  30002150
+	};
 
-    ec.statsModel = Backbone.Model.extend({
-	url:'/api/marketstat/json'
-    });
+	ec.statsModel = Backbone.Model.extend({
+		url:'/api/marketstat/json'
+	});
 
-    ec.statsView = Backbone.View.extend({
-	initialize:function () {
-            this.model.bind("change", this.render, this);
-	},
-	render: function (event) { 
-	    var source   = $("#statsTemplate").html();
-	    var template = Handlebars.compile(source);
-	    this.$el.html(template(this.model.toJSON()[0]));
-	    return this;
-	}
-    });
+	ec.marketSystemsCollection = Backbone.Collection.extend(ec.marketSystems);
+	ec.marketSystemModel = Backbone.Model.extend();
 
-    ec.statsScrollView = Backbone.View.extend({
-	initialize: function() {            this.model.bind("change", this.render, this); },
-	render: function(event) {
-	    var template = Handlebars.compile($("#statsTemplate").html());
-	    var data = this.model.toJSON();
+	ec.marketSystemsView = Backbone.View.extend({
+		events : {
 
-	    this.$el.empty();
-	    var model = this;
-	    $.each(data, function() {
-		model.$el.append(template({ typeid : this.sell.forQuery.types[0], typename : ec.types[this.sell.forQuery.types[0]], values: this }));
-	    });
+		},
+		render: function(event) {
+			var source = $("#marketSystemChooserTemplate").html();
+			var template = Handlebars.compile(source);
+			this.$el.html(template(this.model.toJSON()));
+			return this;
+		}
+	});
 
-	    return this;
-	}
-    });
+	ec.statsView = Backbone.View.extend({
+		initialize:function () {
+			this.model.bind("change", this.render, this);
+		},
+		render: function (event) {
+			var source   = $("#statsTemplate").html();
+			var template = Handlebars.compile(source);
+			this.$el.html(template(this.model.toJSON()[0]));
+			return this;
+		}
+	});
 
-    ec.indexpage = function() {
+	ec.statsScrollView = Backbone.View.extend({
+		initialize: function() {
+			this.model.bind("change", this.render, this);
+		},
+		render: function(event) {
+			var template = Handlebars.compile($("#statsTemplate").html());
+			var data = this.model.toJSON();
+
+			this.$el.empty();
+			var model = this;
+			$.each(data, function() {
+				model.$el.append(template({ typeid : this.sell.forQuery.types[0], typename : ec.types[this.sell.forQuery.types[0]], values: this }));
+			});
+
+		return this;
+		}
+	});
+
+	ec.indexpage = function() {
 	var stats = new ec.statsModel();
 	var statsView = new ec.statsScrollView( { model : stats, el : $("#statsHolder")});
 	var data = {"typeid" : "34,35,36,37,38,39,40,29668", "usesystem" : "30000142"};
 	stats.fetch({data: data});
 	window.setInterval(function() {
-	    stats.fetch({data: data});
+		stats.fetch({data: data});
 	}, 60000);
-	
-    };
 
-    ec.quicklook = function (regionlist) {
+	};
+
+	ec.quicklook = function (regionlist) {
 	var stats = new ec.statsModel();
 	urlParams["regionlimit"] = new Array();
 	var regionstr = "";
 	$.each(regionlist, function (region) {
-	    regionstr = regionstr + this.toString() + ",";
+		regionstr = regionstr + this.toString() + ",";
 	});
 	urlParams["regionlimit"] = regionstr;
 
@@ -102,10 +125,9 @@ var urlParams = {};
 	stats.fetch({data:urlParams});
 
 	window.setInterval(function() {
-	    stats.fetch({data: urlParams});
-	}, 60000);
+		stats.fetch({data: urlParams});
+	}, 1200000);
 
-    };
-
+	};
 
 })(window.ec = window.ec || {});
