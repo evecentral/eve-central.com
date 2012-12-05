@@ -23,7 +23,6 @@ import memcache
 sys.path.append('../lib')
 
 import cherrypy
-import dowser
 
 from tradetool import TradeTool
 from evec import Home
@@ -38,13 +37,9 @@ if __name__=="__main__":
     if os.path.isfile('site.config.local'):
         cherrypy.config.update("site.config.local")
 
-    if not os.path.exists('/tmp/cherry_session'):
-        os.mkdir('/tmp/cherry_session')
-
     cherrypy.config.update({'server.socket_port': int(sys.argv[1])})
 
     cherrypy.tree.mount(Home(), '/home')
-    cherrypy.tree.mount(dowser.Root(), '/dowser')
     cherrypy.tree.mount(TradeTool(), '/tradetool')
     cherrypy.tree.mount(JsonTools(), '/json_tools')
 
