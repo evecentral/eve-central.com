@@ -10,6 +10,7 @@ object ActorNames {
 	val getorders = "getorders"
 	val uploadstorage = "uploadstorage"
 	val unifiedparser = "unifiedparser"
+	val gethiststats = "gethiststats"
 
 	val http_apiv3 = "http_apiv3"
 	val http_apiv2 = "http_apiv2"

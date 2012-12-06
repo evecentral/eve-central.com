@@ -35,6 +35,7 @@ object Boot extends App {
 	val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
 	val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
 	val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
+	val gethiststats = system.actorOf(Props[GetHistStats].withRouter(new SmallestMailboxRouter(10)), ActorNames.gethiststats)
 
 
 	class APIServiceActor extends Actor with APIv2Service with APIv3Service {

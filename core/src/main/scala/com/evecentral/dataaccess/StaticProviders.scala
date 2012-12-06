@@ -31,7 +31,13 @@ object QueryDefaults {
   }
 }
 
-case class Region(regionid: Long, name: String)
+trait BaseRegion {
+
+}
+
+case class AnyRegion() extends BaseRegion
+
+case class Region(regionid: Long, name: String) extends BaseRegion
 
 case class Station(stationid: Long, name: String, shortName: String, system: SolarSystem)
 

@@ -16,6 +16,7 @@ object MarketOrder {
   implicit def pimpMoToDouble(m: MarketOrder) : Double = { m.price }
 }
 
+
 /**
  * Get a list of orders.
  * @TODO: the Long parameters really should be a MarketType, Region etc
