@@ -5,3 +5,6 @@
 core/.idea
 core/target
 core/project/target
+target/
+.idea*
+core/logs
