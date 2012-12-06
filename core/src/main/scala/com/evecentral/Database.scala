@@ -1,20 +1,22 @@
 package com.evecentral
 
-import net.noerd.prequel.DatabaseConfig
+import net.noerd.prequel.{PoolConfig, DatabaseConfig}
 
 import org.postgresql.Driver
 
 object Database {
 
-
 	def coreDb = dbconfig
+
+	private[this] val poolconfig = PoolConfig(maxActive = 20,  maxIdle = 20, minIdle = 20)
 
 	private[this] val dbconfig = DatabaseConfig(
     driver = "org.postgresql.Driver",
     jdbcURL = "jdbc:postgresql://localhost/evec",
     username = "evec",
-    password =  "evec"
-  )
+    password =  "evec",
+		poolConfig = poolconfig
+	)
 
   def concatQuery(fieldName: String, items: Seq[Any]): String = {
     if (items.length == 0) "1=1"
