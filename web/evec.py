@@ -20,7 +20,8 @@ import string
 import os
 import Cheetah.Template
 import random
-import Pyro.core
+import json
+import urllib
 
 import cherrypy
 
@@ -319,9 +320,6 @@ class Home:
     def tradefind_display(self, qtype, fromt, to, set = None, age = 24, cashonhand = 10000000.00, minprofit = 100000, size = 10000, startat = 0, limit = 50, newsearch = "0", sort = "jprofit", prefer_sec = "0"):
 
 
-        mapserver = Pyro.core.PyroURI("PYROLOC://localhost:7766/mapserver").getProxy()
-
-
         session = EVCstate()
         t = display.template('tradefind_display.tmpl', session)
         db = evec_func.db_con()
@@ -545,8 +543,12 @@ class Home:
                 distance = 0
                 time_net_ = time.time()
 
-                distance_map = mapserver.route_comp(compsys, list(from_to_map[compsys]))
-
+                for tosystem in from_to_map[compsys]:
+                    load = urllib.urlopen('http://172.20.20.1:8080/api/distance/from/' + str(int(compsys)) + '/to/' + str(int(tosystem)))
+                    s = load.read()
+                    load.close()
+                    distance_map[tosystem] = json.loads(s)['distance']
+                    
                 time_net += time.time() - time_net_
 
                 for row in from_map[compsys]:
