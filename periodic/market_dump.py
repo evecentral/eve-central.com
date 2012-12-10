@@ -51,7 +51,7 @@ def write_dump(file,date):
 	record += 1
         writer.writerow(a)
 	a = cur.fetchone()
-	if record % 1000 == 0:
+	if record % 10000 == 0:
 	    print record,
     print
 
@@ -59,7 +59,6 @@ def write_dump(file,date):
 def do_date(data):
 
     date = Date(2008,1,15)
-
 
     while date < now() - RelativeDateTime(days = 1):
 	try:
@@ -92,8 +91,6 @@ try:
 except:
     dumps_data = {}
 
-
-
 do_date(dumps_data)
 
 f = open('dumps.pickle', 'w')
@@ -101,5 +98,5 @@ pickle.dump(dumps_data, f)
 f.close()
 
 cur = db.cursor()
-cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '2 days'")
+cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '1 days'")
 db.commit()

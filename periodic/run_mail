@@ -1,3 +1,0 @@
-#!/bin/sh
-cd /www/eve-central.com/periodic
-python mail_send.py
