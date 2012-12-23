@@ -12,6 +12,7 @@ import com.evecentral.dataaccess.SolarSystem
 import scala.Right
 import scala.Some
 import com.evecentral.dataaccess.OrderList
+import com.evecentral.routes.{Jump, RouteBetween}
 
 object TradeFinder {
 	case class RequestSellToBuy(origin: Either[SolarSystem, Region], destination: Either[SolarSystem, Region], taxRate: Double)
@@ -24,34 +25,43 @@ class TradeFinder extends Actor {
 	import context._
 
 	private[this] val getOrders = actorFor(ActorNames.getorders)
+	private[this] val getRoutes = actorFor(ActorNames.routefinder)
 
-	private[this] def fetchOrder(bid: Boolean, location: Either[SolarSystem, Region]): Future[OrderList] = {
+	def fetchOrder(bid: Boolean, location: Either[SolarSystem, Region]): Future[OrderList] = {
 		val regions = location match { case Left(ss) => Nil case Right(r) => Seq(r.regionid) }
 		val systems = location match { case Left(ss) => Seq(ss.systemid) case Right(r) => Nil }
 		val request = GetOrdersFor(Some(bid), Seq(), regions = regions, systems = systems)
 		(getOrders ? request).mapTo
 	}
 
-	private[this] def getRawProfitable(o: Future[Map[Long, Seq[MarketOrder]]],
-	                                   d: Future[Map[Long, Seq[MarketOrder]]], taxRate: Double) = {
-		Future.sequence(Seq(o, d)).map { l =>
-			val originOrders = l(0)
-			val destOrders = l(1)
-			// Match the type IDs to only available ones
-			val originOrdersF = originOrders.filterKeys(k => destOrders.contains(k))
-			val destOrdersF = destOrders.filterKeys(k => originOrdersF.contains(k))
+	def getRawProfitable(o: Map[Long, Seq[MarketOrder]],
+	                     d: Map[Long, Seq[MarketOrder]], taxRate: Double) = {
 
-			originOrdersF.map { case (k,v) => (k -> (v, destOrdersF(k))) } mapValues { v =>
-				v._1.sortBy(_.price).zip(v._2.sortBy(_.price)).filter { case (o,d) => o.price < (d.price - d.price * taxRate) }.unzip
-			}
+		// Match the type IDs to only available ones
+		val originOrdersF = o.filterKeys(k => d.contains(k))
+		val destOrdersF = d.filterKeys(k => originOrdersF.contains(k))
+
+		originOrdersF.map { case (k,v) => (k -> (v, destOrdersF(k))) }.mapValues { v =>
+			v._1.sortBy(_.price).zip(v._2.sortBy(-_.price)).filter { case (o,d) => o.price < (d.price - d.price * taxRate) }.unzip
+		}.filter{ case (key, (v1, v2)) => v1.size > 0 && v2.size > 0 }
+	}
+
+	def enumerateRoutes(orders: Map[Long, (Seq[MarketOrder], Seq[MarketOrder])]): Map[Long, Future[Seq[List[Jump]]]] = {
+		val systems = orders.mapValues { case (a,b) => (a.map { order => order.system }.distinct, b.map { order => order.system}.distinct) }
+
+		val pairs = systems.map { case (key, value) => (key -> (for { a <- value._1; b <- value._2 } yield (a,b)).distinct) }
+		pairs.map { case (key, routes) =>
+			key -> Future.sequence(routes.map { case (s,d) => (getRoutes ? RouteBetween(s,d)).mapTo[List[Jump]] })
+				.map { routes => routes.distinct.sortBy { _.size } }
 		}
 	}
 
 	def receive = {
 		case RequestSellToBuy(origin, destination, taxRate) => {
-			val oFuture = fetchOrder(false, origin).map { r => r.result.groupBy(_.typeid) }
-			val dFuture = fetchOrder(true, destination).map {r => r.result.groupBy(_.typeid) }
-			sender ! getRawProfitable(oFuture, dFuture, taxRate)
+			val rp = for {
+				oFuture <- fetchOrder(false, origin).map { r => r.result.groupBy(_.typeid) }
+				dFuture <- fetchOrder(true, destination).map {r => r.result.groupBy(_.typeid) }
+			} yield getRawProfitable(oFuture, dFuture, taxRate)
 
 		}
 	}
