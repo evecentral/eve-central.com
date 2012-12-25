@@ -1,70 +1,57 @@
 package com.evecentral
 
-import akka.config.Supervision._
-import akka.actor.{Supervisor, Actor}
-import Actor._
+import akka.actor.{Props, ActorSystem, Actor}
 
-import cc.spray.{SprayCanRootService, HttpService}
-
-import com.evecentral.frontend.FrontEndService
 import com.evecentral.dataaccess._
 import com.evecentral.api._
-import datainput.{StatisticsCaptureActor, UploadStorageActor}
+import datainput.{UnifiedUploadParsingActor, StatisticsCaptureActor, UploadStorageActor}
 import routes.RouteFinderActor
 import org.slf4j.LoggerFactory
-import cc.spray.can.{MessageParserConfig, HttpServer}
+import spray.io.{IOExtension, SingletonHandler}
+import util.ActorNames
+import spray.can.server.HttpServer
+import com.typesafe.config.ConfigFactory
+import akka.routing.SmallestMailboxRouter
+import akka.util.duration._
+import akka.util.Timeout
 
 
 object Boot extends App {
 
+	val config = ConfigFactory.load()
+	val system = ActorSystem("evec")
+	val ioBridge = IOExtension(system).ioBridge
 
+  val systemsMap = StaticProvider.systemsMap
+	val stationsMAp = StaticProvider.stationsMap
+	val typesMap = StaticProvider.typesMap
   LoggerFactory.getLogger(getClass)
   // initialize SLF4J early
 
-  val akkaConfig = akka.config.Config.config
-  val apiModule = new APIv3Service {}
-  val apiv2Module = new APIv2Service {}
-  val staticModule = new StaticService {}
+	// "Singleton" actors
+	val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.getorders)
+	val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(3)), ActorNames.uploadstorage)
+	val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
+	val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
+	val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
+	val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
+	val gethiststats = system.actorOf(Props[GetHistStats].withRouter(new SmallestMailboxRouter(10)), ActorNames.gethiststats)
 
-  val frontEndService = new FrontEndService {}
 
-  val config = cc.spray.can.ServerConfig(host = "0.0.0.0", port = akkaConfig.getInt("server-port", 8080),
-    parserConfig = MessageParserConfig(maxUriLength = 16384))
+	class APIServiceActor extends Actor with APIv2Service with APIv3Service {
+		def actorRefFactory = context
+		def receive = runRoute(v2Service ~ api3Service)
+		override implicit val timeout : Timeout = 60.seconds
+	}
 
-  val httpApiService = actorOf(new HttpService(apiModule.api3Service))
-  val httpApiv2Service = actorOf(new HttpService(apiv2Module.v2Service))
-  val httpStaticService = actorOf(new HttpService(staticModule.staticService))
-  val httpFeService = actorOf(new HttpService(frontEndService.frontEndService))
-  val rootService = actorOf(new SprayCanRootService(httpApiService, httpApiv2Service, httpStaticService, httpFeService))
-  val sprayCanServer = actorOf(new HttpServer(config))
+  val apiModule = system.actorOf(Props[APIServiceActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.http_apiv3)
 
-  val systemsMap = StaticProvider.systemsMap
-  val stationsMAp = StaticProvider.stationsMap
-  val typesMap = StaticProvider.typesMap
 
-	/* Build a supervisor for all of the "top-level" actor objects */
-  val supervisor = Supervisor(
-    SupervisorConfig(
-      OneForOneStrategy(List(classOf[Throwable], classOf[Exception]), 100, 100),
-      List(
-        Supervise(httpApiService, Permanent),
-        Supervise(httpApiv2Service, Permanent),
-        Supervise(httpStaticService, Permanent),
-        Supervise(httpFeService, Permanent),
-        Supervise(rootService, Permanent),
-        Supervise(sprayCanServer, Permanent),
-        Supervise(apiv2Module.quicklookActor, Permanent),
-        Supervise(apiv2Module.marketstatActor, Permanent),
-        Supervise(apiv2Module.olduploadActor, Permanent),
-				Supervise(apiModule.unifiedParser, Permanent),
-        Supervise(actorOf(new GetOrdersActor()), Permanent),
-        Supervise(actorOf(new RouteFinderActor()), Permanent),
-        Supervise(actorOf(new OrderCacheActor()), Permanent),
-				Supervise(actorOf(new UploadStorageActor()), Permanent),
-	      Supervise(actorOf(new StatisticsCaptureActor()), Permanent)
+	val server = system.actorOf(
+	Props(new HttpServer(ioBridge, SingletonHandler(apiModule))),
+	"http_server"
+	)
 
-      )
-    )
-  )
-  supervisor.start
+	server ! HttpServer.Bind("0.0.0.0", 8081)
+
 }

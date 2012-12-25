@@ -6,3 +6,7 @@ core/.idea
 core/target
 core/project/target
 ve/
+target/
+.idea*
+core/logs
+

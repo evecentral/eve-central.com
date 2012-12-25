@@ -4,46 +4,50 @@ import akka.actor.Actor
 import com.evecentral.dataaccess._
 import com.evecentral.{RegisterCacheFor, GetCacheFor, OrderStatistics, OrderCacheActor}
 import com.evecentral.routes.RouteFinderActor
+import akka.pattern.ask
 import com.evecentral.dataaccess.GetOrdersFor
 import com.evecentral.RegisterCacheFor
 import com.evecentral.GetCacheFor
 import com.evecentral.dataaccess.OrderList
-
+import akka.dispatch.Future
+import akka.util.duration._
+import akka.util.Timeout
 
 trait BaseOrderQuery {
+	this: Actor =>
+	import context.dispatcher
 
-	def ordersActor = {
-		val r = Actor.registry.actorsFor[GetOrdersActor]
-		r(0)
+	def ordersActor = context.actorFor("/user/" + ActorNames.getorders)
+	def statCache = context.actorFor("/user/" + ActorNames.statCache)
+	def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
+
+	implicit val timeout : Timeout = 60.seconds
+
+	def fetchOrdersFor(buyq: GetOrdersFor) : Future[Seq[MarketOrder]] = {
+		(ordersActor ? buyq).map(_.asInstanceOf[OrderList].result)
 	}
 
-	def statCache = {
-		val r = (Actor.registry.actorsFor[OrderCacheActor]);
-		r(0)
-	}
-
-	def pathActor = {
-		val r = (Actor.registry.actorsFor[RouteFinderActor]); r(0)
-	}
-
-
-	def fetchOrdersFor(buyq: GetOrdersFor) : Seq[MarketOrder] = {
-		val buyf = (ordersActor ? buyq)
-		(buyf.as[OrderList] getOrElse OrderList(null, List[MarketOrder]())).result
-	}
-
-	def fetchCachedStats(query: GetOrdersFor, highToLow: Boolean) : Option[OrderStatistics] = {
-		val r = (statCache ? GetCacheFor(query, highToLow))
-		r.as[Option[OrderStatistics]] getOrElse  None
+	def fetchCachedStats(query: GetOrdersFor, highToLow: Boolean) : Future[Option[OrderStatistics]] = {
+		(statCache ? GetCacheFor(query, highToLow)).map(_.asInstanceOf[Option[OrderStatistics]])
 	}
 
 	def storeCachedStats(stats: OrderStatistics, query: GetOrdersFor) : OrderStatistics = {
 		val cached = OrderStatistics.cached(query, stats)
-		(statCache! RegisterCacheFor(cached))
+		(statCache ! RegisterCacheFor(cached))
 		cached
 	}
 
 	def defaultMinQ(minq: Option[Long], typeid: Long) = minq getOrElse QueryDefaults.minQ(typeid)
+
+	def getCachedStatistic(query: GetOrdersFor) : Future[OrderStatistics] = {
+		fetchCachedStats(query, query.bid.getOrElse(false)).flatMap { value =>
+			value match {
+				case None => fetchOrdersFor(query).map { orders =>
+					storeCachedStats(OrderStatistics(orders, query.bid.getOrElse(false)), query) }
+				case Some(v) => Future { v }
+			}
+		}
+	}
 
 
 	/**
@@ -55,7 +59,8 @@ trait BaseOrderQuery {
 	 * @param minq
 	 * @return
 	 */
-	def getCachedStatistics(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]): (OrderStatistics, OrderStatistics, OrderStatistics) = {
+	def getCachedStatistics(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]):
+	Future[(OrderStatistics, OrderStatistics, OrderStatistics)] = {
 		val numminq = defaultMinQ(minq, typeid)
 		val usesys = usesystem match {
 			case None => Nil
@@ -66,10 +71,12 @@ trait BaseOrderQuery {
 		val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
 		val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesys, setHours, numminq)
 
-		val alls = fetchCachedStats(allq, false) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(allq)), allq)
-		val sels = fetchCachedStats(selq, false) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(selq)), selq)
-		val buys = fetchCachedStats(buyq, true) getOrElse storeCachedStats(OrderStatistics(fetchOrdersFor(buyq), true), buyq)
-		(buys, alls, sels)
+		val allCache = getCachedStatistic(allq)
+		val buyCache = getCachedStatistic(buyq)
+		val sellCache = getCachedStatistic(selq)
+		Future.sequence(Seq(buyCache, allCache, sellCache)).map { s =>
+			(s(0), s(1), s(2))
+		}
 	}
 
 }

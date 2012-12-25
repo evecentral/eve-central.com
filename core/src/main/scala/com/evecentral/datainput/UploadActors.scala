@@ -1,15 +1,16 @@
 package com.evecentral.datainput
 
 import akka.actor.Actor
-import Actor.actorOf
-import cc.spray.typeconversion.DefaultMarshallers
+
 import com.evecentral.dataaccess.StaticProvider
-import com.evecentral.{Database, PoisonCache, OrderCacheActor, ECActorPool}
+import com.evecentral.{Database, PoisonCache, OrderCacheActor}
+import com.evecentral.util.ActorNames
 import org.slf4j.LoggerFactory
-import cc.spray.{RequestContext, Directives}
+import spray.routing.{Directives, RequestContext}
 
 import org.joda.time.DateTime
-import akka.config.Supervision.OneForOneStrategy
+import spray.httpx.marshalling.BasicMarshallers
+
 
 case class UploadTriggerEvent(typeId: Int, regionId: Long)
 
@@ -17,10 +18,10 @@ case class OldUploadPayload(ctx: RequestContext, typename: Option[String], useri
 														data: String, typeid: Option[String], region: Option[String])
 
 
-class OldUploadParsingActor extends Actor with Directives with DefaultMarshallers {
+class OldUploadParsingActor extends Actor with Directives with BasicMarshallers {
 	private val log = LoggerFactory.getLogger(getClass)
 
-	def storageActor = { val r = Actor.registry.actorsFor[UploadStorageActor]; r(0) }
+	def storageActor = context.actorFor("/user/" + ActorNames.uploadstorage)
 
 	def receive = {
 		case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
@@ -36,9 +37,9 @@ class OldUploadParsingActor extends Actor with Directives with DefaultMarshaller
 	}
 }
 
-class UnifiedUploadParsingActor extends Actor with Directives with DefaultMarshallers {
+class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshallers {
 
-	def storageActor = { val r = Actor.registry.actorsFor[UploadStorageActor]; r(0) }
+	def storageActor = context.actorFor("/user/" + ActorNames.uploadstorage)
 
 	private val log = LoggerFactory.getLogger(getClass)
 
@@ -62,9 +63,7 @@ class UploadStorageActor extends Actor {
 
 	private val log = LoggerFactory.getLogger(getClass)
 
-	def statCaptureActor = { val r = Actor.registry.actorsFor[StatisticsCaptureActor]; r(0) }
-
-	self.faultHandler = OneForOneStrategy(List(classOf[Throwable]), 100, 1000)
+	def statCaptureActor = context.actorFor("/user/" + ActorNames.statCapture)
 
 	override def preStart() {
 	}
@@ -103,8 +102,8 @@ class UploadStorageActor extends Actor {
 	}
 
 	def poisonCache(marketType: Int, regionId: Long) {
-		val a = Actor.registry.actorsFor[OrderCacheActor]
-		(a(0) ! PoisonCache(StaticProvider.regionsMap(regionId), StaticProvider.typesMap(marketType)))
+		val a = context.actorFor("/user/" + ActorNames.statCache)
+		(a ! PoisonCache(StaticProvider.regionsMap(regionId), StaticProvider.typesMap(marketType)))
 	}
 
 	def confirmGeneratedAt(generatedAt: DateTime, typeId: Int, regionId: Long) : Boolean = {

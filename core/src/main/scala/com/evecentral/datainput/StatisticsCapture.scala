@@ -1,25 +1,29 @@
 package com.evecentral.datainput
 
-import akka.actor.{Scheduler, Actor}
+import akka.actor.{Actor, Props}
+import akka.util.duration._
 import org.slf4j.LoggerFactory
 import com.evecentral.util.BaseOrderQuery
-import java.util.concurrent.TimeUnit
+import akka.util.duration._
+import akka.pattern.ask
 
 import com.evecentral.dataaccess.{OrderList, StaticProvider, GetOrdersFor}
 import com.evecentral.{RegisterCacheFor, OrderStatistics, Database}
+import akka.dispatch.Future
 
 private[this] case class CaptureStatistics()
 private[this] case class StoreStatistics(query: GetOrdersFor, result: OrderStatistics)
 
 class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
-	private val log = LoggerFactory.getLogger(getClass)
+	import context.dispatcher
 
+	private val log = LoggerFactory.getLogger(getClass)
 	private val toCaptureSet = scala.collection.mutable.Set[GetOrdersFor]()
 
 	override def preStart() {
 		log.info("Pre-starting statistics capture actor")
-		Scheduler.schedule(self, CaptureStatistics(), 2, 60, TimeUnit.MINUTES)
+		context.system.scheduler.schedule(2.minutes, 60.minutes, self, CaptureStatistics())
 	}
 
 	def buildQueries(bid: Boolean, typeid: Int, regionid: Long) : List[GetOrdersFor] = {
@@ -67,15 +71,13 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 			storeStatistics(query, result)
 		case CaptureStatistics() =>
 			log.info("Capturing statistics in a large batch")
-			val results = toCaptureSet.toList.map(ordersActor ? _)
+			val results = toCaptureSet.toList.map(capset => (ordersActor ? capset).mapTo[OrderList])
 			// Attach an oncomplete to all the actors
-			results.foreach(_.onComplete({ res =>
-				res.get match {
+			results.map { entity =>
+				entity onSuccess {
 					case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
 				}
 			}
-			))
-
 			log.info(results.size + " results to capture")
 			toCaptureSet.clear()
 

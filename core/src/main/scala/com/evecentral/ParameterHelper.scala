@@ -1,26 +1,27 @@
 package com.evecentral
 
-import cc.spray.http._
+import spray.http._
 
 import java.net.URI
 import java.net.URLDecoder
 
 import org.parboiled.scala._
-import org.parboiled.errors.ErrorUtils
-import cc.spray.RequestContext
+import org.parboiled.errors.{ParsingException, ErrorUtils}
+import spray.routing.RequestContext
 import java.nio.charset.Charset
-import cc.spray.typeconversion.{SimpleMarshaller, DefaultMarshallers}
+import spray.httpx.marshalling.{Marshaller, BasicMarshallers}
+
 import xml.NodeSeq
-import cc.spray.http.MediaTypes._
+import spray.http.MediaTypes._
 
-
-trait FixedSprayMarshallers extends DefaultMarshallers {
-  override implicit lazy val NodeSeqMarshaller = new SimpleMarshaller[NodeSeq] {
-    val canMarshalTo = ContentType(`text/xml`) ::
-      ContentType(`text/html`) ::
-      ContentType(`application/xhtml+xml`) :: Nil
-    def marshal(value: NodeSeq, contentType: ContentType) = StringMarshaller.marshal("<?xml version='1.0' encoding='utf-8'?>\n" + value.toString, contentType)
-  }
+/**
+ * Attach the xml header to a nodeseq
+ */
+trait FixedSprayMarshallers extends BasicMarshallers {
+	override implicit val NodeSeqMarshaller : Marshaller[NodeSeq] =
+		Marshaller.delegate[NodeSeq, String](
+			`text/xml`, `text/html`, `application/xhtml+xml`
+		){ nodes:NodeSeq => "<?xml version='1.0' encoding='utf-8'?>\n" + nodes.toString }
 }
 /**
  * A helper object for dealing with parameter lists, especially ones
@@ -57,9 +58,9 @@ object ParameterHelper {
 
   def listFromContext(ctx : RequestContext) : ML = {
     try {
-      val formdata = ctx.request.content match {
-        case Some(c) => Some(new String(c.buffer, Charset.forName("UTF-8")))
-        case None => None
+      val formdata = ctx.request.entity match {
+        case EmptyEntity => None
+        case t : HttpEntity => Some(new String(t.buffer, Charset.forName("UTF-8")))
       }
 
       formdata match {
@@ -116,8 +117,7 @@ object RepeatQueryParser extends BaseParser {
         case Right(parameterMap) => parameterMap
       }
     } catch {
-      case e: Exception => throw new HttpException(StatusCodes.BadRequest,
-        "Illegal query string '" + queryString + "':\n" + e.getMessage)
+      case e: Exception => throw new ParsingException("Illegal query string '" + queryString + "':\n" + e.getMessage)
     }
   }
 

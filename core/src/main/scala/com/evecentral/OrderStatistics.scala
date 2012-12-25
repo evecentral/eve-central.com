@@ -206,9 +206,9 @@ class OrderCacheActor extends Actor {
 			val res = cacheLruHash.get(gcf)
 			res match {
 				case os : OrderStatistics =>
-					self.channel ! Some(os)
+					sender ! Some(os)
 				case _ =>
-					self.channel ! None
+					sender ! None
 			}
 		case GetCachedRegion(region) =>
 			val mi = regionLru(region).mapIterator()

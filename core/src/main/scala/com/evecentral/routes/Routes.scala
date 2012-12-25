@@ -7,8 +7,9 @@ import com.evecentral.dataaccess.{StaticProvider, SolarSystem}
 import edu.uci.ics.jung.graph.util.EdgeType
 import org.slf4j.{Logger,  LoggerFactory}
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath
-import scalaj.collection.Imports._
 import edu.uci.ics.jung.algorithms.filters.KNeighborhoodFilter
+import scala.collection.JavaConversions._
+
 
 
 /**
@@ -60,8 +61,8 @@ class RouteFinderActor extends Actor {
     route(from, to).length
   }
 
-  private[routes] def route(from: SolarSystem, to: SolarSystem) : Seq[Jump] = {
-    dsp.getPath(from, to) asScala
+  private[routes] def route(from: SolarSystem, to: SolarSystem) : List[Jump] = {
+    dsp.getPath(from, to).toList
   }
 
 	private[routes] def kNeighbors(origin: SolarSystem, radius: Int) : Seq[SolarSystem] = {
@@ -72,9 +73,9 @@ class RouteFinderActor extends Actor {
 	}
 
   def receive = {
-    case DistanceBetween(f,t) => self.reply(routeDistance(f,t))
-    case RouteBetween(f,t) => self.reply(route(f,t))
-		case NeighborsOf(o,r) => self.reply(kNeighbors(o,r))
+    case DistanceBetween(f,t) => sender ! routeDistance(f,t)
+    case RouteBetween(f,t) => sender ! route(f,t)
+		case NeighborsOf(o,r) => sender ! kNeighbors(o,r)
   }
   
   private var graph = new DirectedSparseGraph[SolarSystem, Jump]()

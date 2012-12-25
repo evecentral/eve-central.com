@@ -1,15 +1,11 @@
 package com.evecentral.dataaccess
 
-import akka.dispatch.Future
-import akka.routing._
-import akka.actor.Actor
-import akka.event.EventHandler
-import Actor._
-import com.evecentral.{ECActorPool, Database}
+import com.evecentral.{Database}
 import org.joda.time.{DateTime, Period}
 import org.postgresql.util.PGInterval
 import net.noerd.prequel.{StringFormattable}
 import org.slf4j.LoggerFactory
+import akka.actor.Actor
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
                        volremain: Long,  volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {
@@ -19,6 +15,7 @@ case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean,
 object MarketOrder {
   implicit def pimpMoToDouble(m: MarketOrder) : Double = { m.price }
 }
+
 
 /**
  * Get a list of orders.
@@ -33,7 +30,7 @@ class SuperPGInterval(interval: PGInterval) {
 		(interval.getMonths * 30 * 24 * 60 * 60).toLong + (interval.getHours * 60 * 60).toLong + (interval.getMinutes * 60).toLong + (interval.getSeconds.toLong)) * 1000
 }
 
-class GetOrdersActor extends ECActorPool {
+class GetOrdersActor extends Actor {
 
 	private val log = LoggerFactory.getLogger(getClass)
 
@@ -79,7 +76,11 @@ class GetOrdersActor extends ECActorPool {
             val volremain = row.nextLong.get
             val volenter = row.nextLong.get
             val minvol = row.nextLong.get
+<<<<<<< HEAD
             val duration = new Period(row.nextLong.get * 1000)
+=======
+            val duration = new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong * 1000)
+>>>>>>> akka2
             MarketOrder(typeid, orderid, price, bid,
               station,
               system,
@@ -93,12 +94,11 @@ class GetOrdersActor extends ECActorPool {
     }
   }
 
-  def instance = actorOf(new Actor { def receive = {
-      case x: GetOrdersFor => {
-	      val channel = self.channel
-	      channel ! OrderList(x, orderList(x))
-      }
-  }
-  }
-  )
+	def receive = {
+		case x: GetOrdersFor => {
+			sender ! OrderList(x, orderList(x))
+		}
+	}
+
+
 }
