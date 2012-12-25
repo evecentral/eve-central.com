@@ -2,20 +2,17 @@ package com.evecentral.api
 
 import akka.actor.Actor
 import akka.pattern.ask
-
-import com.codahale.jerkson.Json.generate
-import spray.http.MediaTypes._
-import spray.routing.{HttpService, RequestContext, Directives}
-import spray.http.HttpHeaders.RawHeader
-import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
-import spray.httpx.LiftJsonSupport
-import com.evecentral.dataaccess._
-import com.evecentral.FixedSprayMarshallers
-import com.evecentral.routes._
 import akka.util.Timeout
 import akka.util.duration._
+import com.codahale.jerkson.Json.generate
+import com.evecentral.FixedSprayMarshallers
+import com.evecentral.dataaccess._
+import com.evecentral.routes._
 import com.evecentral.util.ActorNames
-
+import spray.http.HttpHeaders.RawHeader
+import spray.http.MediaTypes._
+import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
+import spray.routing.HttpService
 
 
 trait APIv3Service extends HttpService with FixedSprayMarshallers {

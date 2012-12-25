@@ -1,31 +1,29 @@
 package com.evecentral.api
 
-import spray.routing.{HttpService, RequestContext, Directives}
-import spray.httpx.LiftJsonSupport
-
-import org.slf4j.LoggerFactory
-import org.joda.time.DateTime
-import net.liftweb.json._
+import akka.actor.{Props, Actor}
+import akka.dispatch.Future
+import akka.pattern.ask
+import akka.util.Timeout
+import akka.util.duration._
 import com.codahale.jerkson.Json._
-import scala.xml._
-import com.evecentral.dataaccess._
 import com.evecentral.ParameterHelper._
-import com.evecentral.frontend.Formatter.priceString
 import com.evecentral._
-import util.{ActorNames, BaseOrderQuery}
+import com.evecentral.dataaccess._
+import com.evecentral.frontend.Formatter.priceString
+import dataaccess.OrderList
 import datainput.{OldUploadParsingActor, OldUploadPayload}
 import frontend.DateFormats
+import net.liftweb.json._
+import org.joda.time.DateTime
+import org.slf4j.LoggerFactory
 import routes.{Jump, RouteBetween}
-
-import dataaccess.OrderList
-import spray.http.{HttpResponse, StatusCodes}
+import scala.xml._
 import spray.http.HttpHeaders.RawHeader
-import akka.actor.{Props, ActorRef, Actor}
-import akka.pattern.ask
-import akka.util.duration._
-import akka.util.Timeout
-import akka.dispatch.Future
-import spray.routing.directives.BasicDirectives
+import spray.http.StatusCodes
+import spray.httpx.LiftJsonSupport
+import spray.routing.{HttpService, RequestContext}
+import util.{ActorNames, BaseOrderQuery}
+
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
 case class QuickLookPathQuery(ctx: RequestContext, from: SolarSystem, to: SolarSystem, types: Int)
@@ -174,6 +172,7 @@ case class EvemonQuery(ctx: RequestContext)
 class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupport with BaseOrderQuery {
 
 	private val log = LoggerFactory.getLogger(getClass)
+
 	import context.dispatcher
 
 	val liftJsonFormats = DefaultFormats
