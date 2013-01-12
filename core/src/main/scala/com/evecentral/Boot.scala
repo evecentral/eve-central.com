@@ -20,7 +20,7 @@ object Boot extends App {
 
 	val config = ConfigFactory.load()
 	val system = ActorSystem("evec")
-	val ioBridge = IOExtension(system).ioBridge
+	val ioBridge = IOExtension(system).ioBridge()
 
   val systemsMap = StaticProvider.systemsMap
 	val stationsMAp = StaticProvider.stationsMap

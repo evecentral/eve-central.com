@@ -76,11 +76,8 @@ class GetOrdersActor extends Actor {
             val volremain = row.nextLong.get
             val volenter = row.nextLong.get
             val minvol = row.nextLong.get
-<<<<<<< HEAD
             val duration = new Period(row.nextLong.get * 1000)
-=======
-            val duration = new Period(row.nextObject.get.asInstanceOf[PGInterval].getSeconds.toLong * 1000)
->>>>>>> akka2
+
             MarketOrder(typeid, orderid, price, bid,
               station,
               system,

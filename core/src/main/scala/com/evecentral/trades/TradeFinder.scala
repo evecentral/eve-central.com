@@ -5,12 +5,12 @@ import com.evecentral.dataaccess._
 import akka.dispatch.Future
 import akka.pattern.ask
 import com.evecentral.util.ActorNames
-import scala.Left
+import akka.util.Timeout
+import akka.util.duration._
+
 import com.evecentral.dataaccess.Region
 import com.evecentral.dataaccess.GetOrdersFor
 import com.evecentral.dataaccess.SolarSystem
-import scala.Right
-import scala.Some
 import com.evecentral.dataaccess.OrderList
 import com.evecentral.routes.{Jump, RouteBetween}
 
@@ -23,6 +23,7 @@ class TradeFinder extends Actor {
 
 	import TradeFinder._
 	import context._
+	implicit val timeout : Timeout = 60.seconds
 
 	private[this] val getOrders = actorFor(ActorNames.getorders)
 	private[this] val getRoutes = actorFor(ActorNames.routefinder)

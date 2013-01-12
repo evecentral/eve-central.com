@@ -35,7 +35,7 @@ db = psycopg2.connect(database='evec', user='evec', host = '172.20.20.1', port =
 def write_dump(file,date):
     global db
     of = open(file, 'w')
-    cur = db.cursor()
+    cur = db.cursor(name = 'dumpcursor')
 
     # write CSV header
     cur.execute("SELECT orderid,regionid,systemid,stationid,typeid,bid,price,minvolume,volremain,volenter,issued,duration,range,reportedby,reportedtime FROM archive_market WHERE (reportedtime) > %s and (reportedtime) <= %s ", [date+" 00:00:00", date+" 23:59:59"])
@@ -76,12 +76,6 @@ def do_date(data):
 	date += RelativeDateTime(days=1)
 
 
-
-
-cur = db.cursor()
-
-
-
 dumps_data = {}
 
 try:
@@ -98,5 +92,5 @@ pickle.dump(dumps_data, f)
 f.close()
 
 cur = db.cursor()
-cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '1 days'")
+cur.execute("DELETE FROM archive_market WHERE reportedtime < NOW() - INTERVAL '3 days'")
 db.commit()
