@@ -9,7 +9,7 @@ sys.path.append('../lib/')
 
 from evecentral import display
 
-db = psycopg2.connect(database='evec', user='evec', host = '172.20.20.1', port = '5432')
+db = psycopg2.connect(database='evec', user='evec', host = 'sb2', port = '5432')
 
 
 
@@ -35,7 +35,7 @@ db = psycopg2.connect(database='evec', user='evec', host = '172.20.20.1', port =
 def write_dump(file,date):
     global db
     of = open(file, 'w')
-    cur = db.cursor(name = 'dumpcursor')
+    cur = db.cursor(name = 'dumpcursor1')
 
     # write CSV header
     cur.execute("SELECT orderid,regionid,systemid,stationid,typeid,bid,price,minvolume,volremain,volenter,issued,duration,range,reportedby,reportedtime FROM archive_market WHERE (reportedtime) > %s and (reportedtime) <= %s ", [date+" 00:00:00", date+" 23:59:59"])
@@ -54,6 +54,7 @@ def write_dump(file,date):
 	if record % 10000 == 0:
 	    print record,
     print
+    cur.close()
 
 
 def do_date(data):

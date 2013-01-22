@@ -544,7 +544,7 @@ class Home:
                 time_net_ = time.time()
 
                 for tosystem in from_to_map[compsys]:
-                    load = urllib.urlopen('http://172.20.20.1:8080/api/distance/from/' + str(int(compsys)) + '/to/' + str(int(tosystem)))
+                    load = urllib.urlopen('http://127.0.0.1:8081/api/distance/from/' + str(int(compsys)) + '/to/' + str(int(tosystem)))
                     s = load.read()
                     load.close()
                     distance_map[tosystem] = json.loads(s)['distance']
