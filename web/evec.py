@@ -35,7 +35,7 @@ from numpy import *
 
 import time
 
-from evecentral.evec_func import EVCstate, SorterDict, format_long, format_price, emit_redirect, get_region_id
+from evecentral.evec_func import EVCstate, SorterDict, format_long, format_price, emit_redirect, get_region_id, empireregions
 
 from tradetool import TradeTool
 from evecentral.suggest import upload_suggest
@@ -117,6 +117,9 @@ class Home:
 
         if 'regionlimit' in session and len(regionlimit) == 0:
             regionlimit = session['regionlimit']
+        
+        if len(regionlimit) == 0:
+            regionlimit = empireregions()
 
         randomregion = None
 
@@ -701,12 +704,10 @@ class Home:
 
         regionlimit = map(int, regionlimit)
 
-        empireregions = [10000001, 10000002, 10000016, 10000020, 10000028, 10000030, 10000032, 10000033, 10000043, 10000049, 10000037, 10000038, 10000036, 10000052, 10000064, 10000065, 10000067, 10000068, 10000054, 10000042,10000044, 10000048 ]
-
 
         if pickregion is not None:
             if empire:
-                regionlimit = empireregions
+                regionlimit = empireregions()
             session['regionlimit'] = regionlimit
         else:
             if 'regionlimit' in session:
