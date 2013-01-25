@@ -108,7 +108,7 @@ class UploadStorageActor extends Actor {
 
 	def filterBogons(rows: Seq[UploadRecord]): Boolean = {
 		rows.foldLeft(true){ case (rest, row) =>
-			rest && row.price > 0.0 && row.price < 1000000000000000 && row.volEntered > 0 && row.minVolume > 0 && row.duration > 0 && row.volRemain > 0
+			rest && row.price > 0.0 && row.price < 1000000000000000.0 && row.volEntered > 0 && row.minVolume > 0 && row.duration > 0 && row.volRemain > 0
 		}
 	}
 
