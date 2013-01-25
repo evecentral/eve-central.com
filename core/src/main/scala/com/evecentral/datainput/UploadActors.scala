@@ -106,6 +106,12 @@ class UploadStorageActor extends Actor {
 		(a ! PoisonCache(StaticProvider.regionsMap(regionId), StaticProvider.typesMap(marketType)))
 	}
 
+	def filterBogons(rows: Seq[UploadRecord]): Boolean = {
+		rows.foldLeft(true){ case (rest, row) =>
+			rest && row.price > 0.0 && row.volEntered > 0 && row.minVolume > 0 && row.duration > 0 && row.volRemain > 0
+		}
+	}
+
 	def confirmGeneratedAt(generatedAt: DateTime, typeId: Int, regionId: Long) : Boolean = {
 	if (generatedAt.isAfterNow || generatedAt.plusHours(1).isBeforeNow)
 		false
@@ -130,7 +136,7 @@ class UploadStorageActor extends Actor {
 			val regionId = data.regionId
 			val typeId = data.typeId
 			val generatedAt = data.generatedAt
-			confirmGeneratedAt(generatedAt, typeId, regionId) match {
+			confirmGeneratedAt(generatedAt, typeId, regionId) && filterBogons(rows) match {
 				case true =>
 					insertData(typeId, regionId, rows)
 					poisonCache(typeId, regionId)
