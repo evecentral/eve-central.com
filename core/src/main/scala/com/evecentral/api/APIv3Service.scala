@@ -13,6 +13,7 @@ import spray.http.HttpHeaders.RawHeader
 import spray.http.MediaTypes._
 import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
 import spray.routing.HttpService
+import org.joda.time.DateTime
 
 
 trait APIv3Service extends HttpService with FixedSprayMarshallers {
@@ -23,6 +24,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
 	/* Lookup some global actors */
 	def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
 	def ordersActor = context.actorFor("/user/" + ActorNames.getorders)
+	def histStatsActor = context.actorFor("/user/" + ActorNames.gethiststats)
 	/* A local actor parsing helper actor */
 	/* Note we can't register this as we are not the actor - one odd spray decision */
 	val unifiedParser = context.actorFor("/user/" + ActorNames.unifiedparser)
@@ -41,7 +43,22 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
 							}
 
 					}
-				} ~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
+				} ~ path("history/for/type" / IntNumber / "region" / IntNumber / "bid" / IntNumber) {
+					(typeid, regionid, bid) =>
+						get {
+							respondWithMediaType(`application/json`) { ctx =>
+								val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid), bid == 1,
+									region = Right(StaticProvider.regionsMap(regionid)), None, new DateTime().minusDays(1), new DateTime())).map {
+									case x : GetHistStats.CapturedOrderStatistics => generate(x)
+									case _ => throw new Exception("no available stats")
+								}
+								getF.onComplete {
+									case Left(t) => ctx.failWith(t)
+									case Right(s) => ctx.complete(s)
+								}
+							}
+						}
+				}	~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
 					(fromr, tor) =>
 						get {
 							respondWithMediaType(`application/json`) { ctx =>
