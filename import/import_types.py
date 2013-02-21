@@ -1,7 +1,7 @@
 import psycopg2
 import csv
 
-db = psycopg2.connect(database = 'evec', user = 'evec', port = 9999)
+db = psycopg2.connect(database = 'evec', user = 'evec', port = 5432)
 cur = db.cursor()
 
 stat = open("types.txt")

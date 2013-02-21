@@ -89,7 +89,7 @@ def import_conq_stations(db):
         
 
 def main(sqle = None, live_only = False):
-    db = psycopg2.connect(database = 'evec', user = 'evec', port = 9999)
+    db = psycopg2.connect(database = 'evec', user = 'evec', port = 5432)
     import_conq_stations(db)
     if not live_only:
         dbs = sqlite3.connect(sqle)
