@@ -65,7 +65,7 @@ class GetHistStatsWorker extends Actor {
 
 			sender ! Database.coreDb.transaction { tx =>
 					tx.select("SELECT average,median,volume,stddev,buyup,minimum,maximum,timeat FROM trends_type_region WHERE typeid = ? AND " +
-						"systemid = ? AND regionid = ? AND bid = ? AND timeat >= ? AND timeat <= ? ORDER BY timeat",
+						"systemid = ? AND region = ? AND bid = ? AND timeat >= ? AND timeat <= ? ORDER BY timeat",
 						mtype.typeid, systemid, regionid, bidint, fromDate, toDate) { row =>
 						val avg = row.nextDouble.get
 						val median = row.nextDouble.get
