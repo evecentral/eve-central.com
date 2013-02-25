@@ -50,7 +50,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid), bid == 1,
                   region = lookupRegion(region)
                 )).map {
-                  case x : GetHistStats.CapturedOrderStatistics => generate(x)
+                  case x : Seq[GetHistStats.CapturedOrderStatistics] => generate(x)
                   case _ => throw new Exception("no available stats")
                 }
                 getF.onComplete {
@@ -63,12 +63,14 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
           (typeid, system, bid) =>
             get {
               respondWithMediaType(`application/json`) { ctx =>
+                val system = lookupSystem(system)
+                val region = system.region
                 val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
                   bid == 1,
-                  region = AnyRegion(),
-                  system = Some(lookupSystem(system))
+                  region = region,
+                  system = system)
                 )).map {
-                  case x : GetHistStats.CapturedOrderStatistics => generate(x)
+                  case x : Seq[GetHistStats.CapturedOrderStatistics] => generate(x)
                   case _ => throw new Exception("no available stats")
                 }
                 getF.onComplete {

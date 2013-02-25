@@ -23,19 +23,16 @@ object GetHistStats {
 	case class CapturedOrderStatistics(median: Double, variance: Double, max: Double, avg: Double,
 	                                   stdDev: Double, highToLow: Boolean, min: Double, volume: Long,
 		                                 fivePercent: Double, wavg: Double, timeat: DateTime) extends OrderStatistics
-  case class NoRecords()
 }
 
 class GetHistStats extends Actor {
 
-	val cache: Cache[GetHistStats.Request, GetHistStats.CapturedOrderStatistics] = CacheBuilder.newBuilder()
+	val cache: Cache[GetHistStats.Request, Seq[GetHistStats.CapturedOrderStatistics]] = CacheBuilder.newBuilder()
   .maximumSize(10000)
   .expireAfterWrite(30, TimeUnit.MINUTES)
   .build()
 
   private val log = LoggerFactory.getLogger(getClass)
-
-  private[this] case class StoreStat(stat: CapturedOrderStatistics)
 
   val dbworker = context.actorOf(Props[GetHistStatsWorker].withRouter(new SmallestMailboxRouter(5)), ActorNames.gethiststats)
 
@@ -47,12 +44,9 @@ class GetHistStats extends Actor {
         case None =>
           (dbworker ? req).map { result =>
             result match {
-              case os: CapturedOrderStatistics =>
+              case os: Seq[CapturedOrderStatistics] =>
                 cache.put(req, os)
                 sender ! result
-              case ns: NoRecords =>
-                log.error("No records for request")
-                sender ! ns
               case t =>
                 log.error("Unknown response " + t)
             }
@@ -93,7 +87,7 @@ class GetHistStatsWorker extends Actor {
         }
 
 			}
-      sender ! result.headOption.getOrElse(NoRecords())
+      sender ! result
 
 		}
 
