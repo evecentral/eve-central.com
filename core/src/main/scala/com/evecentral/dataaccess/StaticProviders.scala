@@ -46,11 +46,20 @@ case class SolarSystem(systemid: Long, name: String, security: Double, region: R
 case class MarketType(typeid: Long,  name: String)
 
 object LookupHelper {
+
   def lookupSystem(text: String) : SolarSystem = {
     try {
       StaticProvider.systemsMap(text.toLong)
     } catch {
       case _ => StaticProvider.systemsByName(text)
+    }
+  }
+
+  def lookupRegion(text: String): Region = {
+    try {
+      StaticProvider.regionsMap(text.toLong)
+    } catch {
+      case _ => StaticProvider.regionsByName(text)
     }
   }
 
