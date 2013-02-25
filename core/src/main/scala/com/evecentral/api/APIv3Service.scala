@@ -60,16 +60,16 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
               }
             }
         } ~ path("history/for/type" / IntNumber / "system" / "[^/]+".r / "bid" / IntNumber) {
-          (typeid, system, bid) =>
+          (typeid, systemid, bid) =>
             get {
               respondWithMediaType(`application/json`) { ctx =>
-                val system = lookupSystem(system)
+                val system = lookupSystem(systemid)
                 val region = system.region
                 val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
                   bid == 1,
                   region = region,
-                  system = system
-                ).map {
+                  system = Some(system)
+                )).map {
                   case x : Seq[GetHistStats.CapturedOrderStatistics] => generate(x)
                   case _ => throw new Exception("no available stats")
                 }

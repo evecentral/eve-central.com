@@ -5,9 +5,9 @@ import akka.routing.SmallestMailboxRouter
 import akka.pattern.ask
 import akka.util.duration._
 
-import com.evecentral.{CachedOrderStatistics, Database, OrderStatistics}
+import com.evecentral.{Database, OrderStatistics}
 import com.evecentral.util.ActorNames
-import com.evecentral.dataaccess.GetHistStats.{NoRecords, CapturedOrderStatistics}
+import com.evecentral.dataaccess.GetHistStats.CapturedOrderStatistics
 
 import org.joda.time.DateTime
 import com.google.common.cache.{Cache, CacheBuilder}
