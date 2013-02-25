@@ -69,7 +69,7 @@ class GetHistStatsWorker extends Actor {
 			val regionid = region match { case AnyRegion() => -1 case Region(id, name) => id }
 			val systemid = system match { case Some(s) => s.systemid case None => 0 }
 			val bidint = if (bid) 1 else 0
-      val fromDate = from.getOrElse(new DateTime().minusDays(1))
+      val fromDate = from.getOrElse(new DateTime().minusDays(7))
       val toDate = to.getOrElse(new DateTime())
 
       val result = Database.coreDb.transaction { tx =>
