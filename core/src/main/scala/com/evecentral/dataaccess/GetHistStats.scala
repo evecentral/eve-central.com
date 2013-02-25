@@ -5,9 +5,9 @@ import akka.routing.SmallestMailboxRouter
 import akka.pattern.ask
 import akka.util.duration._
 
-import com.evecentral.{Database, OrderStatistics}
+import com.evecentral.{CachedOrderStatistics, Database, OrderStatistics}
 import com.evecentral.util.ActorNames
-import com.evecentral.dataaccess.GetHistStats.CapturedOrderStatistics
+import com.evecentral.dataaccess.GetHistStats.{NoRecords, CapturedOrderStatistics}
 
 import org.joda.time.DateTime
 import com.google.common.cache.{Cache, CacheBuilder}
@@ -22,6 +22,7 @@ object GetHistStats {
 	case class CapturedOrderStatistics(median: Double, variance: Double, max: Double, avg: Double,
 	                                   stdDev: Double, highToLow: Boolean, min: Double, volume: Long,
 		                                 fivePercent: Double, wavg: Double, timeat: DateTime) extends OrderStatistics
+  case class NoRecords()
 }
 
 class GetHistStats extends Actor {
@@ -41,8 +42,11 @@ class GetHistStats extends Actor {
 		case req: GetHistStats.Request => {
       Option(cache.getIfPresent(req)) match {
         case None =>
-          (dbworker ? req).mapTo[GetHistStats.CapturedOrderStatistics].map { result =>
-            cache.put(req, result)
+          (dbworker ? req).map { result =>
+            result match {
+              case os: CapturedOrderStatistics =>
+                cache.put(req, os)
+            }
             sender ! result
           }
         case Some(res) =>
@@ -63,22 +67,24 @@ class GetHistStatsWorker extends Actor {
       val fromDate = from.getOrElse(new DateTime().minusDays(1))
       val toDate = to.getOrElse(new DateTime())
 
-			sender ! Database.coreDb.transaction { tx =>
-					tx.select("SELECT average,median,volume,stddev,buyup,minimum,maximum,timeat FROM trends_type_region WHERE typeid = ? AND " +
-						"systemid = ? AND region = ? AND bid = ? AND timeat >= ? AND timeat <= ? ORDER BY timeat",
-						mtype.typeid, systemid, regionid, bidint, fromDate, toDate) { row =>
-						val avg = row.nextDouble.get
-						val median = row.nextDouble.get
-						val volume = row.nextLong.get
-						val stddev = row.nextDouble.get
-						val buyup = row.nextDouble.get
-						val minimum = row.nextDouble.get
-						val maximum = row.nextDouble.get
-						val timeat = new DateTime(row.nextDate.get)
-						GetHistStats.CapturedOrderStatistics(median, 0, maximum, avg, stddev, bid, minimum, volume, buyup, 0, timeat)
-					}
+      val result = Database.coreDb.transaction { tx =>
+        tx.select("SELECT average,median,volume,stddev,buyup,minimum,maximum,timeat FROM trends_type_region WHERE typeid = ? AND " +
+          "systemid = ? AND region = ? AND bid = ? AND timeat >= ? AND timeat <= ? ORDER BY timeat",
+          mtype.typeid, systemid, regionid, bidint, fromDate, toDate) { row =>
+          val avg = row.nextDouble.get
+          val median = row.nextDouble.get
+          val volume = row.nextLong.get
+          val stddev = row.nextDouble.get
+          val buyup = row.nextDouble.get
+          val minimum = row.nextDouble.get
+          val maximum = row.nextDouble.get
+          val timeat = new DateTime(row.nextDate.get)
+          GetHistStats.CapturedOrderStatistics(median, 0, maximum, avg, stddev, bid, minimum, volume, buyup, 0, timeat)
+        }
 
 			}
+      sender ! result.headOption.getOrElse(NoRecords())
+
 		}
 
 	}
