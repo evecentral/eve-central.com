@@ -68,8 +68,8 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
                   bid == 1,
                   region = region,
-                  system = system)
-                )).map {
+                  system = system
+                ).map {
                   case x : Seq[GetHistStats.CapturedOrderStatistics] => generate(x)
                   case _ => throw new Exception("no available stats")
                 }
