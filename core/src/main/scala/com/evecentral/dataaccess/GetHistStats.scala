@@ -12,6 +12,7 @@ import com.evecentral.dataaccess.GetHistStats.{NoRecords, CapturedOrderStatistic
 import org.joda.time.DateTime
 import com.google.common.cache.{Cache, CacheBuilder}
 import java.util.concurrent.TimeUnit
+import org.slf4j.LoggerFactory
 
 
 object GetHistStats {
@@ -32,6 +33,8 @@ class GetHistStats extends Actor {
   .expireAfterWrite(30, TimeUnit.MINUTES)
   .build()
 
+  private val log = LoggerFactory.getLogger(getClass)
+
   private[this] case class StoreStat(stat: CapturedOrderStatistics)
 
   val dbworker = context.actorOf(Props[GetHistStatsWorker].withRouter(new SmallestMailboxRouter(5)), ActorNames.gethiststats)
@@ -46,13 +49,20 @@ class GetHistStats extends Actor {
             result match {
               case os: CapturedOrderStatistics =>
                 cache.put(req, os)
+                sender ! result
+              case ns: NoRecords =>
+                log.error("No records for request")
+                sender ! ns
+              case t =>
+                log.error("Unknown response " + t)
             }
-            sender ! result
           }
         case Some(res) =>
           sender ! res
       }
 		}
+    case _ =>
+      log.error("Unknown request type ")
 	}
 }
 
