@@ -42,11 +42,12 @@ class GetHistStats extends Actor {
 		case req: GetHistStats.Request => {
       Option(cache.getIfPresent(req)) match {
         case None =>
+          val origSender = sender
           (dbworker ? req).map { result =>
             result match {
               case os: Seq[CapturedOrderStatistics] =>
                 cache.put(req, os)
-                sender ! result
+                origSender ! result
               case t =>
                 log.error("Unknown response " + t)
             }
