@@ -1,14 +1,17 @@
 package com.evecentral.dataaccess
 
 import akka.actor.{Props, Actor}
+import akka.routing.SmallestMailboxRouter
+import akka.pattern.ask
+import akka.util.duration._
+
 import com.evecentral.{Database, OrderStatistics}
+import com.evecentral.util.ActorNames
+import com.evecentral.dataaccess.GetHistStats.CapturedOrderStatistics
+
 import org.joda.time.DateTime
 import com.google.common.cache.{Cache, CacheBuilder}
 import java.util.concurrent.TimeUnit
-import akka.routing.SmallestMailboxRouter
-import akka.pattern.ask
-import com.evecentral.util.ActorNames
-import com.evecentral.dataaccess.GetHistStats.CapturedOrderStatistics
 
 
 object GetHistStats {
@@ -31,6 +34,8 @@ class GetHistStats extends Actor {
   private[this] case class StoreStat(stat: CapturedOrderStatistics)
 
   val dbworker = context.actorOf(Props[GetHistStatsWorker].withRouter(new SmallestMailboxRouter(5)), ActorNames.gethiststats)
+
+  implicit val timeout: akka.util.Timeout = 10.seconds
 
 	def receive = {
 		case req: GetHistStats.Request => {
