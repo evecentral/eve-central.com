@@ -64,8 +64,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 	def receive = {
 		case UploadTriggerEvent(typeid, regionid) =>
 			/* Build queries for orders */
-			log.debug("Generating list of queries to get results for")
-			if (StaticProvider.typesMap.contains(typeid))
+      if (StaticProvider.typesMap.contains(typeid))
 				toCaptureSet ++= (buildQueries(true, typeid, regionid) ++ buildQueries(false, typeid, regionid))
 		case StoreStatistics(query, result) =>
 			storeStatistics(query, result)

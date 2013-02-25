@@ -250,9 +250,7 @@ class OrderCacheActor extends Actor {
 						false
 				})
 
-			log.info("Expiring " + lsf.size + " entries from cache")
-				
-			lsf.foreach { 
+			lsf.foreach {
 				case gcf : GetCacheFor =>
 					ls.remove(gcf)
 					cacheLruHash.remove(gcf)

@@ -25,7 +25,6 @@ class OldUploadParsingActor extends Actor with Directives with BasicMarshallers 
 
 	def receive = {
 		case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
-			log.info("Processing upload payload for " + typeid)
 			val lines = data.split("\n").tail
 			val rows = lines.map(UploadCsvRow(_))
 			if (rows.nonEmpty)
@@ -45,10 +44,8 @@ class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshall
 
 	def receive = {
 		case msg : String =>
-			log.debug("Trying to parse unified message")
 			UnifiedParser(msg) match {
 				case Some(unimsg) =>
-					log.debug("Parsed uni msg")
 					storageActor ! unimsg
 				case None =>
 					log.error("Unable to parse unified message due to wrong type")
@@ -141,8 +138,7 @@ class UploadStorageActor extends Actor {
 					insertData(typeId, regionId, rows)
 					poisonCache(typeId, regionId)
 					statCaptureActor ! UploadTriggerEvent(typeId, regionId)
-					log.debug("Processing upload complete")
-				case false =>
+									case false =>
 					log.debug("GeneratedAt time was out of bounds to be considered fresh")
 			}
 
@@ -151,12 +147,9 @@ class UploadStorageActor extends Actor {
 
 	def receive = {
 		case rows : CsvUploadMessage =>
-			log.info("Storing classic message")
 			procData(rows)
 		case msg : UnifiedUploadMessage =>
-			log.info("Storing unified message")
 			msg.rowsets.foreach(s => procData(s))
 		case hist : UnifiedHistoryMessage =>
-			log.info("Storing history information")
 	}
 }
