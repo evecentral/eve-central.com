@@ -14,6 +14,7 @@ import com.google.common.cache.{Cache, CacheBuilder}
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonIgnore}
+import org.joda.time.format.ISODateTimeFormat
 
 
 object GetHistStats {
@@ -31,7 +32,7 @@ object GetHistStats {
 		                                 fivePercent: Double,
                                      wavg: Double,
                                      timeat: DateTime) extends OrderStatistics {
-    val at = timeat.getMillis
+    val at = ISODateTimeFormat.dateTimeNoMillis().print(timeat)
   }
 }
 
