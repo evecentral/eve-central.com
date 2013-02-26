@@ -32,7 +32,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 			GetOrdersFor(Some(bid), List(typeid), StaticProvider.empireRegions.map(_.regionid), List(), 24))
 
 		if (regionid == StaticProvider.regionsByName("The Forge").regionid)
-			base ++ List(GetOrdersFor(Some(bid), List(typeid), List(), List(StaticProvider.systemsByName("Jita").systemid), 24))
+			base ++ List(GetOrdersFor(Some(bid), List(typeid), List(regionid), List(StaticProvider.systemsByName("Jita").systemid), 24))
 		else
 			base
 
