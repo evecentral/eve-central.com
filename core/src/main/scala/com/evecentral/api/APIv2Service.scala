@@ -5,24 +5,28 @@ import akka.dispatch.Future
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
-import com.codahale.jerkson.Json._
+
 import com.evecentral.ParameterHelper._
 import com.evecentral._
 import com.evecentral.dataaccess._
 import com.evecentral.frontend.Formatter.priceString
-import dataaccess.OrderList
-import datainput.{OldUploadParsingActor, OldUploadPayload}
-import frontend.DateFormats
+import com.evecentral.dataaccess.OrderList
+import com.evecentral.datainput.{OldUploadParsingActor, OldUploadPayload}
+import com.evecentral.frontend.DateFormats
+import com.evecentral.util.{ActorNames, BaseOrderQuery}
+import com.evecentral.routes.{Jump, RouteBetween}
+
 import net.liftweb.json._
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
-import routes.{Jump, RouteBetween}
+
 import scala.xml._
+
 import spray.http.HttpHeaders.RawHeader
 import spray.http.StatusCodes
 import spray.httpx.LiftJsonSupport
 import spray.routing.{HttpService, RequestContext}
-import util.{ActorNames, BaseOrderQuery}
+
 
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
@@ -173,6 +177,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
 	private val log = LoggerFactory.getLogger(getClass)
 
+  import JacksonMapper.serialize
 	import context.dispatcher
 
 	val liftJsonFormats = DefaultFormats
@@ -292,7 +297,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
 	case class BuyAllSell(buy: OrderStatistics, all: OrderStatistics, sell: OrderStatistics)
 
-	def wrapAsJson(types: Future[Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]]) : Future[String] = types.map { types => generate(types.map(u => BuyAllSell(u._1, u._2, u._3))) }
+	def wrapAsJson(types: Future[Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]]) : Future[String] = types.map { types => serialize(types.map(u => BuyAllSell(u._1, u._2, u._3))) }
 
 
 }

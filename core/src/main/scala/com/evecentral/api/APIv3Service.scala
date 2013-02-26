@@ -4,7 +4,6 @@ import akka.actor.Actor
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
-import com.codahale.jerkson.Json.generate
 import com.evecentral.FixedSprayMarshallers
 import com.evecentral.dataaccess._
 import com.evecentral.routes._
@@ -13,7 +12,6 @@ import spray.http.HttpHeaders.RawHeader
 import spray.http.MediaTypes._
 import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
 import spray.routing.HttpService
-import org.joda.time.DateTime
 
 
 trait APIv3Service extends HttpService with FixedSprayMarshallers {
@@ -40,7 +38,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
             ctx =>
               val station = StaticProvider.stationsMap(stationid)
               complete {
-                generate(Map(("short_name" -> station.shortName), ("long_name" -> station.name)))
+                serialize(Map(("short_name" -> station.shortName), ("long_name" -> station.name)))
               }
 
           }
@@ -89,7 +87,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
 
 
                 val distanceF = (pathActor ? DistanceBetween(from, to)).map {
-                  case x : Int => (generate(Map("distance" -> x)))
+                  case x : Int => (serialize(Map("distance" -> x)))
                   case _ => throw new Exception("No value returned")
                 }
                 distanceF.onComplete {
@@ -108,7 +106,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   val to = lookupSystem(tor)
 
                   val routeFuture = (pathActor ? RouteBetween(from, to)).mapTo[List[Jump]].map { v =>
-                    generate(v)
+                    serialize(v)
                   }
 
                   routeFuture onComplete {
@@ -124,7 +122,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
               ctx =>
                 val or = lookupSystem(origin)
                 val json = (pathActor ? NeighborsOf(or, radius)).mapTo[Seq[SolarSystem]].map { sss =>
-                  generate(sss)
+                  serialize(sss)
                 }
                 json.onComplete {
                   case Right(data) => ctx.complete(json)
@@ -136,7 +134,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
             get {
               respondWithMediaType(`application/json`) {
                 complete {
-                  generate(StaticProvider.typesMap.filter(_._2.name.contains(rest)).filter(!_._2.name.contains("Blueprint")))
+                  serialize(StaticProvider.typesMap.filter(_._2.name.contains(rest)).filter(!_._2.name.contains("Blueprint")))
                 }
               }
             }
@@ -144,7 +142,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
           get {
             respondWithMediaType(`application/json`) {
               complete {
-                generate(StaticProvider.regionsMap)
+                serialize(StaticProvider.regionsMap)
               }
             }
           }

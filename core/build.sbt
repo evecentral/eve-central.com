@@ -38,11 +38,7 @@ resolvers += "Spray" at "http://repo.spray.io/"
 
 resolvers += "Spray Nightlies" at "http://nightlies.spray.io/"
 
-resolvers += "Codehale" at "http://repo.codahale.com"
-
 resolvers += "theatr.us" at "http://repo.theatr.us"
-
-libraryDependencies += "us.theatr" %% "jerkson" % "0.6.0-SNAPSHOT"
 
 libraryDependencies += "io.spray" % "spray-can"     % "1.0-M7"
 
