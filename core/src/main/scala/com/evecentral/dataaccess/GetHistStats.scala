@@ -13,7 +13,7 @@ import org.joda.time.DateTime
 import com.google.common.cache.{Cache, CacheBuilder}
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonIgnore}
 
 
 object GetHistStats {
@@ -21,15 +21,16 @@ object GetHistStats {
                      system: Option[SolarSystem] = None,
                      from: Option[DateTime] = None, to: Option[DateTime] = None)
 
+  @JsonIgnoreProperties(value = Array("variance", "highToLow", "wavg", "timeat"))
 	case class CapturedOrderStatistics(median: Double,
-                                     @JsonIgnore(value = true) variance: Double,
+                                     variance: Double,
                                      max: Double, avg: Double,
 	                                   stdDev: Double,
-                                     @JsonIgnore(value = true) highToLow: Boolean,
+                                     highToLow: Boolean,
                                      min: Double, volume: Long,
 		                                 fivePercent: Double,
-                                     @JsonIgnore(value = true) wavg: Double,
-                                     @JsonIgnore(value = true) timeat: DateTime) extends OrderStatistics {
+                                     wavg: Double,
+                                     timeat: DateTime) extends OrderStatistics {
     val at = timeat.getMillis
   }
 }
