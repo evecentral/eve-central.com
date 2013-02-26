@@ -94,12 +94,8 @@ class RouteFinderActor extends Actor {
       tx =>
         tx.selectAndProcess("SELECT fromsystem,tosystem FROM jumps") {
           row =>
-            val from = row.nextInt match {
-              case Some(x) => StaticProvider.systemsMap(x)
-            }
-            val to = row.nextInt match {
-              case Some(x) => StaticProvider.systemsMap(x)
-            }
+            val from = StaticProvider.systemsMap(row.nextInt.get)
+            val to = StaticProvider.systemsMap(row.nextInt.get)
             val jump = Jump(from, to, (from.security >= 0.5) && (to.security < 0.5))
             val edges = new edu.uci.ics.jung.graph.util.Pair[SolarSystem](from,to)
             graph.addEdge(jump, edges, EdgeType.DIRECTED)

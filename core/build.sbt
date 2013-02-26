@@ -70,11 +70,7 @@ libraryDependencies += "com.google.guava" % "guava" % "13.0"
 
 libraryDependencies += "com.google.code.findbugs" % "jsr305" % "1.3.+"
 
-libraryDependencies += "com.fasterxml" % "jackson-module-scala" % "1.9.3"
-
-libraryDependencies += "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.12"
-
-libraryDependencies += "org.codehaus.jackson" % "jackson-core-asl" % "1.9.12"
+libraryDependencies += "com.fasterxml.jackson.module" % "jackson-module-scala" % "2.1.2"
 
 libraryDependencies += "net.sf.jung" % "jung-algorithms" % "2.0.1"
 

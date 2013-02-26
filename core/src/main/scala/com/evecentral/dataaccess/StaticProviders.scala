@@ -1,6 +1,8 @@
 package com.evecentral.dataaccess
 
 import com.evecentral.Database
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 object StationNameUtility {
   def shorten(name: String) : String = {
@@ -44,6 +46,14 @@ case class Station(stationid: Long, name: String, shortName: String, system: Sol
 case class SolarSystem(systemid: Long, name: String, security: Double, region: Region, constellationid: Long)
 
 case class MarketType(typeid: Long,  name: String)
+
+object JacksonMapper {
+  def serialize[T](t : T): String = {
+    val mapper = new ObjectMapper()
+    mapper.registerModule(DefaultScalaModule)
+    mapper.writeValueAsString(t)
+  }
+}
 
 object LookupHelper {
 

@@ -30,6 +30,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
   val unifiedParser = context.actorFor("/user/" + ActorNames.unifiedparser)
 
   import LookupHelper._
+  import JacksonMapper._
 
   val api3Service = {
     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
@@ -50,7 +51,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid), bid == 1,
                   region = lookupRegion(region)
                 )).map {
-                  case x : Seq[GetHistStats.CapturedOrderStatistics] => generate(x)
+                  case x : Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
                   case _ => throw new Exception("no available stats")
                 }
                 getF.onComplete {
@@ -70,7 +71,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   region = region,
                   system = Some(system)
                 )).map {
-                  case x : Seq[GetHistStats.CapturedOrderStatistics] => generate(x)
+                  case x : Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
                   case _ => throw new Exception("no available stats")
                 }
                 getF.onComplete {
