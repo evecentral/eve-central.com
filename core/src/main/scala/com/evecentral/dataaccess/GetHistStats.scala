@@ -22,14 +22,14 @@ object GetHistStats {
                      from: Option[DateTime] = None, to: Option[DateTime] = None)
 
 	case class CapturedOrderStatistics(median: Double,
-                                     @JsonIgnore variance: Double,
+                                     @JsonIgnore(value = true) variance: Double,
                                      max: Double, avg: Double,
 	                                   stdDev: Double,
-                                     @JsonIgnore highToLow: Boolean,
+                                     @JsonIgnore(value = true) highToLow: Boolean,
                                      min: Double, volume: Long,
 		                                 fivePercent: Double,
-                                     @JsonIgnore wavg: Double,
-                                     @JsonIgnore timeat: DateTime) extends OrderStatistics {
+                                     @JsonIgnore(value = true) wavg: Double,
+                                     @JsonIgnore(value = true) timeat: DateTime) extends OrderStatistics {
     val at = timeat.getMillis
   }
 }
