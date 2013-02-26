@@ -8,12 +8,14 @@ import org.slf4j.LoggerFactory
 import akka.actor.Actor
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
-                       volremain: Long,  volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {
+                       volremain: Long, volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {
   val weightPrice = price * volenter
 }
 
 object MarketOrder {
-  implicit def pimpMoToDouble(m: MarketOrder) : Double = { m.price }
+  implicit def pimpMoToDouble(m: MarketOrder): Double = {
+    m.price
+  }
 }
 
 
@@ -26,15 +28,15 @@ case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Lon
 case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
 class SuperPGInterval(interval: PGInterval) {
-	def toMillis = ((interval.getYears * 365 * 24 * 60 * 60).toLong + (interval.getDays * 24 * 60 * 60).toLong +
-		(interval.getMonths * 30 * 24 * 60 * 60).toLong + (interval.getHours * 60 * 60).toLong + (interval.getMinutes * 60).toLong + (interval.getSeconds.toLong)) * 1000
+  def toMillis = ((interval.getYears * 365 * 24 * 60 * 60).toLong + (interval.getDays * 24 * 60 * 60).toLong +
+    (interval.getMonths * 30 * 24 * 60 * 60).toLong + (interval.getHours * 60 * 60).toLong + (interval.getMinutes * 60).toLong + (interval.getSeconds.toLong)) * 1000
 }
 
 class GetOrdersActor extends Actor {
 
-	private val log = LoggerFactory.getLogger(getClass)
+  private val log = LoggerFactory.getLogger(getClass)
 
-	/**
+  /**
    * This query does a lot of internal SQL building and not a prepared statement. I'm sorry,
    * but at least everything is typesafe :-)
    */
@@ -52,7 +54,7 @@ class GetOrdersActor extends Actor {
       }
       case None => "1=1"
     }
-    
+
     db.transaction {
       tx =>
 
@@ -91,11 +93,11 @@ class GetOrdersActor extends Actor {
     }
   }
 
-	def receive = {
-		case x: GetOrdersFor => {
-			sender ! OrderList(x, orderList(x))
-		}
-	}
+  def receive = {
+    case x: GetOrdersFor => {
+      sender ! OrderList(x, orderList(x))
+    }
+  }
 
 
 }

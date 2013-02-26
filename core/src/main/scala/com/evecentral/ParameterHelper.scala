@@ -18,20 +18,23 @@ import spray.http.MediaTypes._
  * Attach the xml header to a nodeseq
  */
 trait FixedSprayMarshallers extends BasicMarshallers {
-	override implicit val NodeSeqMarshaller : Marshaller[NodeSeq] =
-		Marshaller.delegate[NodeSeq, String](
-			`text/xml`, `text/html`, `application/xhtml+xml`
-		){ nodes:NodeSeq => "<?xml version='1.0' encoding='utf-8'?>\n" + nodes.toString }
+  override implicit val NodeSeqMarshaller: Marshaller[NodeSeq] =
+    Marshaller.delegate[NodeSeq, String](
+      `text/xml`, `text/html`, `application/xhtml+xml`
+    ) {
+      nodes: NodeSeq => "<?xml version='1.0' encoding='utf-8'?>\n" + nodes.toString
+    }
 }
+
 /**
  * A helper object for dealing with parameter lists, especially ones
  * containing repeated parameters which don't play nice with spray's
  * single-map implementation of them.
  */
 object ParameterHelper {
-  
-  type ML = List[(String,  String)]
-  
+
+  type ML = List[(String, String)]
+
   def paramsFromQuery(name: String, params: ML): List[String] = {
     (params.foldLeft(List[String]()) {
       (i, s) => if (s._1 == name) s._2 :: i else i
@@ -56,11 +59,11 @@ object ParameterHelper {
     }
   }
 
-  def listFromContext(ctx : RequestContext) : ML = {
+  def listFromContext(ctx: RequestContext): ML = {
     try {
       val formdata = ctx.request.entity match {
         case EmptyEntity => None
-        case t : HttpEntity => Some(new String(t.buffer, Charset.forName("UTF-8")))
+        case t: HttpEntity => Some(new String(t.buffer, Charset.forName("UTF-8")))
       }
 
       formdata match {
@@ -71,7 +74,7 @@ object ParameterHelper {
       case _ => Nil
     }
   }
-  
+
 }
 
 /**

@@ -21,8 +21,11 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
 
   /* Lookup some global actors */
   def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
+
   def ordersActor = context.actorFor("/user/" + ActorNames.getorders)
+
   def histStatsActor = context.actorFor("/user/" + ActorNames.gethiststats)
+
   /* A local actor parsing helper actor */
   /* Note we can't register this as we are not the actor - one odd spray decision */
   val unifiedParser = context.actorFor("/user/" + ActorNames.unifiedparser)
@@ -33,67 +36,71 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
   val api3Service = {
     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
       pathPrefix("api") {
-        path("station/shorten" / IntNumber) { stationid =>
-          get {
-            ctx =>
-              val station = StaticProvider.stationsMap(stationid)
-              complete {
-                serialize(Map(("short_name" -> station.shortName), ("long_name" -> station.name)))
-              }
+        path("station/shorten" / IntNumber) {
+          stationid =>
+            get {
+              ctx =>
+                val station = StaticProvider.stationsMap(stationid)
+                complete {
+                  serialize(Map(("short_name" -> station.shortName), ("long_name" -> station.name)))
+                }
 
-          }
+            }
         } ~ path("history/for/type" / IntNumber / "region" / "[^/]+".r / "bid" / IntNumber) {
           (typeid, region, bid) =>
             get {
-              respondWithMediaType(`application/json`) { ctx =>
-                val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid), bid == 1,
-                  region = lookupRegion(region)
-                )).map {
-                  case x : Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
-                  case _ => throw new Exception("no available stats")
-                }
-                getF.onComplete {
-                  case Left(t) => ctx.failWith(t)
-                  case Right(s) => ctx.complete(s)
-                }
+              respondWithMediaType(`application/json`) {
+                ctx =>
+                  val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid), bid == 1,
+                    region = lookupRegion(region)
+                  )).map {
+                    case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
+                    case _ => throw new Exception("no available stats")
+                  }
+                  getF.onComplete {
+                    case Left(t) => ctx.failWith(t)
+                    case Right(s) => ctx.complete(s)
+                  }
               }
             }
         } ~ path("history/for/type" / IntNumber / "system" / "[^/]+".r / "bid" / IntNumber) {
           (typeid, systemid, bid) =>
             get {
-              respondWithMediaType(`application/json`) { ctx =>
-                val system = lookupSystem(systemid)
-                val region = system.region
-                val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
-                  bid == 1,
-                  region = region,
-                  system = Some(system)
-                )).map {
-                  case x : Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
-                  case _ => throw new Exception("no available stats")
-                }
-                getF.onComplete {
-                  case Left(t) => ctx.failWith(t)
-                  case Right(s) => ctx.complete(s)
-                }
+              respondWithMediaType(`application/json`) {
+                ctx =>
+                  val system = lookupSystem(systemid)
+                  val region = system.region
+                  val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
+                    bid == 1,
+                    region = region,
+                    system = Some(system)
+                  )).map {
+                    case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
+                    case _ => throw new Exception("no available stats")
+                  }
+                  getF.onComplete {
+                    case Left(t) => ctx.failWith(t)
+                    case Right(s) => ctx.complete(s)
+                  }
               }
             }
-        }	~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
+        } ~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
           (fromr, tor) =>
             get {
-              respondWithMediaType(`application/json`) { ctx =>
-                val from  = lookupSystem(fromr)
-                val to = lookupSystem(tor)
+              respondWithMediaType(`application/json`) {
+                ctx =>
+                  val from = lookupSystem(fromr)
+                  val to = lookupSystem(tor)
 
 
-                val distanceF = (pathActor ? DistanceBetween(from, to)).map {
-                  case x : Int => (serialize(Map("distance" -> x)))
-                  case _ => throw new Exception("No value returned")
-                }
-                distanceF.onComplete {
-                  case Left(t) => ctx.failWith(t)
-                  case Right(s) => ctx.complete(s)
-                }
+                  val distanceF = (pathActor ? DistanceBetween(from, to)).map {
+                    case x: Int => (serialize(Map("distance" -> x)))
+                    case _ => throw new Exception("No value returned")
+                  }
+                  distanceF.onComplete {
+                    case Left(t) => ctx.failWith(t)
+                    case Right(s) => ctx.complete(s)
+                  }
 
               }
             }
@@ -102,11 +109,12 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
             get {
               respondWithMediaType(`application/json`) {
                 ctx =>
-                  val from  = lookupSystem(fromr)
+                  val from = lookupSystem(fromr)
                   val to = lookupSystem(tor)
 
-                  val routeFuture = (pathActor ? RouteBetween(from, to)).mapTo[List[Jump]].map { v =>
-                    serialize(v)
+                  val routeFuture = (pathActor ? RouteBetween(from, to)).mapTo[List[Jump]].map {
+                    v =>
+                      serialize(v)
                   }
 
                   routeFuture onComplete {
@@ -121,8 +129,9 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
             get {
               ctx =>
                 val or = lookupSystem(origin)
-                val json = (pathActor ? NeighborsOf(or, radius)).mapTo[Seq[SolarSystem]].map { sss =>
-                  serialize(sss)
+                val json = (pathActor ? NeighborsOf(or, radius)).mapTo[Seq[SolarSystem]].map {
+                  sss =>
+                    serialize(sss)
                 }
                 json.onComplete {
                   case Right(data) => ctx.complete(json)
@@ -159,18 +168,26 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
           fluff => // Fluff is anything trailing in the URL, which we'll just ignore for sanity here
             (decodeRequest(NoEncoding) | decodeRequest(Gzip) | decodeRequest(Deflate)) {
               get {
-                parameter("data") { data =>
-                  unifiedParser ! data
-                  complete {"1"}
+                parameter("data") {
+                  data =>
+                    unifiedParser ! data
+                    complete {
+                      "1"
+                    }
                 }
               } ~ post {
-                formFields("data") { data =>
-                  unifiedParser ! data
-                  complete { "1" }
+                formFields("data") {
+                  data =>
+                    unifiedParser ! data
+                    complete {
+                      "1"
+                    }
                 } ~ entity(as[String]) {
                   data =>
                     unifiedParser ! data
-                    complete { "1" }
+                    complete {
+                      "1"
+                    }
                 }
               } ~ put {
                 ctx =>
@@ -180,7 +197,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   ctx.complete(sb)
               }
             }
-        } ~ path ("syndicate") {
+        } ~ path("syndicate") {
           complete {
             "1"
           }

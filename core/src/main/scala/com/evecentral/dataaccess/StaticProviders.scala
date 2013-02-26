@@ -5,14 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 object StationNameUtility {
-  def shorten(name: String) : String = {
+  def shorten(name: String): String = {
     try {
-    val split = "Moon ".r.replaceAllIn(name, "M").split(" - ")
-    val head = split.reverse.tail.reverse.mkString(" - ") // I'm sorry
-    val words = split.last.split(" ").fold("")((c,s) => c + s.charAt(0))
-    head + " - " + words
+      val split = "Moon ".r.replaceAllIn(name, "M").split(" - ")
+      val head = split.reverse.tail.reverse.mkString(" - ") // I'm sorry
+      val words = split.last.split(" ").fold("")((c, s) => c + s.charAt(0))
+      head + " - " + words
     } catch {
-      case e : StringIndexOutOfBoundsException => name
+      case e: StringIndexOutOfBoundsException => name
     }
   }
 }
@@ -45,10 +45,10 @@ case class Station(stationid: Long, name: String, shortName: String, system: Sol
 
 case class SolarSystem(systemid: Long, name: String, security: Double, region: Region, constellationid: Long)
 
-case class MarketType(typeid: Long,  name: String)
+case class MarketType(typeid: Long, name: String)
 
 object JacksonMapper {
-  def serialize[T](t : T): String = {
+  def serialize[T](t: T): String = {
     val mapper = new ObjectMapper()
     mapper.registerModule(DefaultScalaModule)
     mapper.writeValueAsString(t)
@@ -57,7 +57,7 @@ object JacksonMapper {
 
 object LookupHelper {
 
-  def lookupSystem(text: String) : SolarSystem = {
+  def lookupSystem(text: String): SolarSystem = {
     try {
       StaticProvider.systemsMap(text.toLong)
     } catch {
@@ -73,7 +73,7 @@ object LookupHelper {
     }
   }
 
-  def lookupType(text: String) : MarketType = {
+  def lookupType(text: String): MarketType = {
     try {
       StaticProvider.typesMap(text.toLong)
     } catch {
@@ -88,13 +88,13 @@ object LookupHelper {
 object StaticProvider {
 
   /**
-   *  A list of regions considered to be in Empire Space
+   * A list of regions considered to be in Empire Space
    */
   lazy val empireRegions = List[Long](10000001, 10000002, 10000016, 10000020, 10000028, 10000030, 10000032, 10000033,
     10000043, 10000049, 10000037, 10000038, 10000036, 10000052, 10000064, 10000065, 10000067,
     10000068, 10000054, 10000042, 10000044, 10000048).map(id => regionsMap(id))
 
-  
+
   /**
    * Maps a systemId to a solarsystem.
    */
@@ -109,7 +109,7 @@ object StaticProvider {
             val security = row.nextDouble.get
             val regionid = row.nextLong.get
             val constellationid = row.nextLong.get
-            
+
             m = m ++ Map(sysid -> SolarSystem(sysid, name, security, regionsMap(regionid), constellationid))
         }
     }
@@ -117,16 +117,22 @@ object StaticProvider {
   }
 
   lazy val systemsByName = {
-    systemsMap.foldLeft(Map[String, SolarSystem]()) { (maap, solar) => maap ++ Map(solar._2.name -> solar._2) }
+    systemsMap.foldLeft(Map[String, SolarSystem]()) {
+      (maap, solar) => maap ++ Map(solar._2.name -> solar._2)
+    }
   }
 
   lazy val typesByName = {
-    typesMap.foldLeft(Map[String, MarketType]()) { (maap, typ) => maap ++ Map(typ._2.name -> typ._2) }
+    typesMap.foldLeft(Map[String, MarketType]()) {
+      (maap, typ) => maap ++ Map(typ._2.name -> typ._2)
+    }
   }
 
-	lazy val regionsByName = {
-		regionsMap.foldLeft(Map[String, Region]()) { (maap, reg) => maap ++ Map(reg._2.name -> reg._2) }
-	}
+  lazy val regionsByName = {
+    regionsMap.foldLeft(Map[String, Region]()) {
+      (maap, reg) => maap ++ Map(reg._2.name -> reg._2)
+    }
+  }
 
   /**
    * Maps a station ID to a station
