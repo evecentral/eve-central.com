@@ -9,15 +9,25 @@ import akka.pattern.ask
 
 import com.evecentral.dataaccess.{OrderList, StaticProvider, GetOrdersFor}
 import com.evecentral.{RegisterCacheFor, OrderStatistics, Database}
-import akka.dispatch.Future
 
 private[this] case class CaptureStatistics()
 
 private[this] case class StoreStatistics(query: GetOrdersFor, result: OrderStatistics)
 
+object StatisticsCapture {
+  val allEmpireRegions = -1
+  val noRegion = 0
+}
+
 class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
-  import context.dispatcher
+  /**
+   * A static list of systems to always capture statistics for
+   */
+  val systemsAlwaysCaptureFor = Map("The Forge" -> "Jita",
+    "Domain" -> "Amarr",
+    "Sinq Laison" -> "Dodixie",
+    "Heimatar" -> "Rens").map { case (r,s) => (StaticProvider.regionsByName(r).regionid -> StaticProvider.systemsByName(s).systemid)}
 
   private val log = LoggerFactory.getLogger(getClass)
   private val toCaptureSet = scala.collection.mutable.Set[GetOrdersFor]()
@@ -32,21 +42,22 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
       GetOrdersFor(Some(bid), List(typeid), List(), List(), 24),
       GetOrdersFor(Some(bid), List(typeid), StaticProvider.empireRegions.map(_.regionid), List(), 24))
 
-    if (regionid == StaticProvider.regionsByName("The Forge").regionid)
-      base ++ List(GetOrdersFor(Some(bid), List(typeid), List(regionid), List(StaticProvider.systemsByName("Jita").systemid), 24))
-    else
-      base
-
+    base ++ systemsAlwaysCaptureFor.filter {case (r,_) => r == regionid } map {
+      case (r,s) => GetOrdersFor(Some(bid), List(typeid), List(r), List(s), 24)
+    }
   }
 
   def storeStatistics(query: GetOrdersFor, result: OrderStatistics) {
-    val region = if (query.regions.size > 1) -1 else if (query.regions.size == 1) query.regions.head else 0
+    val region = if (query.regions.size > 1) StatisticsCapture.allEmpireRegions
+    else if (query.regions.size == 1) query.regions.head
+    else StatisticsCapture.noRegion
+
     val system = query.systems.headOption match {
-      case Some(y) => y.toLong
+      case Some(y) => y
       case None => 0
     }
-    val item = query.types(0).toInt
 
+    val item = query.types(0).toInt
 
     Database.coreDb.transaction {
       tx =>
