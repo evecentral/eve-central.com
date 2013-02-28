@@ -27,7 +27,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
   val systemsAlwaysCaptureFor = Map("The Forge" -> "Jita",
     "Domain" -> "Amarr",
     "Sinq Laison" -> "Dodixie",
-    "Heimatar" -> "Rens").map { case (r,s) => (StaticProvider.regionsByName(r).regionid -> StaticProvider.systemsByName(s).systemid)}
+    "Heimatar" -> "Rens").map { case (r,s) => (StaticProvider.regionsByName(r).regionid -> StaticProvider.systemsByName(s).systemid)}.toMap
 
   private val log = LoggerFactory.getLogger(getClass)
   private val toCaptureSet = scala.collection.mutable.Set[GetOrdersFor]()
@@ -42,9 +42,9 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
       GetOrdersFor(Some(bid), List(typeid), List(), List(), 24),
       GetOrdersFor(Some(bid), List(typeid), StaticProvider.empireRegions.map(_.regionid), List(), 24))
 
-    base ++ systemsAlwaysCaptureFor.filter {case (r,_) => r == regionid } map {
-      case (r,s) => GetOrdersFor(Some(bid), List(typeid), List(r), List(s), 24)
-    }
+    base ++ (systemsAlwaysCaptureFor.filter { case (r: Long, s) => r == regionid }.map {
+      case (r: Long,s: Long) => GetOrdersFor(Some(bid), List(typeid), List(r), List(s), 24)
+    })
   }
 
   def storeStatistics(query: GetOrdersFor, result: OrderStatistics) {

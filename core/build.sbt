@@ -18,7 +18,7 @@ mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>            
 
 name := "eve-central-ng"
 
-version := "3.1.1"
+version := "3.1.2"
 
 scalaVersion := "2.9.2"
 
