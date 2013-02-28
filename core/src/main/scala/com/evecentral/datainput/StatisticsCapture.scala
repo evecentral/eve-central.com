@@ -7,6 +7,8 @@ import com.evecentral.util.BaseOrderQuery
 import akka.util.duration._
 import akka.pattern.ask
 
+import org.joda.time.{DateTime => JTDateTime}
+
 import com.evecentral.dataaccess.{OrderList, StaticProvider, GetOrdersFor}
 import com.evecentral.{RegisterCacheFor, OrderStatistics, Database}
 
@@ -27,14 +29,21 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
   val systemsAlwaysCaptureFor = Map("The Forge" -> "Jita",
     "Domain" -> "Amarr",
     "Sinq Laison" -> "Dodixie",
-    "Heimatar" -> "Rens").map { case (r,s) => (StaticProvider.regionsByName(r).regionid -> StaticProvider.systemsByName(s).systemid)}.toMap
+    "Heimatar" -> "Rens")
+    .map {
+    case (r,s) =>
+      (StaticProvider.regionsByName(r).regionid ->
+        StaticProvider.systemsByName(s).systemid)
+  }.toMap
 
   private val log = LoggerFactory.getLogger(getClass)
   private val toCaptureSet = scala.collection.mutable.Set[GetOrdersFor]()
 
   override def preStart() {
     log.info("Pre-starting statistics capture actor")
-    context.system.scheduler.schedule(2.minutes, 60.minutes, self, CaptureStatistics())
+    val timeTillNextHour = 60 - new JTDateTime().getMinuteOfHour
+    context.system.scheduler.schedule(timeTillNextHour.minutes, 60.minutes,
+      self, CaptureStatistics())
   }
 
   def buildQueries(bid: Boolean, typeid: Int, regionid: Long): List[GetOrdersFor] = {
