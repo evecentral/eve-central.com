@@ -34,10 +34,19 @@ object QueryDefaults {
 }
 
 trait BaseRegion {
-
+  val name: String
+  val regionid: Long
 }
 
-case class AnyRegion() extends BaseRegion
+case object AnyRegion extends BaseRegion {
+  val regionid: Long = 0
+  val name = "Any Region"
+}
+/** Meta regions */
+case object AllEmpireRegions extends BaseRegion {
+  val regionid: Long = -1L
+  val name = "All Empire"
+}
 
 case class Region(regionid: Long, name: String) extends BaseRegion
 

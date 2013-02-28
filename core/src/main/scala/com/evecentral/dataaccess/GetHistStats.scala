@@ -80,10 +80,8 @@ class GetHistStatsWorker extends Actor {
   def receive = {
     case GetHistStats.Request(mtype, bid, region, system, from, to) => {
       import net.noerd.prequel.SQLFormatterImplicits._
-      val regionid = region match {
-        case AnyRegion() => -1
-        case Region(id, name) => id
-      }
+      val regionid = region.regionid
+
       val systemid = system match {
         case Some(s) => s.systemid
         case None => 0

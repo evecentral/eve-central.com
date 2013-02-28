@@ -3,6 +3,7 @@ package com.evecentral.api
 import akka.actor.Actor
 import akka.pattern.ask
 import akka.util.Timeout
+import akka.dispatch.Future
 import akka.util.duration._
 import com.evecentral.FixedSprayMarshallers
 import com.evecentral.dataaccess._
@@ -11,13 +12,22 @@ import com.evecentral.util.ActorNames
 import spray.http.HttpHeaders.RawHeader
 import spray.http.MediaTypes._
 import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
-import spray.routing.HttpService
+import spray.routing.{RequestContext, HttpService}
+import spray.httpx.marshalling.Marshaller
+import com.evecentral.datainput.StatisticsCapture
 
 
 trait APIv3Service extends HttpService with FixedSprayMarshallers {
   this: Actor =>
 
   implicit val timeout: Timeout = 10.seconds
+
+  def fcomplete[T](future: Future[T], ctx: RequestContext)(implicit marshaller: Marshaller[T]) {
+    future.onComplete {
+      case Left(t) => ctx.failWith(t)
+      case Right(s) => ctx.complete(s)
+    }
+  }
 
   /* Lookup some global actors */
   def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
@@ -46,44 +56,57 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 }
 
             }
-        } ~ path("history/for/type" / IntNumber / "region" / "[^/]+".r / "bid" / IntNumber) {
-          (typeid, region, bid) =>
-            get {
-              respondWithMediaType(`application/json`) {
-                ctx =>
-                  val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid), bid == 1,
-                    region = lookupRegion(region)
-                  )).map {
-                    case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
-                    case _ => throw new Exception("no available stats")
+        } ~ path("history/for/type" / IntNumber) {
+          (typeid) =>
+
+            path("region" / "[^/]+".r / "bid" / IntNumber) {
+              (region, bid) =>
+                get {
+                  respondWithMediaType(`application/json`) {
+                    ctx =>
+                      val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid), bid == 1,
+                        region = lookupRegion(region)
+                      )).map {
+                        case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
+                        case _ => throw new Exception("no available stats")
+                      }
+                      fcomplete(getF, ctx)
                   }
-                  getF.onComplete {
-                    case Left(t) => ctx.failWith(t)
-                    case Right(s) => ctx.complete(s)
+                }
+            } ~ path("system" / "[^/]+".r / "bid" / IntNumber) {
+              (systemid, bid) =>
+                get {
+                  respondWithMediaType(`application/json`) {
+                    ctx =>
+                      val system = lookupSystem(systemid)
+                      val region = system.region
+                      val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
+                        bid == 1,
+                        region = region,
+                        system = Some(system)
+                      )).map {
+                        case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
+                        case _ => throw new Exception("no available stats")
+                      }
+                      fcomplete(getF, ctx)
                   }
-              }
-            }
-        } ~ path("history/for/type" / IntNumber / "system" / "[^/]+".r / "bid" / IntNumber) {
-          (typeid, systemid, bid) =>
-            get {
-              respondWithMediaType(`application/json`) {
-                ctx =>
-                  val system = lookupSystem(systemid)
-                  val region = system.region
-                  val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
-                    bid == 1,
-                    region = region,
-                    system = Some(system)
-                  )).map {
-                    case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
-                    case _ => throw new Exception("no available stats")
-                  }
-                  getF.onComplete {
-                    case Left(t) => ctx.failWith(t)
-                    case Right(s) => ctx.complete(s)
-                  }
-              }
-            }
+                } ~ path("empire" / "bid" / IntNumber) {
+                  (bid) =>
+                    get {
+                      respondWithMediaType(`application/json`) {
+                        ctx =>
+                          val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
+                            bid == 1,
+                            region = AllEmpireRegions
+                          )).map {
+                            case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
+                            case _ => throw new Exception("no available stats")
+                          }
+                          fcomplete(getF, ctx)
+                      }
+                    }
+                }
+          }
         } ~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
           (fromr, tor) =>
             get {
@@ -92,16 +115,11 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   val from = lookupSystem(fromr)
                   val to = lookupSystem(tor)
 
-
                   val distanceF = (pathActor ? DistanceBetween(from, to)).map {
                     case x: Int => (serialize(Map("distance" -> x)))
                     case _ => throw new Exception("No value returned")
                   }
-                  distanceF.onComplete {
-                    case Left(t) => ctx.failWith(t)
-                    case Right(s) => ctx.complete(s)
-                  }
-
+                  fcomplete(distanceF, ctx)
               }
             }
         } ~ path("route/from" / "[^/]+".r / "to" / "[^/]+".r) {
@@ -116,12 +134,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                     v =>
                       serialize(v)
                   }
-
-                  routeFuture onComplete {
-                    case Right(data) => ctx.complete(data)
-                    case Left(t) => ctx.failWith(t)
-                  }
-
+                  fcomplete(routeFuture, ctx)
               }
             }
         } ~ path("neighbors/of" / "[^/]+".r / "radius" / IntNumber) {
@@ -133,10 +146,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   sss =>
                     serialize(sss)
                 }
-                json.onComplete {
-                  case Right(data) => ctx.complete(json)
-                  case Left(t) => ctx.failWith(t)
-                }
+                fcomplete(json, ctx)
             }
         } ~ path("types" / ".*".r) {
           rest =>
