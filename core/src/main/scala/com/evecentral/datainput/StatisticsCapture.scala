@@ -94,7 +94,11 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
       storeStatistics(query, result)
     case CaptureStatistics() =>
       log.info("Capturing statistics in a large batch")
-      val results = toCaptureSet.toList.map(capset => (ordersActor ? capset).mapTo[OrderList])
+      val results = toCaptureSet.toSeq.map(capset => (ordersActor ? capset).mapTo[OrderList])
+
+      log.info(results.size + " results to capture")
+      toCaptureSet.clear()
+
       // Attach an oncomplete to all the actors
       results.map {
         entity =>
@@ -102,9 +106,6 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
             case OrderList(query, result) => self ! StoreStatistics(query, OrderStatistics(result, query.bid.getOrElse(false)))
           }
       }
-      log.info(results.size + " results to capture")
-      toCaptureSet.clear()
-
   }
 
 }
