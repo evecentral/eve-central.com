@@ -88,36 +88,16 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
       case Some(o) => o.result.foldLeft(Seq[Node]()) {
         (i, order) =>
           i ++ <order id={order.orderId.toString}>
-            <region>
-              {order.region.regionid}
-            </region>
-            <station>
-              {order.station.stationid}
-            </station>
-            <station_name>
-              {order.station.name}
-            </station_name>
-            <security>
-              {order.system.security}
-            </security>
-            <range>
-              {order.range}
-            </range>
-            <price>
-              {priceString(order.price)}
-            </price>
-            <vol_remain>
-              {order.volremain}
-            </vol_remain>
-            <min_volume>
-              {order.minVolume}
-            </min_volume>
-            <expires>
-              {DateFormats.dateOnly.print(new DateTime().plus(order.expires))}
-            </expires>
-            <reported_time>
-              {DateFormats.dateTime.print(order.reportedAt)}
-            </reported_time>
+            <region>{order.region.regionid}</region>
+            <station>{order.station.stationid}</station>
+            <station_name>{order.station.name}</station_name>
+            <security>{order.system.security}</security>
+            <range>{order.range}</range>
+            <price>{priceString(order.price)}</price>
+            <vol_remain>{order.volremain}</vol_remain>
+            <min_volume>{order.minVolume}</min_volume>
+            <expires>{DateFormats.dateOnly.print(new DateTime().plus(order.expires))}</expires>
+            <reported_time>{DateFormats.dateTime.print(order.reportedAt)}</reported_time>
           </order>
       }
     }
@@ -147,31 +127,15 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
         val selr = l(1).asInstanceOf[OrderList]
         <evec_api version="2.0" method="quicklook_path">
           <quicklook>
-            <item>
-              {typeid}
-            </item>
-            <itemname>
-              {StaticProvider.typesMap(typeid).name}
-            </itemname>
+            <item>{typeid}</item>
+            <itemname>{StaticProvider.typesMap(typeid).name}</itemname>
             <regions></regions>
-            <hours>
-              {setHours}
-            </hours>
-            <minqty>
-              {minq}
-            </minqty>
-            <sell_orders>
-              {showOrders(Some(selr))}
-            </sell_orders>
-            <buy_orders>
-              {showOrders(Some(buyr))}
-            </buy_orders>
-            <from>
-              {froms.systemid}
-            </from>
-            <to>
-              {tos.systemid}
-            </to>
+            <hours>{setHours}</hours>
+            <minqty>{minq}</minqty>
+            <sell_orders>{showOrders(Some(selr))}</sell_orders>
+            <buy_orders>{showOrders(Some(buyr))}</buy_orders>
+            <from>{froms.systemid}</from>
+            <to>{tos.systemid}</to>
           </quicklook>
         </evec_api>
     }
@@ -202,27 +166,13 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
         val selr = l(1).asInstanceOf[OrderList]
         <evec_api version="2.0" method="quicklook">
           <quicklook>
-            <item>
-              {typeid}
-            </item>
-            <itemname>
-              {StaticProvider.typesMap(typeid).name}
-            </itemname>
-            <regions>
-              {regionName(regionLimit)}
-            </regions>
-            <hours>
-              {setHours}
-            </hours>
-            <minqty>
-              {minq}
-            </minqty>
-            <sell_orders>
-              {showOrders(Some(selr))}
-            </sell_orders>
-            <buy_orders>
-              {showOrders(Some(buyr))}
-            </buy_orders>
+            <item>{typeid}</item>
+            <itemname>{StaticProvider.typesMap(typeid).name}</itemname>
+            <regions>{regionName(regionLimit)}</regions>
+            <hours>{setHours}</hours>
+            <minqty>{minq}</minqty>
+            <sell_orders>{showOrders(Some(selr))}</sell_orders>
+            <buy_orders>{showOrders(Some(buyr))}</buy_orders>
           </quicklook>
         </evec_api>
     }
@@ -319,12 +269,8 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
     getCachedStatistic(q).map {
       s =>
         <mineral>
-          <name>
-            {mineral.name}
-          </name>
-          <price>
-            {priceString(s.wavg)}
-          </price>
+          <name>{mineral.name}</name>
+          <price>{priceString(s.wavg)}</price>
         </mineral>
     }
   }
@@ -333,27 +279,13 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
   def typeXml(r: Future[(OrderStatistics, OrderStatistics, OrderStatistics)], typeid: Long): Future[NodeSeq] = {
 
     def subGroupXml(alls: OrderStatistics): NodeSeq = {
-      <volume>
-        {alls.volume}
-      </volume>
-        <avg>
-          {priceString(alls.wavg)}
-        </avg>
-        <max>
-          {priceString(alls.max)}
-        </max>
-        <min>
-          {priceString(alls.min)}
-        </min>
-        <stddev>
-          {priceString(alls.stdDev)}
-        </stddev>
-        <median>
-          {priceString(alls.median)}
-        </median>
-        <percentile>
-          {priceString(alls.fivePercent)}
-        </percentile>
+      <volume>{alls.volume}</volume>
+        <avg>{priceString(alls.wavg)}</avg>
+        <max>{priceString(alls.max)}</max>
+        <min>{priceString(alls.min)}</min>
+        <stddev>{priceString(alls.stdDev)}</stddev>
+        <median>{priceString(alls.median)}</median>
+        <percentile>{priceString(alls.fivePercent)}</percentile>
     }
     r.map {
       r =>
@@ -362,15 +294,9 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
         val sels: OrderStatistics = r._3
 
         <type id={typeid.toString}>
-          <buy>
-            {subGroupXml(buys)}
-          </buy>
-          <sell>
-            {subGroupXml(sels)}
-          </sell>
-          <all>
-            {subGroupXml(alls)}
-          </all>
+          <buy>{subGroupXml(buys)}</buy>
+          <sell>{subGroupXml(sels)}</sell>
+          <all>{subGroupXml(alls)}</all>
         </type>
     }
   }
@@ -378,9 +304,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
   def wrapAsXml(nodes: Future[Seq[NodeSeq]]): Future[NodeSeq] = nodes.map {
     nodes => <evec_api version="2.0" method="marketstat_xml">
-      <marketstat>
-        {nodes}
-      </marketstat>
+      <marketstat>{nodes}</marketstat>
     </evec_api>
   }
 
