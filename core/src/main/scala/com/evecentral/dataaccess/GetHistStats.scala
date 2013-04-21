@@ -47,7 +47,8 @@ class GetHistStats extends Actor {
 
   private val log = LoggerFactory.getLogger(getClass)
 
-  val dbworker = context.actorOf(Props[GetHistStatsWorker].withRouter(new SmallestMailboxRouter(5)), ActorNames.gethiststats)
+  val dbworker = context.actorOf(Props[GetHistStatsWorker].withRouter(new SmallestMailboxRouter(5)).withDispatcher("db-dispatcher"),
+    ActorNames.gethiststats)
 
   implicit val timeout: akka.util.Timeout = 10.seconds
 

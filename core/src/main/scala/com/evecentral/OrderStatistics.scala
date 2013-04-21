@@ -13,23 +13,14 @@ import org.apache.commons.collections.map.LRUMap
 
 trait OrderStatistics {
   def volume: Long
-
   def wavg: Double
-
   def avg: Double
-
   def variance: Double
-
   def stdDev: Double
-
   def median: Double
-
   def fivePercent: Double
-
   def max: Double
-
   def min: Double
-
   def highToLow: Boolean
 }
 
@@ -65,11 +56,8 @@ object OrderStatistics {
         new LazyOrderStatistics(over.filter(order => order.price > (l.wavg / 3)), highToLow)
       } else {
         new LazyOrderStatistics(over.filter(order => order.price < (l.wavg * 3)), highToLow)
-
       }
     }
-
-
   }
 
   def cached(query: GetOrdersFor, data: OrderStatistics): CachedOrderStatistics = {

@@ -29,14 +29,14 @@ object Boot extends App {
   // initialize SLF4J early
 
   // "Singleton" actors
-  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.getorders)
+  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10).withDispatcher("db-dispatcher")), ActorNames.getorders)
+  val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
+  val statCap = system.actorOf(Props[StatisticsCaptureActor].withDispatcher("db-dispatcher"), ActorNames.statCapture)
+
   val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(3)), ActorNames.uploadstorage)
   val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
   val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
   val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
-  val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
-  val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
-
 
   class APIServiceActor extends Actor with APIv2Service with APIv3Service {
     def actorRefFactory = context
@@ -47,7 +47,6 @@ object Boot extends App {
   }
 
   val apiModule = system.actorOf(Props[APIServiceActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.http_apiv3)
-
 
   val server = system.actorOf(
     Props(new HttpServer(ioBridge, SingletonHandler(apiModule))),

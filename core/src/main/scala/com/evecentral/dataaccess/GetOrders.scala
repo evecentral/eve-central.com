@@ -18,23 +18,15 @@ object MarketOrder {
   }
 }
 
-
 /**
  * Get a list of orders.
- * @TODO: the Long parameters really should be a MarketType, Region etc
+ * TODO: the Long parameters really should be a MarketType, Region etc
  */
 case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Long], systems: Seq[Long], hours: Long = 24, minq: Long = 1)
 
 case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
-class SuperPGInterval(interval: PGInterval) {
-  def toMillis = ((interval.getYears * 365 * 24 * 60 * 60).toLong + (interval.getDays * 24 * 60 * 60).toLong +
-    (interval.getMonths * 30 * 24 * 60 * 60).toLong + (interval.getHours * 60 * 60).toLong + (interval.getMinutes * 60).toLong + (interval.getSeconds.toLong)) * 1000
-}
-
 class GetOrdersActor extends Actor {
-
-  private val log = LoggerFactory.getLogger(getClass)
 
   /**
    * This query does a lot of internal SQL building and not a prepared statement. I'm sorry,
