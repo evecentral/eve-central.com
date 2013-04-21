@@ -48,14 +48,16 @@ object OrderStatistics {
   import MarketOrder._
 
   def apply(over: Seq[MarketOrder], highToLow: Boolean = false): OrderStatistics = {
-    if (over.length < 10)
-      new LazyOrderStatistics(over, highToLow)
-    else {
-      val l = new LazyOrderStatistics(over, highToLow)
-      if (highToLow) {
-        new LazyOrderStatistics(over.filter(order => order.price > (l.wavg / 3)), highToLow)
-      } else {
-        new LazyOrderStatistics(over.filter(order => order.price < (l.wavg * 3)), highToLow)
+    val overFiltered = over.filter(_.price > 0.15) // Limit prices to avoid 0.01 ISKers
+
+    if (over.length < 10) {
+      new LazyOrderStatistics(overFiltered, highToLow)
+    } else {
+      // This double computes statistics for filtering by weighted average
+      val allStats = new LazyOrderStatistics(overFiltered, highToLow)
+      highToLow match {
+        case true => new LazyOrderStatistics(overFiltered.filter(order => order.price > (allStats.wavg / 3)), highToLow)
+        case false => new LazyOrderStatistics(overFiltered.filter(order => order.price < (allStats.wavg * 3)), highToLow)
       }
     }
   }

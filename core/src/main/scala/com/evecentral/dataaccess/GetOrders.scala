@@ -54,7 +54,7 @@ class GetOrdersActor extends Actor {
           " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND " + bid + " AND (" +
           typeLimit + ") AND (" +
           regionLimit + ") AND ( " +
-          systems + ") AND price > 0.15 ", StringFormattable(hours)) {
+          systems + ")", StringFormattable(hours)) {
           row =>
             val typeid = row.nextLong.get
             val orderid = row.nextLong.get
