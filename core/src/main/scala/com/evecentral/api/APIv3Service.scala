@@ -56,7 +56,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 }
 
             }
-        } ~ path("history/for/type" / IntNumber) {
+        } ~ pathPrefix("history/for/type" / IntNumber) {
           (typeid) =>
 
             path("region" / "[^/]+".r / "bid" / IntNumber) {
