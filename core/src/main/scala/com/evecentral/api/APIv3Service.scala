@@ -58,7 +58,6 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
             }
         } ~ pathPrefix("history/for/type" / IntNumber) {
           (typeid) =>
-
             path("region" / "[^/]+".r / "bid" / IntNumber) {
               (region, bid) =>
                 get {
@@ -90,23 +89,24 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                       }
                       fcomplete(getF, ctx)
                   }
-                } ~ path("empire" / "bid" / IntNumber) {
-                  (bid) =>
-                    get {
-                      respondWithMediaType(`application/json`) {
-                        ctx =>
-                          val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
-                            bid == 1,
-                            region = AllEmpireRegions
-                          )).map {
-                            case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
-                            case _ => throw new Exception("no available stats")
-                          }
-                          fcomplete(getF, ctx)
-                      }
-                    }
                 }
-          }
+
+            } ~ path("empire" / "bid" / IntNumber) {
+              (bid) =>
+                get {
+                  respondWithMediaType(`application/json`) {
+                    ctx =>
+                      val getF = (histStatsActor ? GetHistStats.Request(StaticProvider.typesMap(typeid),
+                        bid == 1,
+                        region = AllEmpireRegions
+                      )).map {
+                        case x: Seq[GetHistStats.CapturedOrderStatistics] => serialize(Map("values" -> x))
+                        case _ => throw new Exception("no available stats")
+                      }
+                      fcomplete(getF, ctx)
+                  }
+                }
+            }
         } ~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
           (fromr, tor) =>
             get {
