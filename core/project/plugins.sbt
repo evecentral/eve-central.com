@@ -1,7 +1,6 @@
 
 resolvers ++= Seq (
-  "zentrope" at "http://zentrope.com/maven",
-  "sbt-plugin-releases" at "http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"
+  "zentrope" at "http://zentrope.com/maven"
 )
 
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.8.5")
