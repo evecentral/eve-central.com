@@ -15,6 +15,7 @@ import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
 import spray.routing.{RequestContext, HttpService}
 import spray.httpx.marshalling.Marshaller
 import com.evecentral.datainput.StatisticsCapture
+import org.joda.time.DateTime
 
 
 trait APIv3Service extends HttpService with FixedSprayMarshallers {
@@ -174,6 +175,14 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 }
               }
             }
+        } ~ path("time") {
+          get {
+            respondWithMediaType(`application/json`) {
+              complete {
+                serialize(new DateTime)
+              }
+            }
+          }
         } ~ path("upload" / Rest) {
           fluff => // Fluff is anything trailing in the URL, which we'll just ignore for sanity here
             (decodeRequest(NoEncoding) | decodeRequest(Gzip) | decodeRequest(Deflate)) {

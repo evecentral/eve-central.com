@@ -40,6 +40,7 @@ libraryDependencies ++= Seq(
   "io.spray" % "spray-testkit"     % "1.0-M7",
   "com.typesafe.akka" % "akka-actor"  % "2.0.4",
   "com.typesafe.akka" % "akka-testkit" % "2.0.4",
+  "com.typesafe.akka" % "akka-slf4j" % "2.0.4",
   "net.noerd" %% "prequel" % "0.3.9",
   "org.scalatest" %% "scalatest" % "1.9.1" % "test",
   "postgresql" % "postgresql" % "9.1-901.jdbc4",
