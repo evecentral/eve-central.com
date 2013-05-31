@@ -1,10 +1,9 @@
 package com.evecentral.datainput
 
 import akka.actor.{Actor, Props}
-import akka.util.duration._
+import scala.concurrent.duration._
 import org.slf4j.LoggerFactory
 import com.evecentral.util.BaseOrderQuery
-import akka.util.duration._
 import akka.pattern.ask
 
 import org.joda.time.{DateTime => JTDateTime}
@@ -38,6 +37,7 @@ class StatisticsCaptureActor extends Actor with BaseOrderQuery {
 
   private val log = LoggerFactory.getLogger(getClass)
   private val toCaptureSet = scala.collection.mutable.Set[GetOrdersFor]()
+  implicit val ec = context.dispatcher
 
   override def preStart() {
     log.info("Pre-starting statistics capture actor")

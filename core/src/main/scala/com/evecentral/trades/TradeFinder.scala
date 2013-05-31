@@ -2,11 +2,11 @@ package com.evecentral.trades
 
 import akka.actor.Actor
 import com.evecentral.dataaccess._
-import akka.dispatch.Future
+import scala.concurrent.Future
 import akka.pattern.ask
 import com.evecentral.util.ActorNames
 import akka.util.Timeout
-import akka.util.duration._
+import scala.concurrent.duration._
 
 import com.evecentral.dataaccess.Region
 import com.evecentral.dataaccess.GetOrdersFor

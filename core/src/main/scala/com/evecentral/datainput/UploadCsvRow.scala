@@ -6,35 +6,20 @@ import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
 
 trait UploadRecord {
   def price: Double
-
   def volRemain: Long
-
   def marketTypeId: Int
-
   def range: Int
-
   def orderId: Long
-
   def volEntered: Long
-
   def minVolume: Long
-
   def bid: Boolean
-
   def issued: DateTime
-
   def duration: Long
-
   def stationId: Long
-
   def regionId: Long
-
   def solarSystemId: Long
-
   def jumps: Int
-
   def source: String
-
   def generatedAt: DateTime
 
   lazy val generatedAtString = {
@@ -76,7 +61,7 @@ case class UploadCsvRow(line: String) extends UploadRecord {
     try {
       DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").parseDateTime(fields(8))
     } catch {
-      case _ => DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(fields(8))
+      case _ : Throwable => DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS").parseDateTime(fields(8))
     }
   }
   val duration = fields(9).toDouble.toLong
@@ -87,7 +72,7 @@ case class UploadCsvRow(line: String) extends UploadRecord {
   val source = try {
     fields(14)
   } catch {
-    case _ => "Unknown"
+    case _ : Throwable => "Unknown"
   }
   val generatedAt = new DateTime()
 

@@ -71,7 +71,7 @@ object ParameterHelper {
         case Some(fd) => extractListOfParams(ctx.request.uri + "?" + fd)
       }
     } catch {
-      case _ => Nil
+      case _ : Throwable => Nil
     }
   }
 

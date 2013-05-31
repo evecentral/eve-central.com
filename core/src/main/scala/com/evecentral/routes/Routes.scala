@@ -10,7 +10,6 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath
 import edu.uci.ics.jung.algorithms.filters.KNeighborhoodFilter
 import scala.collection.JavaConversions._
 
-
 /**
  * A jump from one solar system to another.
  */

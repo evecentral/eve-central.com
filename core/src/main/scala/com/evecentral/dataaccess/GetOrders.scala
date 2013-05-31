@@ -2,7 +2,6 @@ package com.evecentral.dataaccess
 
 import com.evecentral.{Database}
 import org.joda.time.{DateTime, Period}
-import org.postgresql.util.PGInterval
 import net.noerd.prequel.{StringFormattable}
 import org.slf4j.LoggerFactory
 import akka.actor.Actor

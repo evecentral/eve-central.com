@@ -9,8 +9,8 @@ import com.evecentral.dataaccess.GetOrdersFor
 import com.evecentral.RegisterCacheFor
 import com.evecentral.GetCacheFor
 import com.evecentral.dataaccess.OrderList
-import akka.dispatch.Future
-import akka.util.duration._
+import scala.concurrent.Future
+import scala.concurrent.duration._
 import akka.util.Timeout
 
 trait BaseOrderQuery {

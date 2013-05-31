@@ -20,9 +20,7 @@ name := "eve-central-ng"
 
 version := "3.1.3"
 
-scalaVersion := "2.9.2"
-
-scalacOptions += "-Ydependent-method-types"
+scalaVersion := "2.10.1"
 
 resolvers ++= Seq(
   "Twitter" at "http://maven.twttr.com/",
@@ -35,12 +33,12 @@ resolvers ++= Seq(
   "theatr.us" at "http://repo.theatr.us")
 
 libraryDependencies ++= Seq(
-  "io.spray" % "spray-can" % "1.0-M7",
-  "io.spray" % "spray-routing"     % "1.0-M7",
-  "io.spray" % "spray-testkit"     % "1.0-M7",
-  "com.typesafe.akka" % "akka-actor"  % "2.0.4",
-  "com.typesafe.akka" % "akka-testkit" % "2.0.4",
-  "com.typesafe.akka" % "akka-slf4j" % "2.0.4",
+  "io.spray" % "spray-can" % "1.1-M7",
+  "io.spray" % "spray-routing"     % "1.1-M7",
+  "io.spray" % "spray-testkit"     % "1.1-M7",
+  "com.typesafe.akka" %% "akka-actor"  % "2.1.4",
+  "com.typesafe.akka" %% "akka-testkit" % "2.1.4",
+  "com.typesafe.akka" %% "akka-slf4j" % "2.1.4",
   "net.noerd" %% "prequel" % "0.3.9",
   "org.scalatest" %% "scalatest" % "1.9.1" % "test",
   "postgresql" % "postgresql" % "9.1-901.jdbc4",

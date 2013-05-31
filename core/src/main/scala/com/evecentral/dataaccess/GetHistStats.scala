@@ -3,7 +3,7 @@ package com.evecentral.dataaccess
 import akka.actor.{Props, Actor}
 import akka.routing.SmallestMailboxRouter
 import akka.pattern.ask
-import akka.util.duration._
+import scala.concurrent.duration._
 
 import com.evecentral.{Database, OrderStatistics}
 import com.evecentral.util.ActorNames
@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonIgnore}
 import org.joda.time.format.ISODateTimeFormat
+import scala.concurrent.ExecutionContext
 
 
 object GetHistStats {
@@ -51,6 +52,7 @@ class GetHistStats extends Actor {
     ActorNames.gethiststats)
 
   implicit val timeout: akka.util.Timeout = 10.seconds
+  implicit val execC: ExecutionContext = context.dispatcher
 
   def receive = {
     case req: GetHistStats.Request => {

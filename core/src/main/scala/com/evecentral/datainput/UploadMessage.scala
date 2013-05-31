@@ -2,8 +2,7 @@ package com.evecentral.datainput
 
 import net.liftweb.json._
 import org.joda.time.DateTime
-import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
-import tools.nsc.io.ManifestOps
+import org.joda.time.format.{ISODateTimeFormat}
 
 
 /**
@@ -11,13 +10,9 @@ import tools.nsc.io.ManifestOps
  */
 trait UploadMessage {
   def orders: Seq[UploadRecord]
-
   def typeId: Int
-
   def regionId: Long
-
   def valid: Boolean
-
   def generatedAt: DateTime
 }
 

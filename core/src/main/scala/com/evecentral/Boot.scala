@@ -12,7 +12,7 @@ import util.ActorNames
 import spray.can.server.HttpServer
 import com.typesafe.config.ConfigFactory
 import akka.routing.SmallestMailboxRouter
-import akka.util.duration._
+import scala.concurrent.duration._
 import akka.util.Timeout
 
 

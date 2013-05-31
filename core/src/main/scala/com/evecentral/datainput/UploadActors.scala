@@ -11,7 +11,6 @@ import spray.routing.{Directives, RequestContext}
 import org.joda.time.DateTime
 import spray.httpx.marshalling.BasicMarshallers
 
-
 case class UploadTriggerEvent(typeId: Int, regionId: Long)
 
 case class OldUploadPayload(ctx: RequestContext, typename: Option[String], userid: Option[String],
@@ -122,7 +121,7 @@ class UploadStorageActor extends Actor {
         }
         dbtime.isBefore(generatedAt)
       } catch {
-        case _ => {
+        case _ : Throwable => {
           log.debug("GeneratedAt success since there isn't anything in the database"); true
         }
       }

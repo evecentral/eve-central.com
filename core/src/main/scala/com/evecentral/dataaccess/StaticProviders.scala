@@ -70,7 +70,7 @@ object LookupHelper {
     try {
       StaticProvider.systemsMap(text.toLong)
     } catch {
-      case _ => StaticProvider.systemsByName(text)
+      case _ : Throwable => StaticProvider.systemsByName(text)
     }
   }
 
@@ -78,7 +78,7 @@ object LookupHelper {
     try {
       StaticProvider.regionsMap(text.toLong)
     } catch {
-      case _ => StaticProvider.regionsByName(text)
+      case _ : Throwable => StaticProvider.regionsByName(text)
     }
   }
 
@@ -86,7 +86,7 @@ object LookupHelper {
     try {
       StaticProvider.typesMap(text.toLong)
     } catch {
-      case _ => StaticProvider.typesByName(text)
+      case _ : Throwable => StaticProvider.typesByName(text)
     }
   }
 }

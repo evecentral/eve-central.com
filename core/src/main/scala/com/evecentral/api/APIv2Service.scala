@@ -1,10 +1,10 @@
 package com.evecentral.api
 
 import akka.actor.{Props, Actor}
-import akka.dispatch.Future
+import scala.concurrent.Future
 import akka.pattern.ask
 import akka.util.Timeout
-import akka.util.duration._
+import scala.concurrent.duration._
 
 import com.evecentral.ParameterHelper._
 import com.evecentral._
@@ -23,10 +23,33 @@ import org.slf4j.LoggerFactory
 import scala.xml._
 
 import spray.http.HttpHeaders.RawHeader
-import spray.http.StatusCodes
-import spray.httpx.LiftJsonSupport
 import spray.routing.{HttpService, RequestContext}
+import spray.httpx.unmarshalling.Unmarshaller
+import spray.httpx.marshalling.Marshaller
+import spray.http._
+import MediaTypes._
+import net.liftweb.json.Serialization._
+import net.liftweb.json._
+import scala.util.{Failure, Success}
 
+trait LiftJsonSupport {
+
+  /**
+   * The `Formats` to use for (de)serialization.
+   */
+  implicit def liftJsonFormats: Formats
+
+  implicit def liftJsonUnmarshaller[T :Manifest] =
+    Unmarshaller[T](`application/json`) {
+      case x: HttpBody =>
+        val jsonSource = x.asString
+        parse(jsonSource).extract[T]
+    }
+
+  implicit def liftJsonMarshaller[T <: AnyRef] =
+    Marshaller.delegate[T, String](`application/json`)(write(_))
+
+}
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
 
@@ -68,8 +91,8 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
       val minq = singleParam("setminQ", params)
       val result = queryQuicklook(typeid, setHours, regionLimit, usesystem, minq)
       result.onComplete {
-        case Left(t) => ctx.failWith(t)
-        case Right(r) => ctx.complete(r)
+        case Failure(t) => ctx.failWith(t)
+        case Success(r) => ctx.complete(r)
       }
   }
 
@@ -204,8 +227,8 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
         </minerals>
       }
       typeFuture.onComplete {
-        case Right(t) => ctx.complete(t)
-        case Left(t) => ctx.failWith(t)
+        case Success(t) => ctx.complete(t)
+        case Failure(t) => ctx.failWith(t)
       }
     case MarketstatQuery(ctx, dtype) =>
       try {

@@ -3,8 +3,8 @@ package com.evecentral.api
 import akka.actor.Actor
 import akka.pattern.ask
 import akka.util.Timeout
-import akka.dispatch.Future
-import akka.util.duration._
+import scala.concurrent.Future
+import scala.concurrent.duration._
 import com.evecentral.FixedSprayMarshallers
 import com.evecentral.dataaccess._
 import com.evecentral.routes._
@@ -16,6 +16,7 @@ import spray.routing.{RequestContext, HttpService}
 import spray.httpx.marshalling.Marshaller
 import com.evecentral.datainput.StatisticsCapture
 import org.joda.time.DateTime
+import scala.util.{Success, Failure}
 
 
 trait APIv3Service extends HttpService with FixedSprayMarshallers {
@@ -25,8 +26,8 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
 
   def fcomplete[T](future: Future[T], ctx: RequestContext)(implicit marshaller: Marshaller[T]) {
     future.onComplete {
-      case Left(t) => ctx.failWith(t)
-      case Right(s) => ctx.complete(s)
+      case Failure(t) => ctx.failWith(t)
+      case Success(s) => ctx.complete(s)
     }
   }
 
