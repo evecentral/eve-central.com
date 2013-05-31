@@ -9,23 +9,6 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: evec; Type: DATABASE; Schema: -; Owner: evec
---
-
-CREATE DATABASE evec WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
-
-
-ALTER DATABASE evec OWNER TO evec;
-
-\connect evec
-
-SET statement_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-
---
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -393,20 +376,6 @@ CREATE TABLE users (
 ALTER TABLE public.users OWNER TO evec;
 
 --
--- Name: wallet; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE TABLE wallet (
-    userid bigint,
-    walletkey integer,
-    balance numeric,
-    timeat timestamp without time zone
-);
-
-
-ALTER TABLE public.wallet OWNER TO evec;
-
---
 -- Name: wallet_journal; Type: TABLE; Schema: public; Owner: evec; Tablespace: 
 --
 
@@ -551,8 +520,6 @@ CREATE INDEX c_m_price ON current_market USING btree (price);
 
 CREATE INDEX c_m_region_type_reptime ON current_market USING btree (regionid, typeid, reportedtime);
 
-ALTER TABLE current_market CLUSTER ON c_m_region_type_reptime;
-
 
 --
 -- Name: c_m_volremain; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
@@ -643,10 +610,10 @@ CREATE INDEX systems_systemname ON systems USING btree (systemname);
 
 
 --
--- Name: trends_type_region_ts; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
+-- Name: trends_type_region_ts_type_region_system; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
 --
 
-CREATE INDEX trends_type_region_ts ON trends_type_region USING btree (timeat);
+CREATE INDEX trends_type_region_ts_type_region_system ON trends_type_region USING btree (timeat, typeid, region, systemid);
 
 
 --
@@ -691,34 +658,6 @@ CREATE INDEX wallet_mt_type ON wallet_market_transactions USING btree (typeid);
 --
 
 CREATE INDEX wallet_mt_type_st ON wallet_market_transactions USING btree (typeid, stationid);
-
-
---
--- Name: wallet_timeat; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE INDEX wallet_timeat ON wallet USING btree (timeat);
-
-
---
--- Name: wallet_userid; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE INDEX wallet_userid ON wallet USING btree (userid);
-
-
---
--- Name: wallet_userid_walletkey; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE INDEX wallet_userid_walletkey ON wallet USING btree (userid, walletkey);
-
-
---
--- Name: wallet_userid_walletkey_timeat; Type: INDEX; Schema: public; Owner: evec; Tablespace: 
---
-
-CREATE INDEX wallet_userid_walletkey_timeat ON wallet USING btree (userid, walletkey, timeat);
 
 
 --
