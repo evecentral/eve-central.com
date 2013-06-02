@@ -66,10 +66,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 
       val params = listFromContext(ctx)
 
-      val setHours = singleParam("sethours", params) match {
-        case Some(x) => x
-        case None => 360
-      }
+      val setHours = singleParam("sethours", params).getOrElse(360.toLong)
       val minq = singleParam("setminQ", params)
       ctx.complete(queryQuicklookPath(types, setHours, minq, froms, tos))
 
@@ -163,14 +160,8 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
       case None => QueryDefaults.minQ(typeid)
     }
 
-    val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesystem match {
-      case None => Nil
-      case Some(x) => List[Long](x)
-    }, setHours)
-    val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesystem match {
-      case None => Nil
-      case Some(x) => List[Long](x)
-    }, setHours)
+    val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesystem.map(Seq(_)).getOrElse(Nil), setHours)
+    val selq = GetOrdersFor(Some(false), List(typeid), regionLimit, usesystem.map(Seq(_)).getOrElse(Nil), setHours)
 
     val buyr = ordersActor ? buyq
     val selr = ordersActor ? selq
@@ -237,11 +228,8 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
         val params = listFromContext(ctx)
         val typeid = paramUnpack(paramsFromQuery("typeid", params))
         if (typeid.foldLeft(true)((n, t) => n && StaticProvider.typesMap.contains(t))) {
-          val setHours = singleParam("hours", params) match {
-            case Some(x) => x
-            case None => 24
-          }
 
+          val setHours = singleParam("hours", params).getOrElse(24.toLong)
           val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
           val usesystem = singleParam("usesystem", params)
           val minq = singleParam("minQ", params)
@@ -269,7 +257,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
             }
           }
         } else {
-          ctx.complete(StatusCodes.BadRequest)
+          ctx.complete(StatusCodes.BadRequest, "A non-marketable type was given")
         }
 
       } catch {
