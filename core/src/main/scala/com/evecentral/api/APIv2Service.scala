@@ -16,7 +16,6 @@ import com.evecentral.frontend.DateFormats
 import com.evecentral.util.{ActorNames, BaseOrderQuery}
 import com.evecentral.routes.{Jump, RouteBetween}
 
-import net.liftweb.json._
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 
@@ -78,14 +77,9 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
 
       val params = listFromContext(ctx)
 
-      val typeid = singleParam("typeid", params) match {
-        case Some(x) => x
-        case None => 34
-      }
-      val setHours = singleParam("sethours", params) match {
-        case Some(x) => x
-        case None => 360
-      }
+      val typeid = singleParam("typeid", params).getOrElse(34.toLong)
+      val setHours = singleParam("sethours", params).getOrElse(360.toLong)
+
       val regionLimit = paramsFromQuery("regionlimit", params).map(_.toLong).distinct
       val usesystem = singleParam("usesystem", params)
       val minq = singleParam("setminQ", params)
@@ -99,9 +93,9 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
   def regionName(regions: List[Long]): NodeSeq = {
     regions.foldLeft(Seq[Node]()) {
       (i, regionid) =>
-        i ++ <region>
+        <region>
           {StaticProvider.regionsMap(regionid).name}
-        </region>
+        </region> ++ i
     }
   }
 
@@ -110,7 +104,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
       case None => Seq[Node]()
       case Some(o) => o.result.foldLeft(Seq[Node]()) {
         (i, order) =>
-          i ++ <order id={order.orderId.toString}>
+          <order id={order.orderId.toString}>
             <region>{order.region.regionid}</region>
             <station>{order.station.stationid}</station>
             <station_name>{order.station.name}</station_name>
@@ -121,17 +115,14 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
             <min_volume>{order.minVolume}</min_volume>
             <expires>{DateFormats.dateOnly.print(new DateTime().plus(order.expires))}</expires>
             <reported_time>{DateFormats.dateTime.print(order.reportedAt)}</reported_time>
-          </order>
+          </order> ++ i
       }
     }
   }
 
   def queryQuicklookPath(typeid: Long, setHours: Long, qminq: Option[Long], froms: SolarSystem, tos: SolarSystem): Future[NodeSeq] = {
 
-    val minq = qminq match {
-      case Some(x) => x
-      case None => QueryDefaults.minQ(typeid)
-    }
+    val minq = qminq.getOrElse(QueryDefaults.minQ(typeid))
 
     val path = (pathActor ? RouteBetween(froms, tos)).mapTo[Seq[Jump]]
     val systems = path.map {

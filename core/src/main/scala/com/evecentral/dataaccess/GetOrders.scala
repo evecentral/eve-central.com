@@ -2,7 +2,7 @@ package com.evecentral.dataaccess
 
 import com.evecentral.{Database}
 import org.joda.time.{DateTime, Period}
-import net.noerd.prequel.{StringFormattable}
+import net.noerd.prequel.{LongFormattable, StringFormattable}
 import org.slf4j.LoggerFactory
 import akka.actor.Actor
 
@@ -36,7 +36,7 @@ class GetOrdersActor extends Actor {
     val regionLimit = Database.concatQuery("regionid", filter.regions)
     val typeLimit = Database.concatQuery("typeid", filter.types)
     val systems = Database.concatQuery("systemid", filter.systems)
-    val hours = filter.hours + " hours"
+    val hours = "%d hours".format(filter.hours)
 
     val bid = filter.bid match {
       case Some(b) => b match {
@@ -50,10 +50,10 @@ class GetOrdersActor extends Actor {
       tx =>
 
         tx.select("SELECT typeid,orderid,price,bid,stationid,systemid,regionid,range,volremain,volenter,minvolume,EXTRACT(EPOCH FROM duration),reportedtime" +
-          " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND " + bid + " AND (" +
+          " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND volenter = ? AND " + bid + " AND (" +
           typeLimit + ") AND (" +
           regionLimit + ") AND ( " +
-          systems + ")", StringFormattable(hours)) {
+          systems + ")", StringFormattable(hours), LongFormattable(filter.minq)) {
           row =>
             val typeid = row.nextLong.get
             val orderid = row.nextLong.get

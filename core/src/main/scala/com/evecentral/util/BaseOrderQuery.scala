@@ -70,10 +70,7 @@ trait BaseOrderQuery {
   def getCachedStatistics(typeid: Long, setHours: Long, regionLimit: Seq[Long], usesystem: Option[Long], minq: Option[Long]):
   Future[(OrderStatistics, OrderStatistics, OrderStatistics)] = {
     val numminq = defaultMinQ(minq, typeid)
-    val usesys = usesystem match {
-      case None => Nil
-      case Some(x) => List[Long](x)
-    }
+    val usesys = usesystem.map(Seq(_)).getOrElse(Nil)
 
     val allq = GetOrdersFor(None, List(typeid), regionLimit, usesys, setHours, numminq)
     val buyq = GetOrdersFor(Some(true), List(typeid), regionLimit, usesys, setHours, numminq)
