@@ -6,7 +6,8 @@ import dataaccess.MarketType
 import dataaccess.Region
 import scala.math._
 import akka.actor.{Scheduler, Actor}
-import java.util.concurrent.TimeUnit
+import scala.concurrent.duration._
+
 import org.slf4j.LoggerFactory
 
 import org.apache.commons.collections.map.LRUMap
@@ -181,7 +182,9 @@ case class PoisonCache(region: Region, marketType: MarketType)
 
 case class PoisonAllCache()
 
-class OrderCacheActor extends Actor {
+class OrderCacheActor(periodicExpire: Boolean = false) extends Actor {
+
+  implicit val ec = context.dispatcher
 
   type LLGCF = scala.collection.mutable.HashSet[GetCacheFor]
 
@@ -200,7 +203,8 @@ class OrderCacheActor extends Actor {
     regionLru.foreach {
       l => l._2.clear()
     }
-    //Scheduler.schedule(self, PoisonAllCache, 5, 60, TimeUnit.MINUTES)
+    if (periodicExpire)
+      context.system.scheduler.schedule(1 minute, 15 minutes, self, PoisonAllCache())
   }
 
 
@@ -237,7 +241,7 @@ class OrderCacheActor extends Actor {
         log.warn("Generated statistics for something non-marketable. I'm confused: " + cached.forQuery.types.headOption)
       }
 
-    case PoisonAllCache =>
+    case PoisonAllCache() =>
       log.info("Poisoning all cache entries")
       cacheLruHash.clear()
       typeQueryCache.foreach(_._2.clear)

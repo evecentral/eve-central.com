@@ -18,7 +18,7 @@ mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>            
 
 name := "eve-central-ng"
 
-version := "3.1.3"
+version := "3.1.4"
 
 scalaVersion := "2.10.1"
 
@@ -56,8 +56,9 @@ libraryDependencies ++= Seq(
   "commons-collections" % "commons-collections" % "3.2.1",
   "com.github.spullara.mustache.java" % "compiler" % "0.8.12")
 
+publishMavenStyle := true
 
-
+publishTo := Some(Resolver.file("file", new File("../../ivy-repo/")))
 
 
 
