@@ -47,7 +47,7 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.0.3",
   "com.google.guava" % "guava" % "14.0",
   "com.google.code.findbugs" % "jsr305" % "1.3.+",
-  "com.fasterxml.jackson.module" % "jackson-module-scala" % "2.1.2",
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.1",
   "net.sf.jung" % "jung-algorithms" % "2.0.1",
   "net.sf.jung" % "jung-graph-impl" % "2.0.1",
   "javax.mail" % "mail" % "1.4.4",
