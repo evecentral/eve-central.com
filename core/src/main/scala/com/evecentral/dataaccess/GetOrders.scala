@@ -50,7 +50,7 @@ class GetOrdersActor extends Actor {
       tx =>
 
         tx.select("SELECT typeid,orderid,price,bid,stationid,systemid,regionid,range,volremain,volenter,minvolume,EXTRACT(EPOCH FROM duration),reportedtime" +
-          " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND volenter = ? AND " + bid + " AND (" +
+          " FROM current_market WHERE reportedtime >= NOW() - (INTERVAL ?) AND volenter >= ? AND " + bid + " AND (" +
           typeLimit + ") AND (" +
           regionLimit + ") AND ( " +
           systems + ")", StringFormattable(hours), LongFormattable(filter.minq)) {
