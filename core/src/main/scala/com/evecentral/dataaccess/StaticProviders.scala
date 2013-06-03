@@ -1,8 +1,8 @@
 package com.evecentral.dataaccess
 
 import com.evecentral.Database
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.databind.ObjectMapper
 
 object StationNameUtility {
   def shorten(name: String): String = {

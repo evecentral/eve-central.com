@@ -46,7 +46,7 @@ class TradeFinder extends Actor {
   }
 
   def getRawProfitable(o: Map[Long, Seq[MarketOrder]],
-                       d: Map[Long, Seq[MarketOrder]], taxRate: Double) = {
+                       d: Map[Long, Seq[MarketOrder]], taxRate: Double): Map[Long, (Seq[MarketOrder], Seq[MarketOrder])] = {
 
     // Match the type IDs to only available ones
     val originOrdersF = o.filterKeys(k => d.contains(k))
@@ -59,9 +59,9 @@ class TradeFinder extends Actor {
         v._1.sortBy(_.price).zip(v._2.sortBy(-_.price)).filter {
           case (o, d) => o.price < (d.price - d.price * taxRate)
         }.unzip
-    }.filter {
+    }.view.filter {
       case (key, (v1, v2)) => v1.size > 0 && v2.size > 0
-    }
+    }.toMap
   }
 
   def enumerateRoutes(orders: Map[Long, (Seq[MarketOrder], Seq[MarketOrder])]): Map[Long, Future[Seq[List[Jump]]]] = {
@@ -73,10 +73,11 @@ class TradeFinder extends Actor {
       }.distinct)
     }
 
-    val pairs = systems.map {
+    val pairs = systems.view.map {
       case (key, value) => (key -> (for {a <- value._1; b <- value._2} yield (a, b)).distinct)
-    }
-    pairs.map {
+    }.toMap
+
+    pairs.view.map {
       case (key, routes) =>
         key -> Future.sequence(routes.map {
           case (s, d) => (getRoutes ? RouteBetween(s, d)).mapTo[List[Jump]]
@@ -86,7 +87,7 @@ class TradeFinder extends Actor {
             _.size
           }
         }
-    }
+    }.toMap
   }
 
   def receive = {
