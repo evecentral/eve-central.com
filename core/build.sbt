@@ -58,7 +58,7 @@ libraryDependencies ++= Seq(
 
 publishMavenStyle := true
 
-publishTo := Some(Resolver.file("file", new File("../../ivy-repo/")))
+publishTo := Some(Resolver.file("file", new File("../../../ivy-repo/")))
 
 
 
