@@ -48,7 +48,8 @@ for fields in csvread:
     # Skip non-market items
     if marketgroup == "null" or marketgroup == "" or marketgroup == "0.0" or marketgroup == "0":
         print "SKIP: ",name,volume,published,marketgroup,id
-        continue
+        marketgroup = 1
+        #continue
     marketgroup = int(marketgroup)
 
     group = int(fields[1])

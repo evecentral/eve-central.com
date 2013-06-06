@@ -22,7 +22,7 @@ import Cheetah.Template
 import random
 import json
 import urllib
-
+from mx import DateTime
 import cherrypy
 
 from evecentral import display
@@ -252,12 +252,11 @@ class Home:
                     else:
                         rec['range'] = -2
                     rec['regionname'] = r[7]
-                    rt = str(r[8])
+                    
+                    reported = DateTime.DateTimeFrom(str(r[8]))
+                    now = DateTime.gmt()
 
-                    if '.' in rt:
-                        rec['reportedtime'] = rt[5:-7]
-                    else:
-                        rec['reportedtime'] = rt[5:]
+                    rec['reportedtime'] = "%d hours ago" % ((now - reported).hours)
         
                     rec['stationname'] = r[9]
                     sec = r[10]
