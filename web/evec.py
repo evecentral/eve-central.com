@@ -255,8 +255,12 @@ class Home:
                     
                     reported = DateTime.DateTimeFrom(str(r[8]))
                     now = DateTime.gmt()
-
-                    rec['reportedtime'] = "%d hours ago" % ((now - reported).hours)
+                    hours = (now - reported).hours
+                    if hours >= 1:
+                        rec['reportedtime'] = "%d hours ago" % (hours)
+                    else:
+                        rec['reportedtime'] = "%d minutes ago" % (now - reported).minutes
+                        
         
                     rec['stationname'] = r[9]
                     sec = r[10]
