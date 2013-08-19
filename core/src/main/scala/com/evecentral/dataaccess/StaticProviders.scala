@@ -54,7 +54,7 @@ case class Station(stationid: Long, name: String, shortName: String, system: Sol
 
 case class SolarSystem(systemid: Long, name: String, security: Double, region: Region, constellationid: Long)
 
-case class MarketType(typeid: Long, name: String)
+case class MarketType(typeid: Long, name: String, group: Long)
 
 object JacksonMapper {
   def serialize[T](t: T): String = {
@@ -184,11 +184,12 @@ object StaticProvider {
     var m = Map[Long, MarketType]()
     Database.coreDb.transaction {
       tx =>
-        tx.selectAndProcess("SELECT typeid,typename FROM types") {
+        tx.selectAndProcess("SELECT typeid,typename,marketgroup FROM types") {
           row =>
             val sysid = row.nextLong.get
             val name = row.nextString.get
-            m = m ++ Map(sysid -> MarketType(sysid, name))
+            val marketGroup = row.nextLong.getOrElse(0L)
+            m = m ++ Map(sysid -> MarketType(sysid, name, marketGroup))
         }
     }
     m
