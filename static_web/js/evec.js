@@ -45,7 +45,17 @@ var urlParams = {};
 	29668 : "PLEX"
     };
 
+    ec.systems = {
+	"30000142": "Jita",
+	"30002659": "Dodixie",
+	"30002510": "Rens",
+	"30002187": "Amarr",
+	"30002053": "Hek"
+    };
 
+
+    ec.indexSystem = "30000142";
+    ec.indexQuery = function() { return {"typeid" : "34,35,36,37,38,39,40,29668", "usesystem" : ec.indexSystem };  }
     ec.statsModel = Backbone.Model.extend({
 	url:'/api/marketstat/json'
     });
@@ -63,7 +73,9 @@ var urlParams = {};
     });
 
     ec.statsScrollView = Backbone.View.extend({
-	initialize: function() {            this.model.bind("change", this.render, this); },
+	initialize: function() {
+            this.model.bind("change", this.render, this); 
+	},
 	render: function(event) {
 	    var template = Handlebars.compile($("#statsTemplate").html());
 	    var data = this.model.toJSON();
@@ -78,14 +90,42 @@ var urlParams = {};
 	}
     });
 
+    ec.statsNameView = Backbone.View.extend({
+	initialize: function() { 
+	    this.model.bind("change", this.render, this); 
+	},
+	render: function(event) {
+	    var el = this.$el;
+	    var model = this.model;
+	    el.empty();
+
+	    _.each(_.keys(ec.systems), function(system) {
+		if (system == ec.indexSystem) {
+		    el.append("<span class=picked>" + ec.systems[system] + "</span>");
+		} else {
+		    var n = $("<span class=topick>" + ec.systems[system] + "</span>");
+		    var a = el.append(n);
+		    n.one("click", "", system, 
+			 function(t) { 
+			     ec.indexSystem = t.data;
+			     model.fetch({data: ec.indexQuery()});
+			 }
+			);
+
+		}
+	    });
+
+	}
+    });
+
     ec.indexpage = function() {
 	var stats = new ec.statsModel();
 	var statsView = new ec.statsScrollView( { model : stats, el : $("#statsHolder")});
-	var data = {"typeid" : "34,35,36,37,38,39,40,29668", "usesystem" : "30000142"};
-	stats.fetch({data: data});
+	var statsNameView = new ec.statsNameView( { model: stats, el : $("#statsName")});
+	stats.fetch({data: ec.indexQuery()});
 	window.setInterval(function() {
-	    stats.fetch({data: data});
-	}, 60000);
+	    stats.fetch({data: ec.indexQuery()});
+	}, 600000);
 	
     };
 

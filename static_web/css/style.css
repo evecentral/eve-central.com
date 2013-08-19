@@ -365,6 +365,18 @@ img {
     padding: 10px;
 }
 
+.stat-bar .picked {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.stat-bar .topick {
+    padding-left: 10px;
+    cursor: pointer;
+    padding-right: 10px;
+    font-size: 70%;
+}
+
 .stat-bar .inner {
 }
 
@@ -375,9 +387,11 @@ img {
     -webkit-transform:rotate(270deg);
     -moz-transform:rotate(270deg);
     -o-transform: rotate(270deg);
+    transform: rotate(270deg);
     -moz-transform-origin: 50% 50%;
     -webkit-transform-origin: 50% 50%;
     -o-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
     display: inline-block;
 
 }
