@@ -26,16 +26,24 @@ object Boot extends App {
   val stationsMAp = StaticProvider.stationsMap
   val typesMap = StaticProvider.typesMap
   LoggerFactory.getLogger(getClass)
+  private[this] val log = LoggerFactory.getLogger("boot")
   // initialize SLF4J early
 
-  // "Singleton" actors
-  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.getorders)
-  val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
-  val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
 
+  // "Singleton" actors
+  log.info("Booting GetOrdersActor")
+  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.getorders)
+  log.info("Booting GetHistStats")
+  val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
+  log.info("Booting StatisticsCaptureActor")
+  val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
+  log.info("Booting UploadStorageActor")
   val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(3)), ActorNames.uploadstorage)
+  log.info("Booting RouteActor")
   val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
+  log.info("Booting OrderCacheActor")
   val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
+  log.info("Booting UnifiedUploadParsingActor")
   val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
 
   class APIServiceActor extends Actor with APIv2Service with APIv3Service {
@@ -45,7 +53,7 @@ object Boot extends App {
 
     override implicit val timeout: Timeout = 60.seconds
   }
-
+  log.info("Booting APIServiceActor")
   val apiModule = system.actorOf(Props[APIServiceActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.http_apiv3)
 
   val server = system.actorOf(

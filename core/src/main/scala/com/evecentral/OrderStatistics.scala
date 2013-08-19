@@ -182,8 +182,8 @@ case class PoisonCache(region: Region, marketType: MarketType)
 
 case class PoisonAllCache()
 
-class OrderCacheActor(periodicExpire: Boolean = false) extends Actor {
-
+class OrderCacheActor extends Actor {
+  val periodicExpire = false
   implicit val ec = context.dispatcher
 
   type LLGCF = scala.collection.mutable.HashSet[GetCacheFor]
