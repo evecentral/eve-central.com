@@ -67,4 +67,4 @@ class JsonTools:
                  'type': 'Region'}
             r = cur_r.fetchone()
             json_list.append(m)
-        return simplejson.dumps({'results' : json_list})
+        return simplejson.dumps(json_list)

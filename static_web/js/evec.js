@@ -147,5 +147,29 @@ var urlParams = {};
 
     };
 
+    ec.tradetool = function() {
+	var desc = Handlebars.compile('<p>{{name}} - {{type}}</p>');
+
+	$("#system1s").typeahead({
+	    name: 'locations',
+	    remote: '/json_tools/system_search?name=%QUERY',
+	    valueKey: 'name',
+	    template: desc,
+	}).bind("typeahead:selected", function(evt, item) {
+	    $('#system1').val(item.id);
+	});
+	$("#system2s").typeahead({
+	    name: 'locations',
+	    remote: '/json_tools/system_search?name=%QUERY',
+	    valueKey: 'id',
+	    template: desc
+	}).bind("typeahead:selected", function(evt, item) {
+	    $('#system2').val(item.id);
+	});
+
+	
+
+    };
+
 
 })(window.ec = window.ec || {});

@@ -8,13 +8,6 @@ Trade Tools
 
 
 <!-- js -->
-<script type="text/javascript" src="/js/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
-
-<script type="text/javascript" src="/js/yui/connection/connection-min.js"></script>
-<script type="text/javascript" src="/js/yui/animation/animation-min.js"></script>
-<script type="text/javascript" src="/js/yui/datasource/datasource-beta-min.js"></script>
-<script type="text/javascript" src="/js/yui/json/json-min.js"></script>
-<script type="text/javascript" src="/js/yui/autocomplete/autocomplete-min.js"></script>
 
 <p><i>Remember!</i>  This market data is collected from user submissions! Take a look at our <a href="/home/software.html">software page</a> to download the free utility which will upload market dumps from the EVE client. </p>
 
@@ -55,39 +48,31 @@ Trade Tools
 <div class="tradeTool">
   <h3>System and Region Price Comparison Tool</h3>
   <p>Compare the price differences between sell orders in two systems or regions (or combination thereof). Simply enter any system or region name in either box, and pick a matching entry from the list. </p>
-  <form action="compare" onsubmit="return ac1.validateForm() &amp;&amp; ac2.validateForm();" class="yui-skin-sam">
+  <form action="compare">
     <div id="systemSearch">
 
       <div>
 From:	    <input id="system1s" type="text" name="name" />
         <input id="system1" type="hidden" name="system1" value="-1" />
-        <br />
-	    <div id="system1ysearchcontainer"></div>
       </div>
 <br>
       <div>
 To:        <input id="system2s" type="text" name="name" />
 
         <input id="system2" type="hidden" name="system2" value="-1" />
-        <br />
 
-
-	    <div id="system2ysearchcontainer"></div>
       </div>
       <br />
       <input type="submit" value="Compare!" />
     </div>
   </form>
-<script type="text/javascript" src="/js/evec_acomplete.js"></script>
-
 </div>
 
-<!--
-<div class="tradeToolPremium">
-  <h3>At-A-Glance Market Views</h3>
-  <p><b>Coming soon!</b> <br />Build a collection of items from different places and compares prices, all in one page. Integrates
-    market order exporting to track your orders vs uploaded pricing information.</p>
-</div>
--->
+<script>
+	\$(document).ready(function() {
+	ec.tradetool();
+	});
+</script>
+
 
 #end def
