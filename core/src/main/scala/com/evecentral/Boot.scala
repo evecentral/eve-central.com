@@ -29,9 +29,9 @@ object Boot extends App {
   // initialize SLF4J early
 
   // "Singleton" actors
-  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10).withDispatcher("db-dispatcher")), ActorNames.getorders)
+  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.getorders)
   val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
-  val statCap = system.actorOf(Props[StatisticsCaptureActor].withDispatcher("db-dispatcher"), ActorNames.statCapture)
+  val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
 
   val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(3)), ActorNames.uploadstorage)
   val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
