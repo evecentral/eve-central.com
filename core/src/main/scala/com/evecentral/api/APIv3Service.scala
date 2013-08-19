@@ -155,9 +155,10 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
             get {
               respondWithMediaType(`application/json`) {
                 complete {
-                  val types = StaticProvider.typesMap.view.map { _._2 }.filter { ty =>
-                   ty.name.contains(rest) &&
-                     ty.group > 0
+                  val check = rest.toLowerCase
+                  val types = StaticProvider.typesMap.values.filter { ty =>
+                   ty.name.toLowerCase.contains(check) &&
+                     ty.group > 0L
                   }.toSeq
                   serialize(types)
                 }
