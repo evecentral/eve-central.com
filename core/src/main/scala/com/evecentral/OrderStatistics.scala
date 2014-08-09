@@ -133,14 +133,14 @@ object OrderStatistics {
       case false =>
         var left = sorted
         var sumVolume: Long = 0
-        var orders: List[MarketOrder] = List[MarketOrder]()
+        val orders = Seq.newBuilder[MarketOrder]
 
         while (sumVolume <= volumeTo) {
           sumVolume += left.head.volenter
-          orders = List[MarketOrder](left.head) ++ orders
+          orders += left.head
           left = left.tail
         }
-        wavg(orders, sumVolume)
+        wavg(orders.result(), sumVolume)
       case true => 0.0
 
     }

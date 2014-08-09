@@ -20,9 +20,9 @@ name := "eve-central-ng"
 
 organization  := "com.evecentral"
 
-version := "3.1.4"
+version := "3.1.5"
 
-scalaVersion := "2.10.1"
+scalaVersion := "2.10.3"
 
 resolvers ++= Seq(
   "Twitter" at "http://maven.twttr.com/",
@@ -34,13 +34,18 @@ resolvers ++= Seq(
   "Spray Nightlies" at "http://nightlies.spray.io/",
   "theatr.us" at "http://repo.theatr.us")
 
+
+/// TODO: Move to actual Spray 1.1+
+val sprayVersion = "1.1-M7"
+val akkaVersion = "2.1.4"
+
 libraryDependencies ++= Seq(
-  "io.spray" % "spray-can" % "1.1-M7",
-  "io.spray" % "spray-routing"     % "1.1-M7",
-  "io.spray" % "spray-testkit"     % "1.1-M7",
-  "com.typesafe.akka" %% "akka-actor"  % "2.1.4",
-  "com.typesafe.akka" %% "akka-testkit" % "2.1.4",
-  "com.typesafe.akka" %% "akka-slf4j" % "2.1.4",
+  "io.spray" % "spray-can" % sprayVersion,
+  "io.spray" % "spray-routing"     % sprayVersion,
+  "io.spray" % "spray-testkit"     % sprayVersion,
+  "com.typesafe.akka" %% "akka-actor"  % akkaVersion,
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "net.noerd" %% "prequel" % "0.3.9",
   "org.scalatest" %% "scalatest" % "1.9.1" % "test",
   "postgresql" % "postgresql" % "9.1-901.jdbc4",
