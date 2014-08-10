@@ -74,7 +74,6 @@ class Comparison:
 
 class TradeTool:
 
-
     def build_compare(self, db, system, mode, hours = 360, secfilter = 0.4):
         cur = db.cursor()
         sql_age = str(int(hours)) + " hours"
@@ -121,9 +120,6 @@ AND types.typeid = current_market.typeid""", [secfilter, system])
 
 
     def combine_maps(self, map1, map2):
-
-
-
         types = set(map1.keys())
         types = types.intersection(map2.keys())
         omap = {}
@@ -166,8 +162,6 @@ AND types.typeid = current_market.typeid""", [secfilter, system])
     @cherrypy.expose
     def compare(self, system1, system2, mode1="systems", mode2="systems", sethours = None, setsecfilter = None, setmaxisk = None, **kwargs):
         db = evec_func.db_con()
-
-
         session = EVCstate()
 
         # Get defaults for sessions

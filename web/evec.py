@@ -90,9 +90,6 @@ class Home:
             emit_redirect('/home/quicklook.html?typeid='+str(int(types[0]['typeid'])))
             return
 
-
-
-
         return t.respond()
 
 
@@ -117,19 +114,13 @@ class Home:
 
         if 'regionlimit' in session and len(regionlimit) == 0:
             regionlimit = session['regionlimit']
-        
+
         if len(regionlimit) == 0:
             regionlimit = empireregions()
 
         randomregion = None
 
         up_sug = None
-        #if len(regionlimit) == 0:
-        #    pass
-        #elif random.randint(1,50) > 10:
-        #    random.shuffle(regionlimit)
-        #    randomregion = regionlimit[0]
-        #    up_sug = upload_suggest(db, randomregion, rettype = "both")
 
         order = 'price'
         orderdir = 'ASC'
@@ -252,7 +243,7 @@ class Home:
                     else:
                         rec['range'] = -2
                     rec['regionname'] = r[7]
-                    
+
                     reported = DateTime.DateTimeFrom(str(r[8]))
                     now = DateTime.gmt()
                     hours = (now - reported).hours
@@ -260,8 +251,7 @@ class Home:
                         rec['reportedtime'] = "%d hours ago" % (hours)
                     else:
                         rec['reportedtime'] = "%d minutes ago" % (now - reported).minutes
-                        
-        
+
                     rec['stationname'] = r[9]
                     sec = r[10]
                     ssec = str(sec)[0:3]
@@ -287,8 +277,6 @@ class Home:
                     lista.append(rec)
 
                     r = query.fetchone()
-
-
 
         # pass in info here
 
@@ -325,7 +313,6 @@ class Home:
     @cherrypy.expose
     def tradefind_display(self, qtype, fromt, to, set = None, age = 24, cashonhand = 10000000.00, minprofit = 100000, size = 10000, startat = 0, limit = 50, newsearch = "0", sort = "jprofit", prefer_sec = "0"):
 
-
         session = EVCstate()
         t = display.template('tradefind_display.tmpl', session)
         db = evec_func.db_con()
@@ -338,7 +325,6 @@ class Home:
         limit = int(limit)
         prefer_sec = int(prefer_sec)
         recalc_route = False
-
 
         if sort not in ['jprofit', 'sprofit', 'profit', 'jumps']:
             return
