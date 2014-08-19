@@ -1,7 +1,4 @@
-Escalation locked and loaded.
-Contribtastic 2.1.1 is the current uploader.
-
-Unified uploader support is in beta testing.
+Contribtastic 2.1.2 is the current uploader.
 
 
 

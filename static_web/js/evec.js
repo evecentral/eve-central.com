@@ -42,7 +42,11 @@ var urlParams = {};
 	38 : "Nocxium",
 	39 : "Zydrine",
 	40 : "Megacyte",
-	29668 : "PLEX"
+	29668 : "PLEX",
+	16274 : "Helium Isotopes",
+	17889 : "Hydrogen Isotopes",
+	17888 : "Nitrogen Isotopes",
+	17887 : "Oxygen Isotopes"
     };
 
     ec.systems = {
@@ -55,7 +59,10 @@ var urlParams = {};
 
 
     ec.indexSystem = "30000142";
-    ec.indexQuery = function() { return {"typeid" : "34,35,36,37,38,39,40,29668", "usesystem" : ec.indexSystem };  }
+    ec.indexQuery = function() { 
+	var types = _.keys(ec.types)
+	return {"typeid" : types.join(","), "usesystem" : ec.indexSystem };  
+    }
     ec.statsModel = Backbone.Model.extend({
 	url:'/api/marketstat/json'
     });
@@ -118,6 +125,10 @@ var urlParams = {};
 	}
     });
 
+    // ----------------------------------------
+    // Page level handlers
+    // ----------------------------------------
+
     ec.indexpage = function() {
 	var stats = new ec.statsModel();
 	var statsView = new ec.statsScrollView( { model : stats, el : $("#statsHolder")});
@@ -143,7 +154,7 @@ var urlParams = {};
 
 	window.setInterval(function() {
 	    stats.fetch({data: urlParams});
-	}, 60000);
+	}, 600000);
 
     };
 
