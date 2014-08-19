@@ -334,7 +334,7 @@ trait APIv2Service extends HttpService with FixedSprayMarshallers {
   val v2Service: spray.routing.Route = {
     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
       pathPrefix("api") {
-        path("quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
+        path("quicklook" / "onpath" / "from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
           (fromr, tor, types) =>
             val fromid = lookupSystem(fromr)
             val toid = lookupSystem(tor)
@@ -363,7 +363,7 @@ trait APIv2Service extends HttpService with FixedSprayMarshallers {
               (marketstatActor ! EvemonQuery(ctx))
           }
         }
-      } ~ path("datainput.py/inputdata") {
+      } ~ path("datainput.py" / "inputdata") {
         post {
           formFields("typename" ?, "userid" ?, "data", "typeid" ?, "region" ?) {
             (typename, userid, data, typeid, region) =>

@@ -51,7 +51,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
   val api3Service = {
     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
       pathPrefix("api") {
-        path("station/shorten" / IntNumber) {
+        path("station" / "shorten" / IntNumber) {
           stationid =>
             get {
               ctx =>
@@ -61,7 +61,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 }
 
             }
-        } ~ pathPrefix("history/for/type" / IntNumber) {
+        } ~ pathPrefix("history" / "for" / "type" / IntNumber) {
           (typeid) =>
             path("region" / "[^/]+".r / "bid" / IntNumber) {
               (region, bid) =>
@@ -112,7 +112,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   }
                 }
             }
-        } ~ path("distance/from" / "[^/]+".r / "to" / "[^/]+".r) {
+        } ~ path("distance / "from" / "[^/]+".r / "to" / "[^/]+".r) {
           (fromr, tor) =>
             get {
               respondWithMediaType(`application/json`) {
@@ -127,7 +127,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   fcomplete(distanceF, ctx)
               }
             }
-        } ~ path("route/from" / "[^/]+".r / "to" / "[^/]+".r) {
+        } ~ path("route" / "from" / "[^/]+".r / "to" / "[^/]+".r) {
           (fromr, tor) =>
             get {
               respondWithMediaType(`application/json`) {
@@ -142,7 +142,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   fcomplete(routeFuture, ctx)
               }
             }
-        } ~ path("neighbors/of" / "[^/]+".r / "radius" / IntNumber) {
+        } ~ path("neighbors" / "of" / "[^/]+".r / "radius" / IntNumber) {
           (origin, radius) =>
             get {
               ctx =>
@@ -175,7 +175,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
               }
             }
           }
-        } ~ path("orders/type" / IntNumber) {
+        } ~ path("orders" / "type" / IntNumber) {
           typeid =>
             get {
               respondWithMediaType(`text/plain`) {
