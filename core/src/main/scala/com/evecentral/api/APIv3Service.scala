@@ -112,7 +112,7 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                   }
                 }
             }
-        } ~ path("distance / "from" / "[^/]+".r / "to" / "[^/]+".r) {
+        } ~ path("distance" / "from" / "[^/]+".r / "to" / "[^/]+".r) {
           (fromr, tor) =>
             get {
               respondWithMediaType(`application/json`) {
