@@ -20,7 +20,7 @@ name := "eve-central-ng"
 
 organization  := "com.evecentral"
 
-version := "3.1.5"
+version := "3.1.7"
 
 scalaVersion := "2.10.3"
 
@@ -35,9 +35,8 @@ resolvers ++= Seq(
   "theatr.us" at "http://repo.theatr.us")
 
 
-/// TODO: Move to actual Spray 1.1+
-val sprayVersion = "1.1.1"
-val akkaVersion = "2.1.4"
+val sprayVersion = "1.3.1"
+val akkaVersion = "2.3.5"
 
 libraryDependencies ++= Seq(
   "io.spray" % "spray-can" % sprayVersion,
