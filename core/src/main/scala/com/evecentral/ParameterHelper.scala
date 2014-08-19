@@ -47,9 +47,9 @@ object ParameterHelper {
 
   def listFromContext(ctx: RequestContext): Uri.Query = {
     try {
-      val formdata = ctx.request.entity match {
-        case Empty => None
-        case t: HttpEntity => Some(t.asString(HttpCharsets.`UTF-8`))
+      val formdata = ctx.request.entity.data match {
+        case HttpData.Empty => None
+        case t: HttpData => Some(t.asString(HttpCharsets.`UTF-8`))
       }
 
       formdata match {
