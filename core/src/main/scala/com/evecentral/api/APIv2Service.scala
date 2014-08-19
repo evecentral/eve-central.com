@@ -333,35 +333,35 @@ trait APIv2Service extends HttpService with FixedSprayMarshallers {
 
   val v2Service: spray.routing.Route = {
     respondWithHeader(RawHeader("Access-Control-Allow-Origin", "*")) {
-      path("api/quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
-        (fromr, tor, types) =>
-          val fromid = lookupSystem(fromr)
-          val toid = lookupSystem(tor)
+      pathPrefix("api") {
+        path("quicklook/onpath/from" / "[^/]+".r / "to" / "[^/]+".r / "fortype" / IntNumber) {
+          (fromr, tor, types) =>
+            val fromid = lookupSystem(fromr)
+            val toid = lookupSystem(tor)
+            (get | post) {
+              ctx =>
+                quicklookActor ! QuickLookPathQuery(ctx, fromid, toid, types)
+            }
+        } ~
+          path("quicklook") {
+            (get | post) {
+              ctx =>
+                (quicklookActor ! QuickLookSimpleQuery(ctx))
+            }
+          } ~ path("marketstat" / Rest) {
+          dtype =>
+            (get | post) {
+              ctx =>
+                if (dtype.size > 0)
+                  (marketstatActor ! MarketstatQuery(ctx, dtype))
+                else
+                  (marketstatActor ! MarketstatQuery(ctx))
+            }
+        } ~ path("evemon") {
           (get | post) {
             ctx =>
-              quicklookActor ! QuickLookPathQuery(ctx, fromid, toid, types)
+              (marketstatActor ! EvemonQuery(ctx))
           }
-      } ~
-        path("api/quicklook") {
-
-          (get | post) {
-            ctx =>
-              (quicklookActor ! QuickLookSimpleQuery(ctx))
-
-          }
-        } ~ path("api/marketstat" / Rest) {
-        dtype =>
-          (get | post) {
-            ctx =>
-              if (dtype.size > 0)
-                (marketstatActor ! MarketstatQuery(ctx, dtype))
-              else
-                (marketstatActor ! MarketstatQuery(ctx))
-          }
-      } ~ path("api/evemon") {
-        (get | post) {
-          ctx =>
-            (marketstatActor ! EvemonQuery(ctx))
         }
       } ~ path("datainput.py/inputdata") {
         post {
