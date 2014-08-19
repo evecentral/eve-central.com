@@ -57,7 +57,7 @@ object ParameterHelper {
       formdata match {
         case None => ctx.request.uri.query
         case Some(fd) => {
-          val q = Uri.Query("?" + fd)
+          val q = Uri.Query(ctx.request.uri.render(new StringRendering).get + "?" + fd)
           log.info("QUERY: " + q)
           q
         }
