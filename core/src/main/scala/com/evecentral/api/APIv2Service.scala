@@ -360,6 +360,8 @@ trait APIv2Service extends HttpService with FixedSprayMarshallers {
         } ~ path("marketstat") {
           post { ctx =>
             (marketstatActor ! MarketstatQuery(ctx))
+          } ~ get { ctx =>
+            (marketstatActor ! MarketstatQuery(ctx))
           }
         } ~ path("evemon") {
           (get | post) {
