@@ -1,5 +1,6 @@
 package com.evecentral
 
+import org.slf4j.{LoggerFactory, Logger}
 import spray.http.HttpEntity.Empty
 import spray.http._
 
@@ -30,6 +31,8 @@ trait FixedSprayMarshallers extends BasicMarshallers {
  */
 object ParameterHelper {
 
+  private[this] val log = LoggerFactory.getLogger(getClass)
+
   def paramsFromQuery(name: String, params: Uri.Query): List[String] = {
     (params.foldLeft(List[String]()) {
       (i, s) => if (s._1 == name) s._2 :: i else i
@@ -51,7 +54,7 @@ object ParameterHelper {
         case HttpData.Empty => None
         case t: HttpData => Some(t.asString(HttpCharsets.`UTF-8`))
       }
-
+      log.info("FormData: " + formdata)
       formdata match {
         case None => ctx.request.uri.query
         case Some(fd) => Uri.Query(Some(fd))
