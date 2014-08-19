@@ -54,10 +54,13 @@ object ParameterHelper {
         case HttpData.Empty => None
         case t: HttpData => Some(t.asString(HttpCharsets.`UTF-8`))
       }
-      log.info("FormData: " + formdata)
       formdata match {
         case None => ctx.request.uri.query
-        case Some(fd) => Uri.Query(Some(fd))
+        case Some(fd) => {
+          val q = Uri.Query("?" + fd)
+          log.info("QUERY: " + q)
+          q
+        }
       }
     } catch {
       case _ : Throwable => Uri.Query(None)
