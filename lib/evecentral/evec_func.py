@@ -169,7 +169,6 @@ def format_price(price):
     return string
 
 
-
 def build_regionquery(front,rl_o):
 
     rl = copy(rl_o)
@@ -234,7 +233,6 @@ def get_type_size(db, typeid):
     return row[0]
 
 # Type list
-
 def type_list(db):
     cur = db.cursor()
 
@@ -252,7 +250,6 @@ def type_list(db):
 
 
 # Region list
-
 def region_list(db):
     cur = db.cursor()
 

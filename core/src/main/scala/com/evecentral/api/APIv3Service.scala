@@ -3,7 +3,8 @@ package com.evecentral.api
 import akka.actor.Actor
 import akka.pattern.ask
 import akka.util.Timeout
-import scala.concurrent.Future
+import spray.http.HttpCharsets
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import com.evecentral.FixedSprayMarshallers
 import com.evecentral.dataaccess._
@@ -14,7 +15,6 @@ import spray.http.MediaTypes._
 import spray.httpx.encoding.{Deflate, NoEncoding, Gzip}
 import spray.routing.{RequestContext, HttpService}
 import spray.httpx.marshalling.Marshaller
-import com.evecentral.datainput.StatisticsCapture
 import org.joda.time.DateTime
 import scala.util.{Success, Failure}
 
@@ -23,8 +23,11 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
   this: Actor =>
 
   implicit val timeout: Timeout = 10.seconds
+  import ExecutionContext.Implicits.global
 
-  def fcomplete[T](future: Future[T], ctx: RequestContext)(implicit marshaller: Marshaller[T]) {
+  def fcomplete[T](future: Future[T], ctx: RequestContext)
+                  (implicit marshaller: Marshaller[T], context: ExecutionContext)
+  {
     future.onComplete {
       case Failure(t) => ctx.failWith(t)
       case Success(s) => ctx.complete(s)
@@ -216,10 +219,9 @@ trait APIv3Service extends HttpService with FixedSprayMarshallers {
                 }
               } ~ put {
                 ctx =>
-                  val content = ctx.request.entity
-                  val sb = new String(content.buffer, "UTF-8")
-                  unifiedParser ! sb
-                  ctx.complete(sb)
+                  val content = ctx.request.entity.asString(HttpCharsets.`UTF-8`)
+                  unifiedParser ! content
+                  ctx.complete(content)
               }
             }
         } ~ path("syndicate") {

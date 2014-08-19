@@ -36,7 +36,7 @@ resolvers ++= Seq(
 
 
 /// TODO: Move to actual Spray 1.1+
-val sprayVersion = "1.1-M7"
+val sprayVersion = "1.1.1"
 val akkaVersion = "2.1.4"
 
 libraryDependencies ++= Seq(

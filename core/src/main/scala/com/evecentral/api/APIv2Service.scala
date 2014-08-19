@@ -1,6 +1,7 @@
 package com.evecentral.api
 
 import akka.actor.{Props, Actor}
+import spray.can.Http
 import scala.concurrent.Future
 import akka.pattern.ask
 import akka.util.Timeout
@@ -38,9 +39,9 @@ trait LiftJsonSupport {
    */
   implicit def liftJsonFormats: Formats
 
-  implicit def liftJsonUnmarshaller[T :Manifest] =
+  implicit def liftJsonUnmarshaller[T: Manifest] =
     Unmarshaller[T](`application/json`) {
-      case x: HttpBody =>
+      case x: HttpEntity =>
         val jsonSource = x.asString
         parse(jsonSource).extract[T]
     }
