@@ -28,7 +28,7 @@ object Boot extends App {
   val stationsMAp = StaticProvider.stationsMap
   val typesMap = StaticProvider.typesMap
   LoggerFactory.getLogger(getClass)
-  private[this] val log = LoggerFactory.getLogger("boot")
+  val log = LoggerFactory.getLogger("boot")
   // initialize SLF4J early
 
 
