@@ -1,20 +1,23 @@
 package com.evecentral
 
-import akka.actor.{Props, ActorSystem, Actor}
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.io.IO
-
-import com.evecentral.dataaccess._
+import akka.routing.SmallestMailboxRouter
+import akka.util.Timeout
 import com.evecentral.api._
-import datainput.{UnifiedUploadParsingActor, StatisticsCaptureActor, UploadStorageActor}
-import routes.RouteFinderActor
+import com.evecentral.dataaccess._
+import com.evecentral.datainput.{StatisticsCaptureActor, UnifiedUploadParsingActor, UploadStorageActor}
+import com.evecentral.routes.RouteFinderActor
+import com.evecentral.util.ActorNames
+import com.typesafe.config.ConfigFactory
 import org.slf4j.LoggerFactory
 import spray.can.Http
-import spray.routing.{RoutingSettings, ExceptionHandler}
-import util.ActorNames
-import com.typesafe.config.ConfigFactory
-import akka.routing.SmallestMailboxRouter
+import spray.http.StatusCodes._
+import spray.routing._
+import spray.routing.Directives.{complete, requestUri}
+import spray.util.LoggingContext
+
 import scala.concurrent.duration._
-import akka.util.Timeout
 
 object Boot extends App {
 
@@ -44,6 +47,16 @@ object Boot extends App {
   val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
   log.info("Booting UnifiedUploadParsingActor")
   val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
+
+  implicit def myExceptionHandler(implicit log: LoggingContext) =
+    ExceptionHandler {
+      case e: Exception =>
+        requestUri { uri =>
+          log.error(e, "General exception for {}", uri)
+          complete(InternalServerError, "An internal error occurred. Here is some fun information!" + e.getStackTraceString)
+        }
+    }
+
 
   class APIServiceActor extends Actor with APIv2Service with APIv3Service {
     def actorRefFactory = context
