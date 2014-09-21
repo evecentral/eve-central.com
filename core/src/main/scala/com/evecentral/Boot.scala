@@ -53,7 +53,8 @@ object Boot extends App {
       case e: Exception =>
         requestUri { uri =>
           log.error("Exception at URI " + uri, e)
-          complete(InternalServerError, "An internal error occurred. Here is some fun information!" + e.getStackTraceString)
+          complete(InternalServerError, "An internal error occurred. Here is a debugging stacktrace. \n" +
+            "Please report issues to https://github.com/theatrus/eve-central.com\n\n" + e.getStackTraceString)
         }
     }
 
