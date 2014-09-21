@@ -48,11 +48,11 @@ object Boot extends App {
   log.info("Booting UnifiedUploadParsingActor")
   val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
 
-  implicit def myExceptionHandler(implicit log: LoggingContext) =
+  def catchAllHandler() =
     ExceptionHandler {
       case e: Exception =>
         requestUri { uri =>
-          log.error(e, "General exception for {}", uri)
+          log.error("Exception at URI " + uri, e)
           complete(InternalServerError, "An internal error occurred. Here is some fun information!" + e.getStackTraceString)
         }
     }
@@ -62,7 +62,7 @@ object Boot extends App {
     def actorRefFactory = context
     implicit val route = RoutingSettings.default
     implicit val exception = ExceptionHandler.default
-    def receive = runRoute(v2Service ~ api3Service)
+    def receive = runRoute(handleExceptions(catchAllHandler()) { v2Service ~ api3Service })
 
     override implicit val timeout: Timeout = 60.seconds
   }

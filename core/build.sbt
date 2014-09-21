@@ -22,7 +22,7 @@ organization  := "com.evecentral"
 
 version := "3.1.7"
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.10.4"
 
 resolvers ++= Seq(
   "Twitter" at "http://maven.twttr.com/",
@@ -51,8 +51,8 @@ libraryDependencies ++= Seq(
   "net.liftweb" %% "lift-json" % "2.5",
   "org.slf4j" % "slf4j-api" % "1.6.4",
   "ch.qos.logback" % "logback-classic" % "1.0.3",
-  "com.google.guava" % "guava" % "14.0",
-  "com.google.code.findbugs" % "jsr305" % "1.3.+",
+  "com.google.guava" % "guava" % "18.0",
+  "com.google.code.findbugs" % "jsr305" % "2.0.1",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.2",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.2.2",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.2.2",
