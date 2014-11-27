@@ -1,4 +1,6 @@
-# EVE-Central.com Code Base - AGPL Release #
+# EVE-Central.com #
+
+[![Build Status](https://travis-ci.org/theatrus/eve-central.com.svg)](https://travis-ci.org/theatrus/eve-central.com)
 
 
 ## Introduction ##
