@@ -1,5 +1,8 @@
 Contribtastic 2.1.2 is the current uploader.
 
+We're switching to CREST soon - obviating the need for
+Contribtastic!
+
 
 
 
