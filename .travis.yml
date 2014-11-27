@@ -4,4 +4,4 @@ scala:
 jdk:
   - oraclejdk7
 
-script: cd core && sbt build
+script: cd core && sbt compile
