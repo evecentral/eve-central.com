@@ -1,7 +1,7 @@
 package com.evecentral.api
 
 import akka.actor.{Props, Actor}
-import spray.can.Http
+import spray.http.HttpHeaders.{RawHeader, `Content-Type`}
 import scala.concurrent.Future
 import akka.pattern.ask
 import akka.util.Timeout
@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory
 
 import scala.xml._
 
-import spray.http.HttpHeaders.RawHeader
 import spray.routing.{HttpService, RequestContext}
 import spray.httpx.unmarshalling.Unmarshaller
 import spray.httpx.marshalling.Marshaller
@@ -236,25 +235,28 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
           val minq = singleParam("minQ", params)
 
           if (dtype == "json") {
+            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/json`) +: h }
             val future = wrapAsJson(Future.sequence(
               typeid.map(t =>
                 getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
             future.onSuccess {
-              case succ: String => ctx.complete(succ)
+              case succ: String => ctxHeader.complete(succ)
             }
             future.onFailure {
-              case _ => ctx.failWith(_)
+              case _ => ctxHeader.failWith(_)
             }
           } else {
+            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/xml`) +: h }
+
             val future = wrapAsXml(Future.sequence(
               typeid.map(t =>
                 typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t)
               )))
             future.onSuccess {
-              case succ: NodeSeq => ctx.complete(succ)
+              case succ: NodeSeq => ctxHeader.complete(succ)
             }
             future.onFailure {
-              case _ => ctx.failWith(_)
+              case _ => ctxHeader.failWith(_)
             }
           }
         } else {
@@ -352,10 +354,11 @@ trait APIv2Service extends HttpService with FixedSprayMarshallers {
           dtype =>
             (get | post) {
               ctx =>
-                if (dtype.size > 0)
-                  (marketstatActor ! MarketstatQuery(ctx, dtype))
-                else
-                  (marketstatActor ! MarketstatQuery(ctx))
+              if (dtype.size > 0) {
+                (marketstatActor ! MarketstatQuery(ctx, dtype))
+              } else {
+                (marketstatActor ! MarketstatQuery(ctx))
+              }
             }
         } ~ path("marketstat") {
           post { ctx =>

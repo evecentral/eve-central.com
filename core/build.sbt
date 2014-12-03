@@ -59,8 +59,7 @@ libraryDependencies ++= Seq(
   "net.sf.jung" % "jung-algorithms" % "2.0.1",
   "net.sf.jung" % "jung-graph-impl" % "2.0.1",
   "javax.mail" % "mail" % "1.4.4",
-  "commons-collections" % "commons-collections" % "3.2.1",
-  "com.github.spullara.mustache.java" % "compiler" % "0.8.12")
+  "commons-collections" % "commons-collections" % "3.2.1")
 
 publishMavenStyle := true
 
