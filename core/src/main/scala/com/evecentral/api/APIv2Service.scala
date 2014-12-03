@@ -235,7 +235,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
           val minq = singleParam("minQ", params)
 
           if (dtype == "json") {
-            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/json`) +: h }
+            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/json`) :: h }
             val future = wrapAsJson(Future.sequence(
               typeid.map(t =>
                 getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
@@ -246,7 +246,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
               case _ => ctxHeader.failWith(_)
             }
           } else {
-            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/xml`) +: h }
+            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/xml`) :: h }
 
             val future = wrapAsXml(Future.sequence(
               typeid.map(t =>
