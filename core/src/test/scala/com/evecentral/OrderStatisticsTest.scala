@@ -2,13 +2,13 @@ package com.evecentral
 
 import dataaccess.{StaticProvider, GetOrdersFor, MarketOrder}
 
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfter, FunSuite}
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike}
+import org.scalatest.ShouldMatchers
 import akka.testkit.{TestKit}
 import akka.actor.{Props, ActorSystem}
 
 
-class OrderStatisticsTest(as: ActorSystem) extends TestKit(as) with FunSuite with ShouldMatchers with BeforeAndAfterAll {
+class OrderStatisticsTest(as: ActorSystem) extends TestKit(as) with FunSuiteLike with ShouldMatchers with BeforeAndAfterAll {
 
 	def this() = this(ActorSystem("MySpec"))
 

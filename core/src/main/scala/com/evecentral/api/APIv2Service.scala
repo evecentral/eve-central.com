@@ -1,7 +1,7 @@
 package com.evecentral.api
 
 import akka.actor.{Props, Actor}
-import spray.http.HttpHeaders.{RawHeader, `Content-Type`}
+import spray.http.HttpHeaders.RawHeader
 import scala.concurrent.Future
 import akka.pattern.ask
 import akka.util.Timeout
@@ -23,32 +23,9 @@ import org.slf4j.LoggerFactory
 import scala.xml._
 
 import spray.routing.{HttpService, RequestContext}
-import spray.httpx.unmarshalling.Unmarshaller
-import spray.httpx.marshalling.Marshaller
 import spray.http._
 import MediaTypes._
-import net.liftweb.json.Serialization._
-import net.liftweb.json._
 import scala.util.{Failure, Success}
-
-trait LiftJsonSupport {
-
-  /**
-   * The `Formats` to use for (de)serialization.
-   */
-  implicit def liftJsonFormats: Formats
-
-  implicit def liftJsonUnmarshaller[T: Manifest] =
-    Unmarshaller[T](`application/json`) {
-      case x: HttpEntity =>
-        val jsonSource = x.asString
-        parse(jsonSource).extract[T]
-    }
-
-  implicit def liftJsonMarshaller[T <: AnyRef] =
-    Marshaller.delegate[T, String](`application/json`)(write(_))
-
-}
 
 case class QuickLookSimpleQuery(ctx: RequestContext)
 
@@ -188,14 +165,12 @@ case class MarketstatQuery(ctx: RequestContext, dtype: String = "xml")
 
 case class EvemonQuery(ctx: RequestContext)
 
-class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupport with BaseOrderQuery {
+class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQuery {
 
   private val log = LoggerFactory.getLogger(getClass)
 
   import JacksonMapper.serialize
   import context.dispatcher
-
-  val liftJsonFormats = DefaultFormats
 
   override implicit val timeout: Timeout = 60.seconds
 
@@ -221,42 +196,43 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
           } else if (strings.size == 1) {
             strings(0).split(",").toList.filter(_.size > 0).map(_.toLong).distinct // Come up with a list of regionlimits comma seperated
           } else {
-            Seq[Long]()
+            Seq.empty[Long]
           }
         }
 
         val params = listFromContext(ctx)
         val typeid = paramUnpack(paramsFromQuery("typeid", params))
-        if (typeid.foldLeft(true)((n, t) => n && StaticProvider.typesMap.contains(t))) {
+
+        if (typeid.forall { n => StaticProvider.typesMap.contains(n) }) {
 
           val setHours = singleParam("hours", params).getOrElse(24.toLong)
           val regionLimit = paramUnpack(paramsFromQuery("regionlimit", params))
           val usesystem = singleParam("usesystem", params)
           val minq = singleParam("minQ", params)
 
+          // This suffix type encoding is a legacy hack retained for backwards portability.
           if (dtype == "json") {
-            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/json`) :: h }
             val future = wrapAsJson(Future.sequence(
               typeid.map(t =>
                 getCachedStatistics(t, setHours, regionLimit, usesystem, minq))))
             future.onSuccess {
-              case succ: String => ctxHeader.complete(succ)
+              case succ: String => ctx.complete(
+                HttpResponse(entity = HttpEntity(`application/json`, succ))
+              )
             }
             future.onFailure {
-              case _ => ctxHeader.failWith(_)
+              case _ => ctx.failWith(_)
             }
           } else {
-            val ctxHeader = ctx.withHttpResponseHeadersMapped { h => `Content-Type`(`application/xml`) :: h }
-
             val future = wrapAsXml(Future.sequence(
               typeid.map(t =>
                 typeXml(getCachedStatistics(t, setHours, regionLimit, usesystem, minq), t)
               )))
             future.onSuccess {
-              case succ: NodeSeq => ctxHeader.complete(succ)
+              case succ: NodeSeq => ctx.complete(succ)
             }
             future.onFailure {
-              case _ => ctxHeader.failWith(_)
+              case _ => ctx.failWith(_)
             }
           }
         } else {
@@ -315,6 +291,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with LiftJsonSupp
 
   case class BuyAllSell(buy: OrderStatistics, all: OrderStatistics, sell: OrderStatistics)
 
+  // In Spray parlance this should be a Marhsaller.
   def wrapAsJson(types: Future[Seq[(OrderStatistics, OrderStatistics, OrderStatistics)]]): Future[String] = types.map {
     types => serialize(types.map(u => BuyAllSell(u._1, u._2, u._3)))
   }

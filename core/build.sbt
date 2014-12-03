@@ -37,6 +37,7 @@ resolvers ++= Seq(
 
 val sprayVersion = "1.3.1"
 val akkaVersion = "2.3.5"
+val jacksonVersion = "2.4.3"
 
 libraryDependencies ++= Seq(
   "io.spray" % "spray-can" % sprayVersion,
@@ -46,16 +47,16 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "net.noerd" %% "prequel" % "0.3.9",
-  "org.scalatest" %% "scalatest" % "1.9.1" % "test",
+  "org.scalatest" %% "scalatest" % "2.2.2" % "test",
   "postgresql" % "postgresql" % "9.1-901.jdbc4",
   "net.liftweb" %% "lift-json" % "2.5",
   "org.slf4j" % "slf4j-api" % "1.6.4",
   "ch.qos.logback" % "logback-classic" % "1.0.3",
-  "com.google.guava" % "guava" % "18.0",
+  "com.google.guava" % "guava" % "15.0",
   "com.google.code.findbugs" % "jsr305" % "2.0.1",
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.2",
-  "com.fasterxml.jackson.core" % "jackson-databind" % "2.2.2",
-  "com.fasterxml.jackson.core" % "jackson-core" % "2.2.2",
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "net.sf.jung" % "jung-algorithms" % "2.0.1",
   "net.sf.jung" % "jung-graph-impl" % "2.0.1",
   "javax.mail" % "mail" % "1.4.4",

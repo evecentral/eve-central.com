@@ -1,11 +1,11 @@
 package com.evecentral.routes
 
-import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike}
 import akka.actor.{Props, ActorSystem, Actor}
 import com.evecentral.dataaccess.StaticProvider
 import akka.testkit.{TestActorRef, TestKit}
 
-class RouteFinderTest(as: ActorSystem) extends TestKit(as) with FunSuite with BeforeAndAfterAll {
+class RouteFinderTest(as: ActorSystem) extends TestKit(as) with FunSuiteLike with BeforeAndAfterAll {
 
 	def this() = this(ActorSystem("MySpec"))
 
