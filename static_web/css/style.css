@@ -355,6 +355,11 @@ td {
 
 }
 
+.doctable table {
+    border-bottom: 1px solid;
+    padding-bottom: 1ex;
+}
+
 .doctable th {
     background-color: #ddd;
 }
