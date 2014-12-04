@@ -361,11 +361,12 @@ td {
 }
 
 .doctable th {
-    background-color: #ddd;
+    background-color: #eee;
+    padding: 2em 2em 2em 2em;
 }
 
 .doctable td {
-    padding: 10px;
+    padding: 5px 5px 5px 5px;
 }
 
 .docsection {
@@ -374,7 +375,7 @@ td {
     font-family:  "freight-sans-pro", sans-serif; 
     font-size: 150%;
     font-weight: 500;
-    background-color: #eee;
+    background-color: #ddd;
 }
 
 img {
