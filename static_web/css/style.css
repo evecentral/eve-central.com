@@ -373,8 +373,8 @@ td {
 
 .docsection {
     padding: 1em 1em 1em 1em;
-    right-margin: 10em;
-    left-margin: -2ex;
+    margin-left: 10em;
+    margin-right: -2ex;
     
     font-family:  "freight-sans-pro", sans-serif; 
     font-size: 150%;
