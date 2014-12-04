@@ -22,7 +22,7 @@ h1, h2, h3 {
 h3 {
     font-size: 150%;
     font-weight: 500;
-    padding-bottom: 2em;
+    padding-top: 1em;
 }
 
 
@@ -357,6 +357,10 @@ td {
 
 .doctable th {
     background-color: #ddd;
+}
+
+.doctable td {
+    padding: 10px;
 }
 
 img {
