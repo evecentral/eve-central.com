@@ -1,3 +1,41 @@
+img {
+    border: 0px;
+}
+
+table {
+    border: 0;
+    border-spacing: 0px;
+}
+
+td {
+    padding: 5px;
+}
+
+h1 {
+    padding-left: 15px;
+    font-weight: 400;
+    font-size: 190%;
+}
+
+body {	
+    font-family: "source-sans-pro", sans-serif;
+    margin: 0px;
+    background: #fff;
+}
+
+a {	 
+    color: #001122;
+}
+
+h1, h2, h3 {
+    font-family:  "freight-sans-pro", sans-serif; 
+}
+
+h3 {
+    font-size: 150%;
+    font-weight: 500;
+}
+
 .view {position: relative;}
 
 .view span {
@@ -12,17 +50,6 @@
     border: 1px solid red;
 }
 
-
-h1, h2, h3 {
-    font-family:  "freight-sans-pro", sans-serif; 
-
-/*     text-shadow: 0 1px rgba(0, 0, 0, 0.2); */
-}
-
-h3 {
-    font-size: 150%;
-    font-weight: 500;
-}
 
 .alignRight {
     text-align: right;
@@ -40,27 +67,6 @@ h3 {
     color: #fff;
 }
 
-
-h1 {
-    padding-left: 15px;
-    font-weight: 400;
-    font-size: 190%;
-
-}
-
-body > h1 {
-/*     margin-top: -30px; */
-}
-
-body {	
-    font-family: "source-sans-pro", sans-serif;
-    margin: 0px;
-    background: #fff;
-}
-
-a {	 
-    color: #001122;
-}
 
 
 #bodyText {
@@ -191,7 +197,6 @@ a {
 #bodyText form {
     background-color: #ddd;
     padding: 1ex;
-    /*margin-left: 2ex;*/
     line-height: 5ex;
     text-align: top;
 }
@@ -279,45 +284,6 @@ a {
     padding-left: 1.1em;
 }
 
-
-
-.formBlock {
-    background-color: #ddd;
-    padding: 1ex;
-    margin-left: 2ex;
-
-}
-
-.RHS {
-    margin-right: 2.5mm;
-    float: right;
-    clear: right;
-}
-
-.LHS {
-    margin-left: 2.5mm;
-    float: left;
-    clear: left;
-}
-
-.treeView {
-    margin: 1ex 1ex 1ex 2.5ex; /* t r b l */
-    border-left: 1px solid;
-    padding-left: 0.5ex;
-}
-
-.treeheader {
-    background-color: #f0f0ff;
-    font-family: sans-serif;
-}
-
-.adLink {
-    background-color: #FFFFaa;
-    padding: 10px;
-    font-size: 90%;
-}
-
-
 .colorAlt {
     background-color: #DDDDEE;
 }
@@ -328,30 +294,7 @@ a {
     padding: 23px;
     margin-bottom: 10px;
 }
-.userPanel {
-    width: 90%;
-    background-color: #ccff99;
-    padding: 10px;
-    padding-bottom: 20px;
-}
 
-#systemSearch {
-
-}
-#system1s { position:static;width:20em; } 
-#system1ysearchcontainer { text-align:left;width:20em; } 
-#system2s { position:static;width:20em; }
-#system2ysearchcontainer { text-align:left;width:20em; } 
-
-table {
-    border: 0;
-    border-spacing: 0px;
-}
-
-td {
-    padding: 5px;
-
-}
 
 /* DEVELOPER SECTION STYLES */
 
@@ -386,11 +329,6 @@ td {
     margin-right: 20em;
     margin-left: 2em;
 }
-
-img {
-    border: 0px;
-}
-
 
 .stat-bar {
     background-color: #222;
