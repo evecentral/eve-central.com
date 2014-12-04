@@ -736,26 +736,6 @@ class Home:
     setigb_html = setigb
 
     @cherrypy.expose
-    def software(self):
-        session = EVCstate()
-
-        t = display.template('software.tmpl', session)
-        return t.respond()
-
-
-    software_html = software
-
-    @cherrypy.expose
-    def develop_old(self):
-        session = EVCstate()
-
-        t = display.template('develop_old.tmpl', session)
-        return t.respond()
-
-    develop_old_html = develop_old
-
-
-    @cherrypy.expose
     def develop(self):
         session = EVCstate()
 
