@@ -39,7 +39,7 @@ Data is provided as a series of parameters:
   </tr>
   <tr>
     <td>hours</td>
-    <td>Statistics for market orders up to X hours old.. Defaults to 24.</td>
+    <td>Statistics for market orders with a reported time up to X hours hold. Defaults to 24.</td>
     <td>False</td>
     <td>True</td>
   </tr>
@@ -75,6 +75,116 @@ Data is provided as a series of parameters:
 
 <p><strong>Example</strong> <a href="http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002</a>
   <a href="http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142">http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142</a></p>
+
+<h3>quicklook</h3>
+
+<p>Quicklook is amongst the oldest endpoints available, and has
+changed little since 2006. It provides a list of market orders based
+on various filters. Annoyingly, many options differ in spelling from
+marketstat.</p>
+
+<ul>
+  <li>Endpoint: <a href="http://api.eve-central.com/api/quicklook">http://api.eve-central.com/api/quicklook</a></li>
+  <li>Methods: <b>GET</b>, <b>POST</b> (with url-encoded data in body)</li>
+  <li>Return data: <b>XML</b></li>
+</ul>
+
+Data is provided as a series of parameters:
+
+<table>
+  <tr>
+    <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
+  </tr>
+  <tr>
+    <td>sethours</td>
+    <td>Market orders with a reported time up to X hours old. Defaults to 24.</td>
+    <td>False</td>
+    <td>True</td>
+  </tr>
+  <tr>
+    <td>typeid</td>
+    <td>The type ID of the item you are requesting. I.e., 34 for
+    Tritanium. 
+    </td>
+    <td>True</td>
+    <td>False</td>
+  </tr>
+  <tr>
+    <td>setminQ</td>
+    <td>The minimum quantity in an order to return. Defaults to 1.</td>
+    <td>False</td>
+    <td>False</td>
+  </tr>
+  <tr>
+    <td>regionlimit</td>
+    <td>Restrict statistics to a region. Can be specified more than once.</td>
+    <td>False</td>
+    <td>True</td>
+  </tr>
+  <tr>
+    <td>usesystem</td>
+    <td>Restrict statistics to a system.</td>
+    <td>False</td>
+    <td>False</td>
+  </tr>
+</table>
+
+<p><strong>Example</strong> <a href="http://api.eve-central.com/api/quicklook?typeid=34">http://api.eve-central.com/api/quicklook?typeid=34</a></p>
+
+<h3>quicklook/onpath</h3>
+
+<p>A much newer API which will report orders for a given type along EVE gate-to-gate path between systems.</p>
+
+<ul>
+  <li>Endpoint: <a href="http://api.eve-central.com/api/quicklook/onpath/from/XXX/to/YYY/fortype/ZZZ">http://api.eve-central.com/api/quicklook/onpath/from/XXX/to/YYY/fortype/ZZZ</a></li>
+  <li>Methods: <b>GET</b>
+  <li>Return data: <b>XML</b></li>
+</ul>
+
+Data is provided as a series of parameters:
+
+<table>
+  <tr>
+    <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
+  </tr>
+  <tr>
+    <td>sethours</td>
+    <td>Market orders with a reported time up to X hours old. Defaults to 360.</td>
+    <td>False</td>
+    <td>True</td>
+  </tr>
+  <tr>
+    <td>setminQ</td>
+    <td>The minimum quantity in an order to return. Defaults to 1.</td>
+    <td>False</td>
+    <td>False</td>
+  </tr>
+</table>
+
+The following position parameters are used:
+
+<table>
+  <tr>
+    <th>Parameter</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>XXX</td>
+    <td>The name or solarsystem ID where to start the path</td>
+  </tr>
+  <tr>
+    <td>YYY</td>
+    <td>The name or solarsystem ID where to end the path</td>
+  </tr>
+  <tr>
+    <td>ZZZ</td>
+    <td>The numeric type ID for which to show (i.e., 34 for Tritanium)</td>
+  </tr>
+</table>
+
+<p><strong>Example</strong> <a href="http://api.eve-central.com/api/quicklook/onpath/from/Jita/to/Amarr/fortype/34">http://api.eve-central.com/api/quicklook/onpath/from/Jita/to/Amarr/fortype/34</a>
+
+
 
 
 #end def
