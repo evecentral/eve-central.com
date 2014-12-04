@@ -362,7 +362,8 @@ td {
 
 .doctable th {
     background-color: #eee;
-    padding: 2em 2em 2em 2em;
+    padding-left: 2em;
+    padding-right: 2em;
 }
 
 .doctable td {
