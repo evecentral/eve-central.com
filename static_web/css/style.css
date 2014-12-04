@@ -382,6 +382,11 @@ td {
     background-color: #ddd;
 }
 
+.docbody {
+    margin-right: 11em;
+    margin-left: 1ex;
+}
+
 img {
     border: 0px;
 }

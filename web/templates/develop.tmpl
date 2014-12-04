@@ -12,291 +12,294 @@ Developer Integration
   information from your own application, killboard, or website.</p>
 
 <p>Support is provided by our Google
-Group: <a href="http://groups.google.com/group/eve-central">http://groups.google.com/group/eve-central</a>
-or via <a href="https://twitter.com/EVEtacCentral">Twitter</a>.</p>
+  Group: <a href="http://groups.google.com/group/eve-central">http://groups.google.com/group/eve-central</a>
+  or via <a href="https://twitter.com/EVEtacCentral">Twitter</a>.</p>
 
 <p>EVE-Central participates in
   the <a href="http://eve-market-data-relay.readthedocs.org/en/latest/index.html">EVE
-  Market Data Relay project.</a> The source code for this website is Open Source, and available at <a href="http://github.com/theatrus/eve-central.com/">GitHub</a>. </p>
+    Market Data Relay project.</a> The source code for this website is Open Source, and available at <a href="http://github.com/theatrus/eve-central.com/">GitHub</a>. </p>
 
 <p>Game data is copyright CCP Games hf. Please see the
-EVE-Online <a href="http://community.eveonline.com/support/policies/eve-eula/">EULA</a>
-for more information.</p>
+  EVE-Online <a href="http://community.eveonline.com/support/policies/eve-eula/">EULA</a>
+  for more information.</p>
 
 <h2>API Endpoints</h2>
 
 <div class="docsection">marketstat</div>
-
-<p>Marketstat is amongst the oldest endpoints available, and has
-changed little since 2006. It provides a summary of the market via
-  various statistics, for a given list of types, regions and systems.</p>
-
-<ul>
-  <li>Endpoint: <a href="http://api.eve-central.com/api/marketstat">http://api.eve-central.com/api/marketstat</a></li>
-  <li>Examples:
-    <ul>
-      <li><a href="http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002</a></li>
-      <li><a href="http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142">http://api.eve-central.com/api/marketstat?typeid=34&amp;usesystem=30000142</a></li>
-    </ul>
-  </li>
-  <li>Methods: <b>GET</b>, <b>POST</b> (with url-encoded data in body)</li>
-  <li>Return data: <b>XML</b>, <b>JSON</b> (via special URL suffix:
-  https://api.eve-central.com/api/marketstat/json, not Accept headers
-    due to legacy clients)</li>
-</ul>
-
-<p>Data is provided as a series of parameters:</p>
-
-<table  class="doctable">
-  <tr>
-    <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
-  </tr>
-  <tr>
-    <td>hours</td>
-    <td>Statistics for market orders with a reported time up to X hours hold. Defaults to 24.</td>
-    <td>False</td>
-    <td>True</td>
-  </tr>
-  <tr>
-    <td>typeid</td>
-    <td>The type ID of the item you are requesting. I.e., 34 for
-    Tritanium. Can be specified more than once. Can be specified in a
-      comma separated list.
-    </td>
-    <td>True</td>
-    <td>True</td>
-  </tr>
-  <tr>
-    <td>minQ</td>
-    <td>The minimum quantity in an order to consider it for the
-      statistics. Defaults to a heuristic scaled per type ID.</td>
-    <td>False</td>
-    <td>False</td>
-  </tr>
-  <tr>
-    <td>regionlimit</td>
-    <td>Restrict statistics to a region. Can be specified more than once.</td>
-    <td>False</td>
-    <td>True</td>
-  </tr>
-  <tr>
-    <td>usesystem</td>
-    <td>Restrict statistics to a system.</td>
-    <td>False</td>
-    <td>False</td>
-  </tr>
-</table>
-
-<div class="docsection">quicklook</div>
-
-<p>Quicklook is amongst the oldest endpoints available, and has
-changed little since 2006. It provides a list of market orders based
-on various filters. Annoyingly, many options differ in spelling from
-marketstat.</p>
-
-<ul>
-  <li>Endpoint: <a href="http://api.eve-central.com/api/quicklook">http://api.eve-central.com/api/quicklook</a></li>
-  <li>Example: <a href="http://api.eve-central.com/api/quicklook?typeid=34">http://api.eve-central.com/api/quicklook?typeid=34</a></li>
-  <li>Methods: <b>GET</b>, <b>POST</b> (with url-encoded data in body)</li>
-  <li>Return data: <b>XML</b></li>
-</ul>
-
-<p>Data is provided as a series of parameters:</p>
-
-<table  class="doctable">
-  <tr>
-    <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
-  </tr>
-  <tr>
-    <td>sethours</td>
-    <td>Market orders with a reported time up to X hours old. Defaults to 24.</td>
-    <td>False</td>
-    <td>True</td>
-  </tr>
-  <tr>
-    <td>typeid</td>
-    <td>The type ID of the item you are requesting. I.e., 34 for
-    Tritanium. 
-    </td>
-    <td>True</td>
-    <td>False</td>
-  </tr>
-  <tr>
-    <td>setminQ</td>
-    <td>The minimum quantity in an order to return. Defaults to 1.</td>
-    <td>False</td>
-    <td>False</td>
-  </tr>
-  <tr>
-    <td>regionlimit</td>
-    <td>Restrict statistics to a region. Can be specified more than once.</td>
-    <td>False</td>
-    <td>True</td>
-  </tr>
-  <tr>
-    <td>usesystem</td>
-    <td>Restrict statistics to a system.</td>
-    <td>False</td>
-    <td>False</td>
-  </tr>
-</table>
-
-<div class="docsection">quicklook/onpath</div>
-
-<p>A much newer API which will report orders for a given type along EVE gate-to-gate path between systems.</p>
-
-<ul>
-  <li>Endpoint: <a href="http://api.eve-central.com/api/quicklook/onpath/from/XXX/to/YYY/fortype/ZZZ">http://api.eve-central.com/api/quicklook/onpath/from/XXX/to/YYY/fortype/ZZZ</a></li>
-  <li>Example: <a href="http://api.eve-central.com/api/quicklook/onpath/from/Jita/to/Amarr/fortype/34">http://api.eve-central.com/api/quicklook/onpath/from/Jita/to/Amarr/fortype/34</a></li>
-  <li>Methods: <b>GET</b>
-  <li>Return data: <b>XML</b></li>
-</ul>
-
-<p>Data is provided as a series of parameters:</p>
-
-<table  class="doctable">
-  <tr>
-    <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
-  </tr>
-  <tr>
-    <td>sethours</td>
-    <td>Market orders with a reported time up to X hours old. Defaults to 360.</td>
-    <td>False</td>
-    <td>True</td>
-  </tr>
-  <tr>
-    <td>setminQ</td>
-    <td>The minimum quantity in an order to return. Defaults to 1.</td>
-    <td>False</td>
-    <td>False</td>
-  </tr>
-</table>
-
-<p>The following position parameters are used:</p>
-
-<table class="doctable">
-  <tr>
-    <th>Parameter</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>XXX</td>
-    <td>The name or solarsystem ID where to start the path</td>
-  </tr>
-  <tr>
-    <td>YYY</td>
-    <td>The name or solarsystem ID where to end the path</td>
-  </tr>
-  <tr>
-    <td>ZZZ</td>
-    <td>The numeric type ID for which to show (i.e., 34 for Tritanium)</td>
-  </tr>
-</table>
-
-<div class="docsection">history</div>
-
-<p>Return EVE-Central's internal view of history for this market, generated based on known orders every hour.</p>
-
-<ul>
-  <li>Endpoint: <a href="http://api.eve-central.com/api/history/for/type/TYPE/SCOPE/LOCALE/bid/1">http://api.eve-central.com/api/history/for/type/TYPE/SCOPE/LOCALE/bid/1</a></li>
-  <li>Examples:
-    <ul>  
-      <li><a href="http://api.eve-central.com/api/history/for/type/34/system/Amarr/bid/1">http://api.eve-central.com/api/history/for/type/34/system/Amarr/bid/1</a></li>
-      <li><a href="http://api.eve-central.com/api/history/for/type/34/region/The%20Forge/bid/0">http://api.eve-central.com/api/history/for/type/34/region/The%20Forge/bid/0</a></li>
-    </ul>
-  </li>  
-    
-  <li>Methods: <b>GET</b>
-  <li>Return data: <b>JSON</b></li>
-</ul>
-
-<p>Data is provided as a series of positional arguments</p>
-
-<table class="doctable">
-  <tr>
-    <th>Parameter</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>TYPE</td>
-    <td>The numeric type ID (i.e., 34 for Tritanium)</td>
-  </tr>
-  <tr>
-    <td>SCOPE</td>
-    <td>One of: region, system</td>
-  <tr>
-    <td>LOCALE</td>
-    <td>The name or numerical ID of the system or region.</td>
-  </tr>
-  <tr>
-    <td>BID[0|1]</td>
-    <td>Buy or sell orders</td>
-  </tr>
-</table>
-
-<div class="docsection">route</div>
-
-<p>Return a path between two locales.
-
-<ul>
-  <li>Endpoint: <a href="http://api.eve-central.com/api/route/from/XXX/to/YYY">http://api.eve-central.com/api/route/from/XXX/to/YYY</a></li>
-  <li>Examples:
-    <ul>  
-      <li><a href="http://api.eve-central.com/api/route/from/Jita/to/V2-VC2">http://api.eve-central.com/api/route/from/Jita/to/V2-VC2</a></li>
-    </ul>
-  </li>  
-  <li>Methods: <b>GET</b>
-  <li>Return data: <b>JSON</b></li>
-</ul>
-
-<p>Data is provided as a series of positional arguments</p>
-
-<table class="doctable">
-  <tr>
-    <th>Parameter</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>XXX</td>
-    <td>System name, or ID, of the origin</td>
-  </tr>
-  <tr>
-    <td>YYY</td>
-    <td>System name, or ID, of the destination</td>
-  </tr>
-</table>
-
-<div class="docsection">evemon</div>
-
-<p>Return reference mineral prices for the calculator in EVEMon.</p>
-
-<ul>
-  <li>Endpoint: <a href="http://api.eve-central.com/api/evemon">http://api.eve-central.com/api/evemon</a></li>
-  <li>Methods: <b>GET</b>
-  <li>Return data: <b>XML</b></li>
-</ul>
-
-
-<h2>CSV Daily Market Order Dumps</h2>
-
-<div class="docsection">CSV Dumps</div>
-
-<p>These CSV files contain all of our user provided uploads dating back
-to 1/15/2006. This is every market log that was uploaded appended end to
-end (though sorting is not guaranteed).</p>
-
-<p>Due to the age of this data, there are some caveats:
+<div class="docbody">
+  <p>Marketstat is amongst the oldest endpoints available, and has
+    changed little since 2006. It provides a summary of the market via
+    various statistics, for a given list of types, regions and systems.</p>
 
   <ul>
-    <li>All timestamps are in Pacfic time (7 or 8 hours off GMT
-    depending on daylight savings time) up until October 2007, when we
-    moved to GMT/UTC.</li>
-    <li>Buy order ranges were incorrect for 2006</li>
+    <li>Endpoint: <a href="http://api.eve-central.com/api/marketstat">http://api.eve-central.com/api/marketstat</a></li>
+    <li>Examples:
+      <ul>
+        <li><a href="http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&amp;typeid=35&amp;regionlimit=10000002</a></li>
+        <li><a href="http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142">http://api.eve-central.com/api/marketstat?typeid=34&amp;usesystem=30000142</a></li>
+      </ul>
+    </li>
+    <li>Methods: <b>GET</b>, <b>POST</b> (with url-encoded data in body)</li>
+    <li>Return data: <b>XML</b>, <b>JSON</b> (via special URL suffix:
+      https://api.eve-central.com/api/marketstat/json, not Accept headers
+      due to legacy clients)</li>
   </ul>
-</p>
 
-The dump files are available
-here: <a href="http://eve-central.com/dumps/">http://eve-central.com/dumps/</a>.
-TAR file archives are provided for years as a download convenience.
+  <p>Data is provided as a series of parameters:</p>
+
+  <table  class="doctable">
+    <tr>
+      <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
+    </tr>
+    <tr>
+      <td>hours</td>
+      <td>Statistics for market orders with a reported time up to X hours hold. Defaults to 24.</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>typeid</td>
+      <td>The type ID of the item you are requesting. I.e., 34 for
+        Tritanium. Can be specified more than once. Can be specified in a
+        comma separated list.
+      </td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>minQ</td>
+      <td>The minimum quantity in an order to consider it for the
+        statistics. Defaults to a heuristic scaled per type ID.</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>regionlimit</td>
+      <td>Restrict statistics to a region. Can be specified more than once.</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>usesystem</td>
+      <td>Restrict statistics to a system.</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+  </table>
+</div>
+
+<div class="docsection">quicklook</div>
+<div class="docbody">
+  <p>Quicklook is amongst the oldest endpoints available, and has
+    changed little since 2006. It provides a list of market orders based
+    on various filters. Annoyingly, many options differ in spelling from
+    marketstat.</p>
+
+  <ul>
+    <li>Endpoint: <a href="http://api.eve-central.com/api/quicklook">http://api.eve-central.com/api/quicklook</a></li>
+    <li>Example: <a href="http://api.eve-central.com/api/quicklook?typeid=34">http://api.eve-central.com/api/quicklook?typeid=34</a></li>
+    <li>Methods: <b>GET</b>, <b>POST</b> (with url-encoded data in body)</li>
+    <li>Return data: <b>XML</b></li>
+  </ul>
+
+  <p>Data is provided as a series of parameters:</p>
+
+  <table  class="doctable">
+    <tr>
+      <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
+    </tr>
+    <tr>
+      <td>sethours</td>
+      <td>Market orders with a reported time up to X hours old. Defaults to 24.</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>typeid</td>
+      <td>The type ID of the item you are requesting. I.e., 34 for
+        Tritanium. 
+      </td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>setminQ</td>
+      <td>The minimum quantity in an order to return. Defaults to 1.</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>regionlimit</td>
+      <td>Restrict statistics to a region. Can be specified more than once.</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>usesystem</td>
+      <td>Restrict statistics to a system.</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+  </table>
+</div>
+
+<div class="docsection">quicklook/onpath</div>
+<div class="docbody">
+  <p>A much newer API which will report orders for a given type along EVE gate-to-gate path between systems.</p>
+
+  <ul>
+    <li>Endpoint: <a href="http://api.eve-central.com/api/quicklook/onpath/from/XXX/to/YYY/fortype/ZZZ">http://api.eve-central.com/api/quicklook/onpath/from/XXX/to/YYY/fortype/ZZZ</a></li>
+    <li>Example: <a href="http://api.eve-central.com/api/quicklook/onpath/from/Jita/to/Amarr/fortype/34">http://api.eve-central.com/api/quicklook/onpath/from/Jita/to/Amarr/fortype/34</a></li>
+    <li>Methods: <b>GET</b>
+    <li>Return data: <b>XML</b></li>
+  </ul>
+
+  <p>Data is provided as a series of parameters:</p>
+
+  <table  class="doctable">
+    <tr>
+      <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
+    </tr>
+    <tr>
+      <td>sethours</td>
+      <td>Market orders with a reported time up to X hours old. Defaults to 360.</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>setminQ</td>
+      <td>The minimum quantity in an order to return. Defaults to 1.</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+  </table>
+
+  <p>The following position parameters are used:</p>
+
+  <table class="doctable">
+    <tr>
+      <th>Parameter</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>XXX</td>
+      <td>The name or solarsystem ID where to start the path</td>
+    </tr>
+    <tr>
+      <td>YYY</td>
+      <td>The name or solarsystem ID where to end the path</td>
+    </tr>
+    <tr>
+      <td>ZZZ</td>
+      <td>The numeric type ID for which to show (i.e., 34 for Tritanium)</td>
+    </tr>
+  </table>
+</div>
+
+<div class="docsection">history</div>
+<div class="docbody">
+  <p>Return EVE-Central's internal view of history for this market, generated based on known orders every hour.</p>
+
+  <ul>
+    <li>Endpoint: <a href="http://api.eve-central.com/api/history/for/type/TYPE/SCOPE/LOCALE/bid/1">http://api.eve-central.com/api/history/for/type/TYPE/SCOPE/LOCALE/bid/1</a></li>
+    <li>Examples:
+      <ul>  
+        <li><a href="http://api.eve-central.com/api/history/for/type/34/system/Amarr/bid/1">http://api.eve-central.com/api/history/for/type/34/system/Amarr/bid/1</a></li>
+        <li><a href="http://api.eve-central.com/api/history/for/type/34/region/The%20Forge/bid/0">http://api.eve-central.com/api/history/for/type/34/region/The%20Forge/bid/0</a></li>
+      </ul>
+    </li>  
+    
+    <li>Methods: <b>GET</b>
+    <li>Return data: <b>JSON</b></li>
+  </ul>
+
+  <p>Data is provided as a series of positional arguments</p>
+
+  <table class="doctable">
+    <tr>
+      <th>Parameter</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>TYPE</td>
+      <td>The numeric type ID (i.e., 34 for Tritanium)</td>
+    </tr>
+    <tr>
+      <td>SCOPE</td>
+      <td>One of: region, system</td>
+    <tr>
+      <td>LOCALE</td>
+      <td>The name or numerical ID of the system or region.</td>
+    </tr>
+    <tr>
+      <td>BID[0|1]</td>
+      <td>Buy or sell orders</td>
+    </tr>
+  </table>
+</div>
+<div class="docsection">route</div>
+<div class="docbody">
+  <p>Return a path between two locales.
+
+    <ul>
+      <li>Endpoint: <a href="http://api.eve-central.com/api/route/from/XXX/to/YYY">http://api.eve-central.com/api/route/from/XXX/to/YYY</a></li>
+      <li>Examples:
+        <ul>  
+          <li><a href="http://api.eve-central.com/api/route/from/Jita/to/V2-VC2">http://api.eve-central.com/api/route/from/Jita/to/V2-VC2</a></li>
+        </ul>
+      </li>  
+      <li>Methods: <b>GET</b>
+      <li>Return data: <b>JSON</b></li>
+    </ul>
+
+  <p>Data is provided as a series of positional arguments</p>
+
+  <table class="doctable">
+    <tr>
+      <th>Parameter</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>XXX</td>
+      <td>System name, or ID, of the origin</td>
+    </tr>
+    <tr>
+      <td>YYY</td>
+      <td>System name, or ID, of the destination</td>
+    </tr>
+  </table>
+</div>
+<div class="docsection">evemon</div>
+<div class="docbody">
+  <p>Return reference mineral prices for the calculator in EVEMon.</p>
+
+  <ul>
+    <li>Endpoint: <a href="http://api.eve-central.com/api/evemon">http://api.eve-central.com/api/evemon</a></li>
+    <li>Methods: <b>GET</b>
+    <li>Return data: <b>XML</b></li>
+  </ul>
+</div>
+
+<div class="docsection">CSV Dumps</div>
+<div class="docbody">
+  <p>These CSV files contain all of our user provided uploads dating back
+    to 1/15/2006. This is every market log that was uploaded appended end to
+    end (though sorting is not guaranteed).</p>
+
+  <p>Due to the age of this data, there are some caveats:
+
+    <ul>
+      <li>All timestamps are in Pacfic time (7 or 8 hours off GMT
+        depending on daylight savings time) up until October 2007, when we
+        moved to GMT/UTC.</li>
+      <li>Buy order ranges were incorrect for 2006</li>
+    </ul>
+  </p>
+
+  The dump files are available
+  here: <a href="http://eve-central.com/dumps/">http://eve-central.com/dumps/</a>.
+  TAR file archives are provided for years as a download convenience.
+
+</div>
 
 #end def
