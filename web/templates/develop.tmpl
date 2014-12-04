@@ -6,12 +6,75 @@ Developer Integration
 
 #def body
 
-#if 'user' in $session
+<h2>API Documentation</h2>
 
-#end if
-<h2>Developer API Documentation</h2>
-<p>Please see the up-to-date documentation at the <a href="http://dev.eve-central.com/evec-api/start">Wiki</a> - : <a href="http://dev.eve-central.com/evec-api/start">http://dev.eve-central.com/evec-api/start</a></p>
-<iframe src="http://dev.eve-central.com/evec-api/start?do=export_html" width="1000" height="1000">
+<p>We have a set of XML and JSON datafeeds available to query pricing
+information from your own application, killboard, or website.</p>
+
+<p>Game data is copyright CCP Games hf. Please see the
+EVE-Online <a href="http://community.eveonline.com/support/policies/eve-eula/">EULA</a>
+for more information.</p>
+
+<h2>API Endpoints</h2>
+
+<h3>marketstat</h3>
+
+<p>Marketstat is amongst the oldest endpoints available, and has
+changed little since 2006. It provides a summary of the market via
+  various statistics, for a given list of types, regions and systems.</p>
+
+<ul>
+  <li>Endpoint: <a href="http://api.eve-central.com/api/marketstat">http://api.eve-central.com/api/marketstat</a></li>
+  <li>Methods: <b>GET</b>, <b>POST</b> (with url-encoded data in body)</li>
+  <li>Return data: <b>XML</b>, <b>JSON</b> (via special URL suffix:
+  https://api.eve-central.com/api/marketstat/json, not Accept headers
+    due to legacy clients)</li>
+</ul>
+
+Data is provided as a series of parameters:
+
+<table>
+  <tr>
+    <th>Parameter</th><th>Usage</th><th>Required</th><th>More than once</th>
+  </tr>
+  <tr>
+    <td>hours</td>
+    <td>Statistics for market orders up to X hours old.. Defaults to 24.</td>
+    <td>False</td>
+    <td>True</td>
+  </tr>
+  <tr>
+    <td>typeid</td>
+    <td>The type ID of the item you are requesting. I.e., 34 for
+    Tritanium. Can be specified more than once. Can be specified in a
+      comma separated list.
+    </td>
+    <td>True</td>
+    <td>True</td>
+  </tr>
+  <tr>
+    <td>minQ</td>
+    <td>The minimum quantity in an order to consider it for the
+      statistics. Defaults to a heuristic scaled per type ID.</td>
+    <td>False</td>
+    <td>False</td>
+  </tr>
+  <tr>
+    <td>regionlimit</td>
+    <td>Restrict statistics to a region. Can be specified more than once.</td>
+    <td>False</td>
+    <td>True</td>
+  </tr>
+  <tr>
+    <td>usesystem</td>
+    <td>Restrict statistics to a system.</td>
+    <td>False</td>
+    <td>False</td>
+  </tr>
+</table>
+
+<p><strong>Example</strong> <a href="http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002">http://api.eve-central.com/api/marketstat?typeid=34&typeid=35&regionlimit=10000002</a>
+  <a href="http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142">http://api.eve-central.com/api/marketstat?typeid=34&usesystem=30000142</a></p>
 
 
 #end def
