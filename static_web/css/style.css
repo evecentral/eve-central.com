@@ -22,9 +22,7 @@ h1, h2, h3 {
 h3 {
     font-size: 150%;
     font-weight: 500;
-    padding-top: 1em;
 }
-
 
 .alignRight {
     text-align: right;
@@ -355,6 +353,8 @@ td {
 
 }
 
+/* DEVELOPER SECTION STYLES */
+
 .doctable {
     border-bottom: 1px solid;
     padding-bottom: 1ex;
@@ -366,6 +366,15 @@ td {
 
 .doctable td {
     padding: 10px;
+}
+
+.docsection {
+    padding-top: 1em;
+    left: -1ex;
+    font-family:  "freight-sans-pro", sans-serif; 
+    font-size: 150%;
+    font-weight: 500;
+    background-color: #eee;
 }
 
 img {
