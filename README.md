@@ -14,9 +14,13 @@ https://github.com/theatrus/eve-central.com
 Discussion is available on the Google Group:
 http://groups.google.com/eve-central
 
-Development wiki:
-http://dev.eve-central.com/
+## API Documention ##
 
+EVE-Central has an ever growing API, with stable API endpoints dating
+back to 2006.
+
+More information on the API is available on the site:
+http://eve-central.com/home/develop.html
 
 ### Requirements (Scala core data API and upload ingester) ###
 
