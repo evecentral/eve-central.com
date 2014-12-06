@@ -11,6 +11,7 @@ import scala.concurrent.duration._
 import org.slf4j.LoggerFactory
 
 import org.apache.commons.collections.map.LRUMap
+import org.joda.time.DateTime
 
 trait OrderStatistics {
   def volume: Long
@@ -23,11 +24,12 @@ trait OrderStatistics {
   def max: Double
   def min: Double
   def highToLow: Boolean
+  def generated: DateTime
 }
 
 case class CachedOrderStatistics(forQuery: GetOrdersFor, volume: Long, wavg: Double, avg: Double, variance: Double,
                                  stdDev: Double, median: Double, fivePercent: Double, max: Double, min: Double,
-                                 highToLow: Boolean) extends OrderStatistics
+                                 highToLow: Boolean, generated: DateTime) extends OrderStatistics
 
 private class LazyOrderStatistics(over: Seq[MarketOrder], val highToLow: Boolean = false) extends OrderStatistics {
   override lazy val volume = OrderStatistics.volume(over)
@@ -42,6 +44,8 @@ private class LazyOrderStatistics(over: Seq[MarketOrder], val highToLow: Boolean
 
   override lazy val max = OrderStatistics.max(over)
   override lazy val min = OrderStatistics.min(over)
+  // Instantiating a lazy will always return the time the stats were built
+  override lazy val generated = DateTime.now()
 }
 
 object OrderStatistics {
@@ -65,7 +69,7 @@ object OrderStatistics {
 
   def cached(query: GetOrdersFor, data: OrderStatistics): CachedOrderStatistics = {
     CachedOrderStatistics(query, data.volume, data.wavg, data.avg, data.variance, data.stdDev, data.median,
-      data.fivePercent, data.max, data.min, data.highToLow)
+      data.fivePercent, data.max, data.min, data.highToLow, data.generated)
   }
 
   def max(over: Seq[MarketOrder]): Double = {

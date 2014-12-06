@@ -1,6 +1,7 @@
 package com.evecentral.dataaccess
 
 import com.evecentral.Database
+import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.databind.ObjectMapper
 
@@ -57,9 +58,14 @@ case class SolarSystem(systemid: Long, name: String, security: Double, region: R
 case class MarketType(typeid: Long, name: String, group: Long)
 
 object JacksonMapper {
-  def serialize[T](t: T): String = {
+  val mapper = {
     val mapper = new ObjectMapper()
     mapper.registerModule(DefaultScalaModule)
+    mapper.registerModule(new JodaModule())
+    mapper
+  }
+
+  def serialize[T](t: T): String = {
     mapper.writeValueAsString(t)
   }
 }

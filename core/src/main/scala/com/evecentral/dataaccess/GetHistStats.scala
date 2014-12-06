@@ -17,14 +17,13 @@ import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonIgnore}
 import org.joda.time.format.ISODateTimeFormat
 import scala.concurrent.ExecutionContext
 
-
 object GetHistStats {
 
   case class Request(marketType: MarketType, bid: Boolean, region: BaseRegion,
                      system: Option[SolarSystem] = None,
                      from: Option[DateTime] = None, to: Option[DateTime] = None)
 
-  @JsonIgnoreProperties(value = Array("variance", "highToLow", "wavg", "timeat"))
+  @JsonIgnoreProperties(value = Array("variance", "highToLow", "wavg", "generated"))
   case class CapturedOrderStatistics(median: Double,
                                      variance: Double,
                                      max: Double, avg: Double,
@@ -33,8 +32,8 @@ object GetHistStats {
                                      min: Double, volume: Long,
                                      fivePercent: Double,
                                      wavg: Double,
-                                     timeat: DateTime) extends OrderStatistics {
-    val at = ISODateTimeFormat.dateTimeNoMillis().print(timeat)
+                                     generated: DateTime) extends OrderStatistics {
+    val at = ISODateTimeFormat.dateTimeNoMillis().print(generated)
   }
 
 }
