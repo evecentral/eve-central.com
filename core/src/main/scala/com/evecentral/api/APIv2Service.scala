@@ -1,6 +1,7 @@
 package com.evecentral.api
 
 import akka.actor.{Props, Actor}
+import org.joda.time.format.ISODateTimeFormat
 import spray.http.HttpHeaders.RawHeader
 import scala.concurrent.Future
 import akka.pattern.ask
@@ -267,6 +268,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
         <stddev>{priceString(alls.stdDev)}</stddev>
         <median>{priceString(alls.median)}</median>
         <percentile>{priceString(alls.fivePercent)}</percentile>
+        <generated>{ISODateTimeFormat.dateTimeNoMillis().print(alls.generated)}</generated>
     }
     r.map {
       r =>

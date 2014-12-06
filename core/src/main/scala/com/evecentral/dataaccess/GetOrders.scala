@@ -1,10 +1,9 @@
 package com.evecentral.dataaccess
 
-import com.evecentral.{Database}
-import org.joda.time.{DateTime, Period}
-import net.noerd.prequel.{LongFormattable, StringFormattable}
-import org.slf4j.LoggerFactory
 import akka.actor.Actor
+import com.evecentral.Database
+import net.noerd.prequel.{LongFormattable, StringFormattable}
+import org.joda.time.{DateTime, Period}
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
                        volremain: Long, volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {

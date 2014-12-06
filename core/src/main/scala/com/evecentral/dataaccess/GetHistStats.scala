@@ -1,21 +1,21 @@
 package com.evecentral.dataaccess
 
-import akka.actor.{Props, Actor}
-import akka.routing.SmallestMailboxRouter
-import akka.pattern.ask
-import scala.concurrent.duration._
-
-import com.evecentral.{Database, OrderStatistics}
-import com.evecentral.util.ActorNames
-import com.evecentral.dataaccess.GetHistStats.CapturedOrderStatistics
-
-import org.joda.time.DateTime
-import com.google.common.cache.{Cache, CacheBuilder}
 import java.util.concurrent.TimeUnit
-import org.slf4j.LoggerFactory
-import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonIgnore}
+
+import akka.actor.{Actor, Props}
+import akka.pattern.ask
+import akka.routing.SmallestMailboxRouter
+import com.evecentral.dataaccess.GetHistStats.CapturedOrderStatistics
+import com.evecentral.util.ActorNames
+import com.evecentral.{Database, OrderStatistics}
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.google.common.cache.{Cache, CacheBuilder}
+import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import org.slf4j.LoggerFactory
+
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
 
 object GetHistStats {
 

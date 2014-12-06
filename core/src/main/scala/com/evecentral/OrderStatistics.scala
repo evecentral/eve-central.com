@@ -1,17 +1,13 @@
 package com.evecentral
 
-import dataaccess._
-import dataaccess.GetOrdersFor
-import dataaccess.MarketType
-import dataaccess.Region
-import scala.math._
-import akka.actor.{Scheduler, Actor}
-import scala.concurrent.duration._
-
-import org.slf4j.LoggerFactory
-
+import akka.actor.Actor
+import com.evecentral.dataaccess.{GetOrdersFor, MarketType, Region, _}
 import org.apache.commons.collections.map.LRUMap
 import org.joda.time.DateTime
+import org.slf4j.LoggerFactory
+
+import scala.concurrent.duration._
+import scala.math._
 
 trait OrderStatistics {
   def volume: Long
@@ -50,7 +46,7 @@ private class LazyOrderStatistics(over: Seq[MarketOrder], val highToLow: Boolean
 
 object OrderStatistics {
 
-  import MarketOrder._
+  import com.evecentral.dataaccess.MarketOrder._
 
   def apply(over: Seq[MarketOrder], highToLow: Boolean = false): OrderStatistics = {
     val overFiltered = over.filter(_.price > 0.15) // Limit prices to avoid 0.01 ISKers
