@@ -1,5 +1,6 @@
 package com.evecentral.datainput
 
+import com.evecentral.dataaccess.StaticProvider
 import net.liftweb.json._
 import org.joda.time.DateTime
 import org.joda.time.format.{ISODateTimeFormat}
@@ -116,8 +117,9 @@ class UnifiedRowset(protected val record: Map[String, _], protected val columns:
       val volremain = row("volRemaining") match {
         case n: BigInt => n.toLong
       }
-      val volenter = row("volEntered") match {
-        case n: BigInt => n.toLong
+      val volenter = row.get("volEntered") match {
+        case Some(n: BigInt) => n.toLong
+        case None => volremain
       }
       val range = row("range") match {
         case n: BigInt => n.toInt
@@ -136,8 +138,9 @@ class UnifiedRowset(protected val record: Map[String, _], protected val columns:
       val stationid = row("stationID") match {
         case n: BigInt => n.toLong
       }
-      val solarsystemid = row("solarSystemID") match {
-        case n: BigInt => n.toLong
+      val solarsystemid = row.get("solarSystemID") match {
+        case Some(n: BigInt) => n.toLong
+        case None => StaticProvider.stationsMap.get(stationid).map { _.system.systemid }.getOrElse(-1.toLong)
       }
       val bid = row("bid").asInstanceOf[Boolean]
       UnifiedRow(price, volremain, typeId, range, orderID, volenter, minvol, bid, issue, duration,
