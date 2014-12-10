@@ -43,11 +43,15 @@ class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshall
 
   def receive = {
     case msg: String =>
-      UnifiedParser(msg) match {
-        case Some(unimsg) =>
-          storageActor ! unimsg
-        case None =>
-          log.error("Unable to parse unified message due to wrong type")
+      try {
+        UnifiedParser(msg) match {
+          case Some(unimsg) =>
+            storageActor ! unimsg
+          case None =>
+            log.error("Unable to parse unified message due to wrong type")
+        }
+      } catch {
+        case e : Exception => log.error("Parse error ", e)
       }
     case _ =>
       log.error("Unknown unified message input")
