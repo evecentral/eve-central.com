@@ -16,14 +16,12 @@ Limit the view to regions (Control or shift click to select more than one). If y
 <br>
 <select name="regionlimit" size="14" multiple="multiple">
 	#for $region in $regions
-	#if not $re.match("[A-F]\-", $region['regionname'])
 		<option value="$region['regionid']"
 		#if $region['regionid'] in $regionlimit
 			selected="selected"
 		#end if
 
 >$region['regionname']</option>
-#end if
 	#end for
 	</select>
 <br>
