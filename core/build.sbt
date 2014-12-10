@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
   "net.noerd" %% "prequel" % "0.3.9",
   "org.scalatest" %% "scalatest" % "2.2.2" % "test",
   "postgresql" % "postgresql" % "9.1-901.jdbc4",
-  "net.liftweb" %% "lift-json" % "2.5",
+  "net.liftweb" %% "lift-json" % "2.6-RC1",
   "org.slf4j" % "slf4j-api" % "1.6.4",
   "ch.qos.logback" % "logback-classic" % "1.0.3",
   "com.google.guava" % "guava" % "15.0",
