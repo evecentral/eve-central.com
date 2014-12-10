@@ -51,7 +51,7 @@ class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshall
             log.error("Unable to parse unified message due to wrong type")
         }
       } catch {
-        case e : Exception => log.error("Parse error ", e)
+        case e : Exception => log.error("Parse error " + msg, e)
       }
     case _ =>
       log.error("Unknown unified message input")
