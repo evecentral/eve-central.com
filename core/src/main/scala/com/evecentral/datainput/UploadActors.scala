@@ -66,7 +66,7 @@ class UploadStorageActor extends Actor {
 
   def insertData(marketType: Int, regionId: Long, rows: Seq[UploadRecord]) {
     import net.noerd.prequel.SQLFormatterImplicits._
-    log.info("Storing ", marketType, regionId, rows)
+    log.info("Storing " + marketType + regionId + rows)
     Database.coreDb.transaction {
       tx =>
         tx.executeBatch("INSERT INTO archive_market (regionid, systemid, stationid, typeid,bid,price, orderid, minvolume, volremain, " +
