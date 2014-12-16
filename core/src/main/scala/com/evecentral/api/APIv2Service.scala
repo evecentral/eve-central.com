@@ -13,7 +13,6 @@ import com.evecentral._
 import com.evecentral.dataaccess._
 import com.evecentral.frontend.Formatter.priceString
 import com.evecentral.dataaccess.OrderList
-import com.evecentral.datainput.{OldUploadParsingActor, OldUploadPayload}
 import com.evecentral.frontend.DateFormats
 import com.evecentral.util.{ActorNames, BaseOrderQuery}
 import com.evecentral.routes.{Jump, RouteBetween}
@@ -307,8 +306,6 @@ trait APIv2Service extends HttpService with FixedSprayMarshallers {
 
   val quicklookActor = context.actorOf(Props[QuickLookQuery], name = ActorNames.http_quicklookquery)
   val marketstatActor = context.actorOf(Props[MarketStatActor], name = ActorNames.http_marketstat)
-  val olduploadActor = context.actorOf(Props[OldUploadParsingActor], name = ActorNames.http_oldupload)
-
 
   import LookupHelper._
 
@@ -349,13 +346,6 @@ trait APIv2Service extends HttpService with FixedSprayMarshallers {
           (get | post) {
             ctx =>
               (marketstatActor ! EvemonQuery(ctx))
-          }
-        }
-      } ~ path("datainput.py" / "inputdata") {
-        post {
-          formFields("typename" ?, "userid" ?, "data", "typeid" ?, "region" ?) {
-            (typename, userid, data, typeid, region) =>
-              olduploadActor ! OldUploadPayload(_, typename, userid, data, typeid, region)
           }
         }
       }

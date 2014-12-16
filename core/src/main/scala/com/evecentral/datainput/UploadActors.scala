@@ -1,6 +1,7 @@
 package com.evecentral.datainput
 
 import akka.actor.Actor
+import akka.dispatch.{RequiresMessageQueue, BoundedMessageQueueSemantics}
 
 import com.evecentral.dataaccess.StaticProvider
 import com.evecentral.{Database, PoisonCache, OrderCacheActor}
@@ -13,29 +14,7 @@ import spray.httpx.marshalling.BasicMarshallers
 
 case class UploadTriggerEvent(typeId: Int, regionId: Long)
 
-case class OldUploadPayload(ctx: RequestContext, typename: Option[String], userid: Option[String],
-                            data: String, typeid: Option[String], region: Option[String])
-
-
-class OldUploadParsingActor extends Actor with Directives with BasicMarshallers {
-  private val log = LoggerFactory.getLogger(getClass)
-
-  def storageActor = context.actorFor("/user/" + ActorNames.uploadstorage)
-
-  def receive = {
-    case OldUploadPayload(ctx, typename, userid, data, typeid, region) => {
-      val lines = data.split("\n").tail
-      val rows = lines.map(UploadCsvRow(_))
-      if (rows.nonEmpty)
-        storageActor ! (new CsvUploadMessage(rows))
-      else
-        log.info("Skipping blank upload from old sources")
-      ctx.complete("Beginning your upload of " + typeid + "\nTypeID: 0 RegionID: 0\nComplete! Thank you for your contribution to EVE-Central.com!")
-    }
-  }
-}
-
-class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshallers {
+class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshallers with RequiresMessageQueue[BoundedMessageQueueSemantics] {
 
   def storageActor = context.actorFor("/user/" + ActorNames.uploadstorage)
 
@@ -59,7 +38,7 @@ class UnifiedUploadParsingActor extends Actor with Directives with BasicMarshall
 
 }
 
-class UploadStorageActor extends Actor {
+class UploadStorageActor extends Actor with RequiresMessageQueue[BoundedMessageQueueSemantics] {
 
   private val log = LoggerFactory.getLogger(getClass)
 

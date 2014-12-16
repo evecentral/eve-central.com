@@ -1,6 +1,7 @@
 package com.evecentral.dataaccess
 
 import akka.actor.Actor
+import akka.dispatch.{RequiresMessageQueue, BoundedMessageQueueSemantics}
 import com.evecentral.Database
 import net.noerd.prequel.{LongFormattable, StringFormattable}
 import org.joda.time.{DateTime, Period}
@@ -24,7 +25,7 @@ case class GetOrdersFor(bid: Option[Boolean], types: Seq[Long], regions: Seq[Lon
 
 case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
-class GetOrdersActor extends Actor {
+class GetOrdersActor extends Actor with RequiresMessageQueue[BoundedMessageQueueSemantics] {
 
   /**
    * This query does a lot of internal SQL building and not a prepared statement. I'm sorry,
