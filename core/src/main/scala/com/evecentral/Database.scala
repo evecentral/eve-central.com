@@ -8,7 +8,7 @@ object Database {
 
   def coreDb = dbconfig
 
-  private[this] val poolconfig = PoolConfig(maxActive = 30, maxIdle = 5, minIdle = 5)
+  private[this] val poolconfig = PoolConfig(maxActive = 60, maxIdle = 60, minIdle = 5)
 
   private[this] val dbconfig = DatabaseConfig(
     driver = "org.postgresql.Driver",
