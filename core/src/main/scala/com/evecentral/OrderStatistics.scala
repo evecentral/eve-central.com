@@ -192,9 +192,9 @@ class OrderCacheActor extends Actor {
     (b, a) => b ++ Map(a.typeid -> new LLGCF())
   }
 
-  private val cacheLruHash = new org.apache.commons.collections.map.LRUMap(40000)
+  private val cacheLruHash = new org.apache.commons.collections.map.LRUMap(100000)
   private val regionLru = StaticProvider.regionsMap.values.foldLeft(Map[Region, LRUMap]()) {
-    (b, a) => b ++ Map[Region, LRUMap](a -> new LRUMap(1000))
+    (b, a) => b ++ Map[Region, LRUMap](a -> new LRUMap(10000))
   }
   private val log = LoggerFactory.getLogger(getClass)
 
