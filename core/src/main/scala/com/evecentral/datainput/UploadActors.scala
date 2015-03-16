@@ -92,25 +92,6 @@ class UploadStorageActor extends Actor with RequiresMessageQueue[BoundedMessageQ
     }
   }
 
-  def confirmGeneratedAt(generatedAt: DateTime, typeId: Int, regionId: Long): Boolean = {
-    if (generatedAt.isAfterNow || generatedAt.plusHours(1).isBeforeNow)
-      false
-    else {
-      try {
-        val dbtime = Database.coreDb.transaction {
-          tx =>
-            import net.noerd.prequel.SQLFormatterImplicits._
-            tx.selectDateTime("SELECT reportedtime FROM current_market WHERE typeid = ? AND regionid = ? LIMIT 1", typeId, regionId)
-        }
-        dbtime.isBefore(generatedAt)
-      } catch {
-        case _ : Throwable => {
-          log.debug("GeneratedAt success since there isn't anything in the database"); true
-        }
-      }
-    }
-
-  }
 
   def procData(data: UploadMessage) {
     val rows = data.orders
@@ -118,7 +99,7 @@ class UploadStorageActor extends Actor with RequiresMessageQueue[BoundedMessageQ
       val regionId = data.regionId
       val typeId = data.typeId
       val generatedAt = data.generatedAt
-      confirmGeneratedAt(generatedAt, typeId, regionId) && filterBogons(rows) match {
+      filterBogons(rows) match {
         case true =>
           insertData(typeId, regionId, rows)
           poisonCache(typeId, regionId)
