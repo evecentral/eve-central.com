@@ -20,9 +20,9 @@ name := "eve-central-ng"
 
 organization  := "com.evecentral"
 
-version := "3.1.6"
+version := "3.1.7"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.10.5"
 
 resolvers ++= Seq(
   "Twitter" at "http://maven.twttr.com/",
@@ -35,14 +35,14 @@ resolvers ++= Seq(
   "theatr.us" at "http://repo.theatr.us")
 
 
-val sprayVersion = "1.3.1"
-val akkaVersion = "2.3.5"
-val jacksonVersion = "2.4.3"
+val sprayVersion = "1.3.3"
+val akkaVersion = "2.3.10"
+val jacksonVersion = "2.4.4"
 
 libraryDependencies ++= Seq(
-  "io.spray" % "spray-can" % sprayVersion,
-  "io.spray" % "spray-routing"     % sprayVersion,
-  "io.spray" % "spray-testkit"     % sprayVersion,
+  "io.spray" %% "spray-can" % sprayVersion,
+  "io.spray" %% "spray-routing"     % sprayVersion,
+  "io.spray" %% "spray-testkit"     % sprayVersion,
   "com.typesafe.akka" %% "akka-actor"  % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
@@ -52,8 +52,7 @@ libraryDependencies ++= Seq(
   "net.liftweb" %% "lift-json" % "2.6-RC1",
   "org.slf4j" % "slf4j-api" % "1.6.4",
   "ch.qos.logback" % "logback-classic" % "1.0.3",
-  "com.google.guava" % "guava" % "15.0",
-  "com.google.code.findbugs" % "jsr305" % "2.0.1",
+  "com.google.guava" % "guava" % "18.0",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,

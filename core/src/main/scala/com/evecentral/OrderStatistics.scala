@@ -35,7 +35,7 @@ private class LazyOrderStatistics(over: Seq[MarketOrder], val highToLow: Boolean
   override lazy val stdDev = OrderStatistics.stdDev(variance)
   lazy val sorted = OrderStatistics.sorted(over, highToLow)
 
-  override lazy val median = OrderStatistics.median(sorted, (volume.toDouble / 2.0))
+  override lazy val median = OrderStatistics.median(sorted, volume.toDouble / 2.0)
   override lazy val fivePercent = OrderStatistics.buyup(sorted, (volume * .05).toLong)
 
   override lazy val max = OrderStatistics.max(over)
@@ -113,7 +113,7 @@ object OrderStatistics {
         var rest = sorted
         var sumVolume: Long = 0
 
-        while (sumVolume <= volumeTo) {
+        while (sumVolume <= volumeTo || rest.nonEmpty) {
           sumVolume += rest.head.volenter
           if (sumVolume < volumeTo)
             rest = rest.tail
@@ -135,7 +135,7 @@ object OrderStatistics {
         var sumVolume: Long = 0
         val orders = Seq.newBuilder[MarketOrder]
 
-        while (sumVolume <= volumeTo) {
+        while (sumVolume <= volumeTo || left.nonEmpty) {
           sumVolume += left.head.volenter
           orders += left.head
           left = left.tail
@@ -204,7 +204,7 @@ class OrderCacheActor extends Actor {
       l => l._2.clear()
     }
     if (periodicExpire)
-      context.system.scheduler.schedule(1 minute, 15 minutes, self, PoisonAllCache())
+      context.system.scheduler.schedule(1.minute, 15.minutes, self, PoisonAllCache())
   }
 
 
@@ -227,12 +227,12 @@ class OrderCacheActor extends Actor {
         mi.next()
       }
     case RegisterCacheFor(cached) =>
-      val present = cached.forQuery.types.foldLeft(true)((t, n) => t && typeQueryCache.contains(n))
+      val present = cached.forQuery.types.forall(n => typeQueryCache.contains(n))
       if (present) {
         val gcf = GetCacheFor(cached.forQuery, cached.highToLow)
         cacheLruHash.put(gcf, cached)
         cached.forQuery.types.foreach(typeQueryCache(_) += gcf)
-        if (!cached.forQuery.systems.nonEmpty) // Only store when systems are empty
+        if (cached.forQuery.systems.isEmpty) // Only store when systems are empty
           cached.forQuery.regions.foreach {
             regionid =>
               regionLru(StaticProvider.regionsMap(regionid)).put(gcf, cached) // Register per regions
@@ -244,7 +244,7 @@ class OrderCacheActor extends Actor {
     case PoisonAllCache() =>
       log.info("Poisoning all cache entries")
       cacheLruHash.clear()
-      typeQueryCache.foreach(_._2.clear)
+      typeQueryCache.foreach(_._2.clear())
       regionLru.foreach(_._2.clear)
 
     case PoisonCache(region, mtype) => // Poisoning of the cache for regions and types
@@ -252,7 +252,7 @@ class OrderCacheActor extends Actor {
 
       val lsf = ls.filter({
         case of: GetCacheFor =>
-          ((of.query.regions.contains(region.regionid) || of.query.regions.isEmpty))
+          (of.query.regions.contains(region.regionid) || of.query.regions.isEmpty)
         case _ =>
           false
       })

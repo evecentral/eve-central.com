@@ -1,6 +1,7 @@
 package com.evecentral
 
 import net.noerd.prequel.{PoolConfig, DatabaseConfig}
+import org.joda.time.Duration
 
 import org.postgresql.Driver
 
@@ -8,7 +9,7 @@ object Database {
 
   def coreDb = dbconfig
 
-  private[this] val poolconfig = PoolConfig(maxActive = 60, maxIdle = 60, minIdle = 5)
+  private[this] val poolconfig = PoolConfig(maxWait = Duration.standardSeconds(2), maxActive = 60, maxIdle = 60, minIdle = 5)
 
   private[this] val dbconfig = DatabaseConfig(
     driver = "org.postgresql.Driver",
