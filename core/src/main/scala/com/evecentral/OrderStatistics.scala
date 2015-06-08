@@ -113,7 +113,7 @@ object OrderStatistics {
         var rest = sorted
         var sumVolume: Long = 0
 
-        while (sumVolume <= volumeTo || rest.nonEmpty) {
+        while (sumVolume <= volumeTo && rest.nonEmpty) {
           sumVolume += rest.head.volenter
           if (sumVolume < volumeTo)
             rest = rest.tail
@@ -135,7 +135,7 @@ object OrderStatistics {
         var sumVolume: Long = 0
         val orders = Seq.newBuilder[MarketOrder]
 
-        while (sumVolume <= volumeTo || left.nonEmpty) {
+        while (sumVolume <= volumeTo && left.nonEmpty) {
           sumVolume += left.head.volenter
           orders += left.head
           left = left.tail
