@@ -172,7 +172,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
   import JacksonMapper.serialize
   import context.dispatcher
 
-  override implicit val timeout: Timeout = 10.seconds
+  override implicit val timeout: Timeout = 53.seconds
 
   def receive = {
 
