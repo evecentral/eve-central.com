@@ -221,7 +221,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
               )
             }
             future.onFailure {
-              case e => log.error(e); ctx.failWith(e)
+              case e => log.error("Couldn't build underlying JSON due to exception", e); ctx.failWith(e)
             }
           } else {
             val future = wrapAsXml(Future.sequence(
@@ -232,7 +232,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
               case succ: NodeSeq => ctx.complete(succ)
             }
             future.onFailure {
-              case e => log.error(e); ctx.failWith(e)
+              case e => log.error("Couldn't build underlying XML", e); ctx.failWith(e)
             }
           }
         } else {
