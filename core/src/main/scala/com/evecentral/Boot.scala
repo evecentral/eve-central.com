@@ -34,7 +34,7 @@ object Boot extends App {
 
   // "Singleton" actors
   log.info("Booting GetOrdersActor")
-  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new RoundRobinRouter(80)), ActorNames.getorders)
+  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new RoundRobinRouter(30)), ActorNames.getorders)
   log.info("Booting GetHistStats")
   val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
   log.info("Booting StatisticsCaptureActor")
