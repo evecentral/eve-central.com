@@ -58,7 +58,6 @@ object ParameterHelper {
         case None => ctx.request.uri.query
         case Some(fd) => {
           val q = Uri(ctx.request.uri.render(new StringRendering).get + "?" + fd).query
-          log.info("QUERY: " + q)
           q
         }
       }
