@@ -267,7 +267,6 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
         <stddev>{priceString(alls.stdDev)}</stddev>
         <median>{priceString(alls.median)}</median>
         <percentile>{priceString(alls.fivePercent)}</percentile>
-        <generated>{ISODateTimeFormat.dateTimeNoMillis().print(alls.generated)}</generated>
     }
     r.map {
       r =>
