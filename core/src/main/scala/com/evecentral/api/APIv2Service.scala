@@ -36,7 +36,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
   import com.evecentral.ParameterHelper._
   import context.dispatcher
 
-  override implicit val timeout: Timeout = 60.seconds
+  override implicit val timeout: Timeout = 10.seconds
 
   def receive = {
     case QuickLookPathQuery(ctx, froms, tos, types) =>
@@ -172,7 +172,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
   import JacksonMapper.serialize
   import context.dispatcher
 
-  override implicit val timeout: Timeout = 60.seconds
+  override implicit val timeout: Timeout = 10.seconds
 
   def receive = {
 
@@ -221,7 +221,7 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
               )
             }
             future.onFailure {
-              case _ => ctx.failWith(_)
+              case e => log.error(e); ctx.failWith(e)
             }
           } else {
             val future = wrapAsXml(Future.sequence(
@@ -232,11 +232,11 @@ class MarketStatActor extends Actor with FixedSprayMarshallers with BaseOrderQue
               case succ: NodeSeq => ctx.complete(succ)
             }
             future.onFailure {
-              case _ => ctx.failWith(_)
+              case e => log.error(e); ctx.failWith(e)
             }
           }
         } else {
-          ctx.complete(StatusCodes.BadRequest, "A non-marketable type was given")
+          ctx.complete(StatusCodes.BadRequest, "A non-marketable type was given, or some other error occurred. ")
         }
 
       } catch {
