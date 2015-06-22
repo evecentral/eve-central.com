@@ -2,7 +2,7 @@ package com.evecentral
 
 import akka.actor.{Actor, ActorSystem, Props}
 import akka.io.IO
-import akka.routing.SmallestMailboxRouter
+import akka.routing.{SmallestMailboxRouter, RoundRobinRouter}
 import akka.util.Timeout
 import com.evecentral.api._
 import com.evecentral.dataaccess._
@@ -34,13 +34,13 @@ object Boot extends App {
 
   // "Singleton" actors
   log.info("Booting GetOrdersActor")
-  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(80)), ActorNames.getorders)
+  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new RoundRobinRouter(80)), ActorNames.getorders)
   log.info("Booting GetHistStats")
   val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
   log.info("Booting StatisticsCaptureActor")
   val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
   log.info("Booting UploadStorageActor")
-  val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(3)), ActorNames.uploadstorage)
+  val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.uploadstorage)
   log.info("Booting RouteActor")
   val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
   log.info("Booting OrderCacheActor")

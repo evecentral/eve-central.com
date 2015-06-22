@@ -36,7 +36,7 @@ class QuickLookQuery extends Actor with FixedSprayMarshallers with BaseOrderQuer
   import com.evecentral.ParameterHelper._
   import context.dispatcher
 
-  override implicit val timeout: Timeout = 10.seconds
+  override implicit val timeout: Timeout = 57.seconds
 
   def receive = {
     case QuickLookPathQuery(ctx, froms, tos, types) =>

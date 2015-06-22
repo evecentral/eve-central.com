@@ -24,7 +24,7 @@ trait BaseOrderQuery {
 
   def pathActor = context.actorFor("/user/" + ActorNames.routefinder)
 
-  implicit val timeout: Timeout = 9.seconds
+  implicit val timeout: Timeout = 58.seconds
 
   def fetchOrdersFor(buyq: GetOrdersFor): Future[Seq[MarketOrder]] = {
     (ordersActor ? buyq).map(_.asInstanceOf[OrderList].result)
