@@ -52,7 +52,7 @@ def format_long(price):
 
 
 def format_price(price):
-    formatted = '{:,.2f}'.format(pp)
+    formatted = '{:,.2f}'.format(price)
     return formatted
 
 
