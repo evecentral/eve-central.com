@@ -34,19 +34,19 @@ object Boot extends App {
 
   // "Singleton" actors
   log.info("Booting GetOrdersActor")
-  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new RoundRobinRouter(30)), ActorNames.getorders)
+  val ordersActor = system.actorOf(Props[GetOrdersActor].withRouter(new SmallestMailboxRouter(60)), ActorNames.getorders)
   log.info("Booting GetHistStats")
   val gethiststats = system.actorOf(Props[GetHistStats], ActorNames.gethiststats)
   log.info("Booting StatisticsCaptureActor")
   val statCap = system.actorOf(Props[StatisticsCaptureActor], ActorNames.statCapture)
   log.info("Booting UploadStorageActor")
-  val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.uploadstorage)
+  val unifiedActor = system.actorOf(Props[UploadStorageActor].withRouter(new SmallestMailboxRouter(20)), ActorNames.uploadstorage)
   log.info("Booting RouteActor")
   val routeActor = system.actorOf(Props[RouteFinderActor], ActorNames.routefinder)
   log.info("Booting OrderCacheActor")
   val statCache = system.actorOf(Props[OrderCacheActor], ActorNames.statCache)
   log.info("Booting UnifiedUploadParsingActor")
-  val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(10)), ActorNames.unifiedparser)
+  val parser = system.actorOf(Props[UnifiedUploadParsingActor].withRouter(new SmallestMailboxRouter(20)), ActorNames.unifiedparser)
 
   def catchAllHandler() =
     ExceptionHandler {
