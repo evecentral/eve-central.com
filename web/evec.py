@@ -261,7 +261,7 @@ class Home:
                     # Try to grab regionid from the end of the query
                     if isbuy:
                         if int(r[11]) > 1:
-                            rec['minvolume'] = format_long(int(r[11]))
+                            rec['minvolume'] = format_long(r[11])
                             rec['minvolume_raw'] = int(r[11])
                         else:
                             rec['minvolume'] = 1
@@ -498,18 +498,18 @@ class Home:
                 row['to2'] = int(r[3])
                 row['fromstation'] = r[4]
                 row['tostation'] = r[5]
-                row['pricediff'] = r[6]
-                row['tradeable'] = format_long(long(r[7]))
-                row['profit'] = format_price(float(r[8]))
+                row['pricediff'] = format_price(r[6])
+                row['tradeable'] = format_long(r[7])
+                row['profit'] = format_price(r[8])
                 row['profit_num'] = float(r[8])
                 row['profit_size'] = float(r[9])
                 from_set.add(fr)
 
 
-                row['tprice'] = format_price(float(r[11]))
-                row['fprice'] = format_price(float(r[12]))
-                row['tvol'] = format_long(long(r[13]))
-                row['fvol'] = format_long(long(r[14]))
+                row['tprice'] = format_price(r[11])
+                row['fprice'] = format_price(r[12])
+                row['tvol'] = format_long(r[13])
+                row['fvol'] = format_long(r[14])
                 trades.append(row)
 
                 # Add to from_to_map - map source
@@ -568,7 +568,7 @@ class Home:
                             row['sortby'] = distance
                             row.reverse= True
 
-                        row['profit_jumps'] = format_price(float(ps/(1+max(0,distance))))
+                        row['profit_jumps'] = format_price(ps/(1+max(0,distance)))
                         row['distance'] = distance
 
 
