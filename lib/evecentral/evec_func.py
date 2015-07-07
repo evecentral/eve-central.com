@@ -47,46 +47,14 @@ class SorterDict(dict):
 
 
 def format_long(price):
-
-    intpart = long(price)
-    intpart = list(str(intpart))
-
-    if price >= 1000:
-        intpart.insert(len(intpart)-3, ',')
-    if price >= 1000000:
-        intpart.insert(len(intpart)-7, ',')
-    if price >= 1000000000:
-        intpart.insert(len(intpart)-11, ',')
-
-    string = ""
-    for x in intpart:
-        string = string + x
-
-    return string
+    formatted = '{:,}'.format(long(price))
+    return formatted
 
 
 def format_price(price):
-    price = float(price)
-    intpart = long(price)
-    intpart = list(str(intpart))
+    formatted = '{:,.2f}'.format(pp)
+    return formatted
 
-    if price >= 1000:
-        intpart.insert(len(intpart)-3, ',')
-    if price >= 1000000:
-        intpart.insert(len(intpart)-7, ',')
-    if price >= 1000000000:
-        intpart.insert(len(intpart)-11, ',')
-
-    string = ""
-    for x in intpart:
-        string = string + x
-
-    price = price - long(price)
-    price = list(str("%f.2" % price))
-    for x in price[1:4]:
-        string = string + x
-
-    return string
 
 class EVCstate:
     def __init__(self, trust=False):
@@ -124,50 +92,6 @@ def simple_error(message):
     mess += "<h3>Error</h3>" + message
     mess += "</body></html>"
     return mess
-
-
-def format_long(price):
-
-    intpart = long(price)
-    intpart = list(str(intpart))
-
-    if price >= 1000:
-        intpart.insert(len(intpart)-3, ',')
-    if price >= 1000000:
-        intpart.insert(len(intpart)-7, ',')
-    if price >= 1000000000:
-        intpart.insert(len(intpart)-11, ',')
-
-    string = ""
-    for x in intpart:
-        string = string + x
-
-    return string
-
-
-def format_price(price):
-    price = float(price)
-    intpart = long(price)
-    intpart = list(str(intpart))
-
-    if price >= 1000:
-        intpart.insert(len(intpart)-3, ',')
-    if price >= 1000000:
-        intpart.insert(len(intpart)-7, ',')
-    if price >= 1000000000:
-        intpart.insert(len(intpart)-11, ',')
-
-    string = ""
-    for x in intpart:
-        string = string + x
-
-    price = price - long(price)
-    price = list(str("%f.2" % price))
-    for x in price[1:4]:
-        string = string + x
-
-    return string
-
 
 def build_regionquery(front,rl_o):
 
