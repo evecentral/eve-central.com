@@ -20,7 +20,7 @@ name := "eve-central-ng"
 
 organization  := "com.evecentral"
 
-version := "3.1.7"
+version := "3.2.0"
 
 scalaVersion := "2.10.5"
 

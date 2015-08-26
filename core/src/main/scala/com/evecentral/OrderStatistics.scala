@@ -47,6 +47,7 @@ private class LazyOrderStatistics(over: Seq[MarketOrder], val highToLow: Boolean
 object OrderStatistics {
 
   import com.evecentral.dataaccess.MarketOrder._
+  private val log = LoggerFactory.getLogger(getClass)
 
   def apply(over: Seq[MarketOrder], highToLow: Boolean = false): OrderStatistics = {
     val overFiltered = over.filter(_.price > 0.15) // Limit prices to avoid 0.01 ISKers
@@ -64,8 +65,11 @@ object OrderStatistics {
   }
 
   def cached(query: GetOrdersFor, data: OrderStatistics): CachedOrderStatistics = {
-    CachedOrderStatistics(query, data.volume, data.wavg, data.avg, data.variance, data.stdDev, data.median,
+    log.info("Producing cached stats for " + query)
+    val cached = CachedOrderStatistics(query, data.volume, data.wavg, data.avg, data.variance, data.stdDev, data.median,
       data.fivePercent, data.max, data.min, data.highToLow, data.generated)
+    log.info("Cached stats done")
+    cached
   }
 
   def max(over: Seq[MarketOrder]): Double = {

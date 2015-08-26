@@ -5,6 +5,7 @@ import akka.dispatch.{RequiresMessageQueue, BoundedMessageQueueSemantics}
 import com.evecentral.Database
 import net.noerd.prequel.{LongFormattable, StringFormattable}
 import org.joda.time.{DateTime, Period}
+import org.slf4j.LoggerFactory
 
 case class MarketOrder(typeid: Long, orderId: Long, price: Double, bid: Boolean, station: Station, system: SolarSystem, region: Region, range: Int,
                        volremain: Long, volenter: Long, minVolume: Long, expires: Period, reportedAt: DateTime) {
@@ -27,6 +28,8 @@ case class OrderList(query: GetOrdersFor, result: Seq[MarketOrder])
 
 class GetOrdersActor extends Actor with RequiresMessageQueue[BoundedMessageQueueSemantics] {
 
+  private val log = LoggerFactory.getLogger(getClass)
+
   /**
    * This query does a lot of internal SQL building and not a prepared statement. I'm sorry,
    * but at least everything is typesafe :-)
@@ -46,7 +49,7 @@ class GetOrdersActor extends Actor with RequiresMessageQueue[BoundedMessageQueue
       case None => "1=1"
     }
 
-    db.transaction {
+    val orders = db.transaction {
       tx =>
 
         tx.select("SELECT typeid,orderid,price,bid,stationid,systemid,regionid,range,volremain,volenter,minvolume,EXTRACT(EPOCH FROM duration),reportedtime" +
@@ -61,10 +64,11 @@ class GetOrdersActor extends Actor with RequiresMessageQueue[BoundedMessageQueue
             val bid = row.nextBoolean.get
             val stationid = row.nextLong.get
             val systemid = row.nextLong.get
-            val system = StaticProvider.systemsMap(systemid)
-            // Get a mock station if required
-            val station = StaticProvider.stationsMap.getOrElse(stationid, Station(stationid, "Unknown", "Unknown", system))
+
+            // Get a mock system or station if required (i.e. not in the database?)
             val region = StaticProvider.regionsMap(row.nextLong.get)
+            val system = StaticProvider.systemsMap.getOrElse(systemid, SolarSystem(systemid, "Unknown", 0.0, region, 0))
+            val station = StaticProvider.stationsMap.getOrElse(stationid, Station(stationid, "Unknown", "Unknown", system))
             val range = row.nextInt.get
             val volremain = row.nextLong.get
             val volenter = row.nextLong.get
@@ -82,6 +86,8 @@ class GetOrdersActor extends Actor with RequiresMessageQueue[BoundedMessageQueue
             )
         }
     }
+    log.info("ORDERS: Fetched for " + typeLimit.toString)
+    orders
   }
 
   def receive = {

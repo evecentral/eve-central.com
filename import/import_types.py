@@ -33,6 +33,8 @@ for fields in csvread:
     published = 0
 
     description = fields[3].strip()
+    if fields[7] == '':
+        fields[7] = '0.001'
     volume = float(fields[7])
     if volume == 0:
         volume = 0.001
