@@ -4,6 +4,7 @@ import sqlite3
 import urllib
 import xml.etree.ElementTree as ET
 import sys
+import json
 
 def import_jumps(dbs, db):
     cur = db.cursor()
@@ -69,29 +70,48 @@ def import_stations(dbs,db):
     cur = db.cursor()
     curs = dbs.cursor()
     curs.execute('SELECT stationID, stationName, solarSystemID from staStations')
+    static_stations = []
     for row in curs:
         stationid = row[0]
         stationname = row[1]
         solarsystem = row[2]
+        station = {'id': stationid, 'name': stationname, 'solarsystem': solarsystem}
+        static_stations.append(station)
         print row[0],'=',row[1]
         import_station(db, stationid, stationname, solarsystem)
+    with open('static_stations.json', 'w') as f:
+        print >>f, json.dumps(static_stations)
 
 def import_conq_stations(db):
     url = "https://api.eveonline.com/eve/ConquerableStationList.xml.aspx"
     xml_string = urllib.urlopen(url).read()
     tree = ET.fromstring(xml_string)
+    conq_stations = []
     for row in tree.iter('row'):
         stationid = row.attrib['stationID']
         stationname = row.attrib['stationName']
         solarsystem = row.attrib['solarSystemID']
+        conq = {'name' : stationname, 'solarsystem': solarsystem, 'id': stationid}
+        conq_stations.append(conq)
         print "Conq: ",stationid,stationname,solarsystem
         import_station(db, stationid, stationname, solarsystem)
+    with open('conq.json', 'w') as f:
+        print >>f, json.dumps(conq_stations)
         
+def import_stations_json(db):
+    with open('stations.json', 'r') as f:
+        stations = json.loads(f.read())
+    for station in stations:
+        print station
+        import_station(db, station['id'], station['name'], station['solarsystem'])
 
-def main(sqle = None, live_only = False):
+def main(sqle = None, live_only = False, json = False):
     db = psycopg2.connect(database = 'evec', user = 'evec', port = 5432)
-    import_conq_stations(db)
-    if not live_only:
+    if live_only:
+        import_conq_stations(db)
+    elif json:
+        import_stations_json(db)
+    else:
         dbs = sqlite3.connect(sqle)
         import_jumps(dbs, db)
         import_regions(dbs, db)
@@ -100,8 +120,11 @@ def main(sqle = None, live_only = False):
 
 
 if __name__ == "__main__":
+
     if sys.argv[1] == "--live":
         main(live_only = True)
+    elif sys.argv[1] == "--json":
+        main(json = True)
     else:
         main(sys.argv[1])
     
