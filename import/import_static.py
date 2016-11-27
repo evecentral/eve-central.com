@@ -75,7 +75,7 @@ def import_stations(dbs,db):
         stationid = row[0]
         stationname = row[1]
         solarsystem = row[2]
-        station = {'id': stationid, 'name': stationname, 'solarsystem': solarsystem}
+        station = {'id': int(stationid), 'name': stationname, 'solarsystem': int(solarsystem)}
         static_stations.append(station)
         print row[0],'=',row[1]
         import_station(db, stationid, stationname, solarsystem)
@@ -91,7 +91,7 @@ def import_conq_stations(db):
         stationid = row.attrib['stationID']
         stationname = row.attrib['stationName']
         solarsystem = row.attrib['solarSystemID']
-        conq = {'name' : stationname, 'solarsystem': solarsystem, 'id': stationid}
+        conq = {'name' : stationname, 'solarsystem': int(solarsystem), 'id': int(stationid)}
         conq_stations.append(conq)
         print "Conq: ",stationid,stationname,solarsystem
         import_station(db, stationid, stationname, solarsystem)
