@@ -42,7 +42,7 @@ var urlParams = {};
 	38 : "Nocxium",
 	39 : "Zydrine",
 	40 : "Megacyte",
-	29668 : "PLEX",
+	44992 : "PLEX",
 	16274 : "Helium Isotopes",
 	17889 : "Hydrogen Isotopes",
 	17888 : "Nitrogen Isotopes",
